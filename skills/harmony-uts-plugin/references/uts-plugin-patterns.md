@@ -190,6 +190,9 @@ uni.showToast({ title: '当前平台暂不支持', icon: 'none' })
 - [ ] `utssdk/interface.uts` 类型完整，页面能获得类型提示。
 - [ ] `app-harmony/index.uts` 只返回普通对象，不泄漏复杂原生对象。
 - [ ] 权限已在 `module.json5` 声明，运行时请求路径已测试。
-- [ ] success/fail/complete 都会被正确调用。
+- [ ] success/fail/complete 都会被正确调用，且 `complete` 只调用一次。
 - [ ] 设备不支持、权限拒绝、API 抛错路径有明确错误码。
+- [ ] 页面调用处有 `#ifdef APP-HARMONY` 和非鸿蒙兜底。
+- [ ] ohpm / 三方 SDK 依赖在 HBuilderX 运行、本地打包或云打包中都可解析。
 - [ ] 页面卸载时释放扫描、监听、session、controller。
+- [ ] 生成工程 `unpackage/dist/*/app-harmony` 中能看到预期权限、依赖和插件产物；确认后回源头修改，不长期维护生成产物。

@@ -177,5 +177,6 @@ stopSensorListen()
 2. 在 `app-harmony/index.uts` 或 `.ets` 中调用 SDK。
 3. 对页面只暴露简单 API。
 4. 把 SDK 错误码映射为统一错误对象。
+5. 验证 HBuilderX 运行、本地打包/云打包都能解析依赖；不要只在生成工程里手工改一次。
 
 不要让页面直接 import ohpm 包。

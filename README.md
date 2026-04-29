@@ -1,6 +1,6 @@
-# SnowBeatRain 个人 Skills
+# Skills
 
-这是 SnowBeatRain 的个人 Agent Skills 仓库，用来集中管理可复用的 AI Agent 能力包。
+这是个人 Agent Skills 仓库，用来集中管理可复用的 AI Agent 能力包。
 
 这里的 **skill** 指一个自包含目录：它通过 `SKILL.md` 告诉 Agent 何时触发、如何工作，并可按需携带 `references/`、`scripts/`、`assets/` 等辅助资源。
 

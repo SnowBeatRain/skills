@@ -1,0 +1,23 @@
+{
+  "name": "personal-skills",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Personal Agent Skills repository with JS/TS-oriented tooling.",
+  "type": "module",
+  "scripts": {
+    "validate": "node tools/validate-skills.mjs",
+    "new:skill": "node tools/new-skill.mjs",
+    "list": "node tools/list-skills.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "agent-skills",
+    "claude-skills",
+    "ai-agent",
+    "typescript",
+    "javascript"
+  ],
+  "license": "UNLICENSED"
+}

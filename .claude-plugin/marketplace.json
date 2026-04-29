@@ -4,13 +4,13 @@
     "name": "SnowBeatRain"
   },
   "metadata": {
-    "description": "Personal Agent Skills maintained by SnowBeatRain.",
+    "description": "SnowBeatRain 维护的中文优先个人 Agent Skills。",
     "version": "0.1.0"
   },
   "plugins": [
     {
       "name": "personal-skills",
-      "description": "Personal reusable skills for AI-agent workflows, with a JS/TS tooling preference.",
+      "description": "中文优先的个人可复用 Agent Skills，偏好 JS/TS 工具链。",
       "source": "./",
       "strict": false,
       "skills": [

@@ -35,7 +35,7 @@ for (const entry of entries) {
 }
 
 if (!skills.length) {
-  console.log('No skills yet. Create one with: npm run new:skill -- my-skill "Use when ..."');
+  console.log('还没有 skills。可以用这个命令创建：npm run new:skill -- my-skill "用于……场景，当用户需要……时使用"');
 } else {
   for (const skill of skills) console.log(`- ${skill.name}: ${skill.description}`);
 }

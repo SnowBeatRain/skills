@@ -5,29 +5,29 @@ description: {{description}}
 
 # {{title}}
 
-## Intent
+## 意图
 
-This skill helps agents {{when_to_use}}.
+这个 skill 帮助 Agent {{when_to_use}}。
 
-## Workflow
+## 工作流
 
-1. Confirm the concrete outcome and constraints from the request.
-2. Inspect relevant files, docs, or inputs before acting.
-3. Read bundled references only when they are relevant to the current task.
-4. Run bundled scripts as black boxes first; use `--help` before reading source unless customization is required.
-5. Prefer JS/TS helpers for new deterministic automation in this repo.
-6. Verify the result with the smallest meaningful check.
-7. Report what changed, what was verified, and any remaining blocker.
+1. 确认用户想要的具体结果、边界和约束。
+2. 先检查相关文件、文档或输入，再行动。
+3. 只读取当前任务需要的 `references/`，避免一次性加载无关资料。
+4. 如果有 bundled scripts，先当黑盒运行；优先查看 `--help`，只有需要定制或排错时才读源码。
+5. 新增确定性自动化时，优先使用 JS/TS helper。
+6. 用最小有效检查验证结果。
+7. 汇报改了什么、验证了什么、还有什么阻塞。
 
-## Resources
+## 资源
 
-- `references/` — optional detailed guidance loaded only when needed.
-- `scripts/` — optional deterministic helpers, preferably JS/TS for this repo.
-- `assets/` — optional templates or static resources used in outputs.
+- `references/`：可选，按需读取的详细指南、示例、schema 或 API 文档。
+- `scripts/`：可选，确定性辅助脚本；本仓库优先 JS/TS。
+- `assets/`：可选，输出模板、静态文件或素材。
 
-## Quality checklist
+## 质量检查
 
-- The frontmatter `description` clearly says when to use this skill.
-- `SKILL.md` stays concise; long details move to `references/`.
-- Scripts have a documented usage path, ideally `--help`.
-- At least one realistic usage prompt exists for important or complex skills.
+- frontmatter 里的 `description` 清楚说明何时使用这个 skill。
+- `SKILL.md` 保持简洁；长细节移动到 `references/`。
+- 脚本有清晰用法，最好支持 `--help`。
+- 重要或复杂 skill 至少有一个真实使用提示词或测试场景。

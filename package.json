@@ -2,7 +2,7 @@
   "name": "personal-skills",
   "version": "0.1.0",
   "private": true,
-  "description": "Personal Agent Skills repository with JS/TS-oriented tooling.",
+  "description": "中文优先的个人 Agent Skills 仓库，偏好 JS/TS 工具链。",
   "type": "module",
   "scripts": {
     "validate": "node tools/validate-skills.mjs",

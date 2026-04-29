@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { createWriteStream } from 'node:fs';
 import { mkdir, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
@@ -7,7 +6,7 @@ import { spawn } from 'node:child_process';
 const [, , skillName] = process.argv;
 
 if (!skillName) {
-  console.error('Usage: npm run pack:skill -- <skill-name>');
+  console.error('用法：npm run pack:skill -- <skill-name>');
   process.exit(1);
 }
 
@@ -40,7 +39,7 @@ async function runZip() {
     });
     child.on('close', (code) => {
       if (code === 0) resolve();
-      else reject(new Error(`zip exited with code ${code}`));
+      else reject(new Error(`zip 退出码：${code}`));
     });
     child.on('error', reject);
   });
@@ -48,24 +47,24 @@ async function runZip() {
 
 async function main() {
   if (!(await existsDirectory(skillDir))) {
-    console.error(`Skill not found: skills/${skillName}`);
+    console.error(`未找到 skill：skills/${skillName}`);
     process.exit(1);
   }
 
   const files = await readdir(skillDir);
   if (!files.includes('SKILL.md')) {
-    console.error(`Skill missing SKILL.md: skills/${skillName}`);
+    console.error(`skill 缺少 SKILL.md：skills/${skillName}`);
     process.exit(1);
   }
 
   if (!(await hasZip())) {
-    console.error('The `zip` command is required to package skills. Install zip or create the archive manually.');
+    console.error('打包需要系统存在 `zip` 命令。请安装 zip，或手动创建压缩包。');
     process.exit(1);
   }
 
   await mkdir(outputDir, { recursive: true });
   await runZip();
-  console.log(`Packed ${outputFile}`);
+  console.log(`已打包：${outputFile}`);
 }
 
 main().catch((error) => {

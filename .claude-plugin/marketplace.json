@@ -1,0 +1,21 @@
+{
+  "name": "snowbeatrain-personal-skills",
+  "owner": {
+    "name": "SnowBeatRain"
+  },
+  "metadata": {
+    "description": "Personal Agent Skills maintained by SnowBeatRain.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "personal-skills",
+      "description": "Personal reusable skills for AI-agent workflows, with a JS/TS tooling preference.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills"
+      ]
+    }
+  ]
+}

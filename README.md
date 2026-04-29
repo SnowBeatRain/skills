@@ -8,6 +8,8 @@ This repo is designed to grow over time as a collection of focused, self-contain
 
 ```text
 .
+├── .claude-plugin/         # Optional Claude Code plugin marketplace metadata
+├── docs/                   # Repo-level notes and curation guidance
 ├── skills/                 # Published personal skills
 │   └── <skill-name>/
 │       ├── SKILL.md        # Required: metadata + instructions
@@ -37,6 +39,20 @@ skills/my-skill-name/SKILL.md
 npm run validate
 ```
 
+## Package one skill
+
+```bash
+npm run pack:skill -- my-skill-name
+```
+
+This creates `dist/my-skill-name.zip` for upload/import workflows.
+
+## Reference patterns
+
+See [`docs/skill-patterns.md`](docs/skill-patterns.md) for curation notes distilled from public skills repositories.
+
+The repo also includes `.claude-plugin/marketplace.json` so it can later be used as a Claude Code plugin marketplace / skill set source if desired.
+
 The validator checks that every skill has:
 
 - a `SKILL.md`
@@ -51,6 +67,8 @@ The validator checks that every skill has:
 - Put repeatable deterministic code in `scripts/`.
 - Put reusable output resources in `assets/`.
 - Prefer JS/TS helper scripts when code is needed.
+- For large helper scripts, document `--help` usage and treat scripts as black boxes unless customization is required.
+- Add focused examples or test prompts for important skills.
 - Avoid dumping general documentation into individual skill folders.
 
 ## Minimal skill shape

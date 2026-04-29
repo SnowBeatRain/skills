@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "validate": "node tools/validate-skills.mjs",
+    "test:validate": "node tools/validate-skills.test.mjs",
     "new:skill": "node tools/new-skill.mjs",
     "list": "node tools/list-skills.mjs",
     "pack:skill": "node tools/pack-skill.mjs"

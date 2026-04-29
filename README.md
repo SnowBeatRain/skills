@@ -16,6 +16,7 @@
 | Skill | 用途 | 位置 |
 |------|------|------|
 | `uniapp-skill` | uni-app / uniapp / uni-app x / UTS / 小程序 / H5 / App / HarmonyOS / 鸿蒙元服务等跨端开发任务 | [`skills/uniapp-skill`](skills/uniapp-skill) |
+| `harmony-uts-plugin` | uni-app / uni-app x 中通过 UTS 封装 HarmonyOS / OpenHarmony 原生 API 为鸿蒙插件 | [`skills/harmony-uts-plugin`](skills/harmony-uts-plugin) |
 
 查看完整列表：
 

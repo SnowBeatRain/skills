@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
 const validator = path.join(repoRoot, 'tools/validate-skills.mjs');
+const lister = path.join(repoRoot, 'tools/list-skills.mjs');
 
 async function createRepo(skillBody, extraFiles = {}) {
   const root = await mkdtemp(path.join(tmpdir(), 'skills-validate-'));
@@ -37,6 +38,13 @@ function runValidate(root) {
   });
 }
 
+function runList(root) {
+  return spawnSync(process.execPath, [lister], {
+    cwd: root,
+    encoding: 'utf8'
+  });
+}
+
 function validSkill(lines = []) {
   return `---
 name: demo-skill
@@ -61,6 +69,29 @@ async function testValidSkillPasses() {
   }, (root) => {
     const result = runValidate(root);
     assert.equal(result.status, 0, result.stderr || result.stdout);
+  });
+}
+
+async function testCrlfFrontmatterPasses() {
+  const crlfSkill = validSkill([
+    '读取 `references/guide.md`。'
+  ]).replaceAll('\n', '\r\n');
+
+  await withRepo(crlfSkill, {
+    'references/guide.md': '# Guide\n'
+  }, (root) => {
+    const result = runValidate(root);
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+  });
+}
+
+async function testCrlfFrontmatterListsDescription() {
+  const crlfSkill = validSkill().replaceAll('\n', '\r\n');
+
+  await withRepo(crlfSkill, {}, (root) => {
+    const result = runList(root);
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(result.stdout, /demo-skill: 用于测试 validate 规则的示例 skill/);
   });
 }
 
@@ -95,6 +126,8 @@ async function testSensitivePatternFails() {
 
 const tests = [
   testValidSkillPasses,
+  testCrlfFrontmatterPasses,
+  testCrlfFrontmatterListsDescription,
   testMissingReferenceFails,
   testOversizedSkillFails,
   testSensitivePatternFails

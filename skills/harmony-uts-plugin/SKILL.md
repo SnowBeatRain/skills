@@ -21,6 +21,8 @@ description: 用于 uni-app / uni-app x 中通过 UTS 开发鸿蒙 HarmonyOS 插
 
 普通页面、路由、组件、`pages.json`、`manifest.json` 优先使用 `uniapp-skill`；涉及鸿蒙原生能力时两个 skill 配合。
 
+如果任务是 iOS、Android、HarmonyOS 三端共用 SQLite UTS 插件，优先使用 `sqlite-uniapp-uts` 统筹公共 API 和三端能力矩阵；本 skill 只补充 `app-harmony`、ArkTS/ETS、Kit/ohpm 和鸿蒙真机验证细节。
+
 ## 工作流
 
 1. **先判断是否真需要插件**

@@ -21,6 +21,7 @@ description: 将此技能应用于所有 uni-app / uniapp / uni-app x / UTS / HB
 - Pinia、生命周期、路由、网络请求、组件、媒体文件、设备 API、web-view、RenderJS、WXS、subNVue。
 - uni-automator、Vitest、CI/CD、安全、性能优化、发布打包。
 - 需要通过 UTS / ArkTS / ETS 封装鸿蒙能力时，同时使用 `harmony-uts-plugin`。
+- 需要通过 UTS 封装 iOS、Android、HarmonyOS 三端共用 SQLite 插件时，同时使用 `sqlite-uniapp-uts`。
 
 ## 工作流
 
@@ -50,6 +51,7 @@ description: 将此技能应用于所有 uni-app / uniapp / uni-app x / UTS / HB
 - 小程序主包体积受限，静态资源应分包、压缩或上 CDN。
 - uni-app x / uvue 强类型和 CSS 能力更接近原生约束；布局优先 flex。
 - 鸿蒙原生能力优先查 `uni.*` 是否已覆盖；确需原生封装时使用 `harmony-uts-plugin`。
+- 三端 SQLite UTS 插件不要只按普通 UTS 插件处理；使用 `sqlite-uniapp-uts` 管统一 API、能力矩阵和真机验证。
 - 不要输出或写入密钥、证书密码、token、真实用户隐私数据。
 
 ## 常用 references

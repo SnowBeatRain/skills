@@ -18,6 +18,7 @@
 | `uniapp-skill` | uni-app / uniapp / uni-app x / UTS / 小程序 / H5 / App / HarmonyOS / 鸿蒙元服务等跨端开发任务 | [`skills/uniapp-skill`](skills/uniapp-skill) |
 | `harmony-uts-plugin` | uni-app / uni-app x 中通过 UTS 封装 HarmonyOS / OpenHarmony 原生 API 为鸿蒙插件 | [`skills/harmony-uts-plugin`](skills/harmony-uts-plugin) |
 | `sqlite-skill` | SQLite / 本地数据库 / schema migration / 事务并发 / 同步冲突 / 索引性能 / PRAGMA/WAL/FTS/JSON / 安全隐私 | [`skills/sqlite-skill`](skills/sqlite-skill) |
+| `sqlite-uniapp-uts` | uni-app / uni-app x 中通过 UTS 封装 iOS、Android、HarmonyOS 三端共用 SQLite 插件 | [`skills/sqlite-uniapp-uts`](skills/sqlite-uniapp-uts) |
 
 查看完整列表：
 

@@ -11,6 +11,8 @@ description: 用于 SQLite 本地数据库设计、SQL 编写、schema/migration
 
 本 skill **只负责 SQLite 与离线数据工程本身**。如果业务项目还涉及具体框架、端平台、插件封装或 UI 工程，由用户主动指定或另行调用对应能力；本 skill 不主动耦合其他 skill。
 
+如果任务是 uni-app / UTS 的 iOS、Android、HarmonyOS 三端共用 SQLite 插件，使用 `sqlite-uniapp-uts` 处理插件工程与平台 Adapter，本 skill 只提供 SQLite 数据层规则。
+
 ## 触发场景
 
 - SQLite 建表、查询、索引、事务、迁移、`PRAGMA`、`EXPLAIN QUERY PLAN`。
@@ -112,6 +114,10 @@ description: 用于 SQLite 本地数据库设计、SQL 编写、schema/migration
 | SQLite 总览 | `references/overview.md` |
 | 运行环境边界 | `references/runtime-boundaries.md` |
 | Adapter 与 API 契约 | `references/adapters-and-api-contracts.md` |
+| 连接生命周期 | `references/connection-lifecycle.md` |
+| Statement 与参数绑定 | `references/statement-and-binding.md` |
+| 结果集映射 | `references/result-set-mapping.md` |
+| 统一错误模型 | `references/error-model.md` |
 | DAO / QueryBuilder | `references/querybuilder-and-dao.md` |
 | PRAGMA 与诊断 | `references/pragmas-and-diagnostics.md` |
 | SQL 基础 | `references/sql-basics.md` |

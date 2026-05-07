@@ -5,7 +5,7 @@ import path from 'node:path';
 const skillsDir = path.join(process.cwd(), 'skills');
 
 function parseFrontmatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n?/);
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
   if (!match) return {};
   return Object.fromEntries(
     match[1]

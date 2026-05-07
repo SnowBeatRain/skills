@@ -1,6 +1,6 @@
 # UTS 结果映射
 
-通用规则见 `sqlite-skill/references/result-set-mapping.md`。本文件定义 UTS 插件对外返回约束。
+本文件自包含 UTS 插件对外返回约束：只返回可序列化 DTO，不返回 cursor、statement、connection 或平台专属对象。
 
 ## 返回结构
 

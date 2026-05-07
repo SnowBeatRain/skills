@@ -18,10 +18,11 @@ SQLite UTS 插件必须做三端真实环境验证。模拟器只能作为早期
 - transaction 成功提交。
 - transaction 中途失败回滚。
 - batch 大量写入。
-- migration 新装和升级。
+- migration 新装、逐历史版本升级和真实旧库 fixture。
 - busy/locked 或并发写入。
 - 数据库文件不存在、路径不可写、磁盘空间不足。
 - App 后台切换、崩溃后重启。
+- migration 中途失败后再次启动恢复，不重复破坏数据。
 
 ## 一致性测试
 

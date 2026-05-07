@@ -37,3 +37,9 @@ Cursor 读取时显式处理：
 - `execSQL` 拼接外部输入导致注入。
 - `onUpgrade` 直接破坏用户数据。
 
+## 外键、WAL 与 API 差异
+
+- 外键约束通常需要在每次打开数据库后显式启用并确认，例如使用平台 API 或执行 `PRAGMA foreign_keys = ON; PRAGMA foreign_keys;`。
+- WAL 可通过 Android API 或 `PRAGMA journal_mode = WAL` 尝试启用，但必须读取结果确认，并在目标 Android 版本、连接池和真机上验证。
+- `execSQL` 适合无结果 DDL/DML，不适合 SELECT；查询必须使用可返回 cursor/rows 的 API。
+- 参数绑定、BLOB、NULL、INTEGER/REAL/TEXT 映射要按 Android API 实测，避免把所有值转字符串。

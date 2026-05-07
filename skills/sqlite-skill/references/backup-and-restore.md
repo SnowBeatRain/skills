@@ -52,3 +52,12 @@ PRAGMA user_version;
 - 加密库备份必须管理密钥生命周期；密钥不能与备份明文放在一起。
 - 多账号场景恢复时不能把 A 用户备份恢复到 B 用户空间。
 - 崩溃日志、导出包和客服排障包都不能包含未脱敏数据库。
+
+## 备份决策树
+
+1. 数据库正在使用中：优先使用 SQLite Online Backup API 或 wrapper 暴露的 backup 方法。
+2. wrapper 不暴露 backup API，但 SQLite 版本支持：评估 `VACUUM INTO`，注意耗时和额外磁盘空间。
+3. 只能文件复制：先关闭所有连接；WAL 模式下要同时处理主库、`-wal`、`-shm`，或在理解阻塞风险后执行合适 checkpoint。
+4. 逻辑迁移/跨版本导出：使用 `.dump`，但大库恢复慢且需要重建索引。
+
+`PRAGMA wal_checkpoint(PASSIVE)` 不保证 WAL 被截断；`FULL` / `RESTART` / `TRUNCATE` 可能阻塞写入或读者，必须在维护窗口或低风险时执行。

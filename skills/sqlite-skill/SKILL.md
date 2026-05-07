@@ -1,6 +1,6 @@
 ---
 name: sqlite-skill
-description: 用于 SQLite 本地数据库设计、SQL 编写、schema/migration、事务并发、索引性能、外键约束、PRAGMA/WAL/FTS/JSON、同步队列、冲突处理、备份恢复、limits 与安全隐私防护。当用户提到 SQLite、sqlite、本地数据库、离线缓存、offline-first、数据同步、迁移、upsert、CREATE TABLE、PRAGMA、WAL、FTS5、本地搜索时使用。保持平台中立：不要默认绑定任何具体框架、端平台或插件；不要把 SQLite 与 IndexedDB、WebSQL、localStorage、key-value storage 或服务端数据库混淆。
+description: 用于平台中立的 SQLite 数据层设计与审查，包括 schema、SQL、migration、事务、索引、PRAGMA/WAL/FTS/JSON、同步持久化、备份恢复、limits 和安全。当用户明确提到 SQLite/sqlite，或需要判断本地关系型数据库是否适合 SQLite 时使用；不要用于未指定 SQLite 的 IndexedDB、localStorage、key-value storage 或服务端数据库任务。
 ---
 
 # SQLite Skill
@@ -11,7 +11,7 @@ description: 用于 SQLite 本地数据库设计、SQL 编写、schema/migration
 
 本 skill **只负责 SQLite 与离线数据工程本身**。如果业务项目还涉及具体框架、端平台、插件封装或 UI 工程，由用户主动指定或另行调用对应能力；本 skill 不主动耦合其他 skill。
 
-如果任务是 uni-app / UTS 的 iOS、Android、HarmonyOS 三端共用 SQLite 插件，使用 `sqlite-uniapp-uts` 处理插件工程与平台 Adapter，本 skill 只提供 SQLite 数据层规则。
+如果用户明确指定要做 uni-app / UTS 的三端 SQLite 插件，可另行使用 `sqlite-uniapp-uts` 处理插件工程与平台 Adapter；本 skill 只提供 SQLite 数据层规则。
 
 ## 触发场景
 

@@ -1,6 +1,6 @@
 # 迁移与版本
 
-通用迁移策略见 `sqlite-skill/references/migrations.md`。
+本文件自包含 UTS 插件迁移与版本最小策略。业务 schema 归业务 DAO，但插件需要提供稳定版本读取、迁移执行、失败回滚和重复启动恢复能力。
 
 ## 推荐机制
 
@@ -33,3 +33,17 @@ export interface Migration {
 - 重复执行不会重复插入或破坏数据。
 - Android/iOS/HarmonyOS 三端版本一致。
 
+## 版本更新事务绑定
+
+每个 migration 的 schema 变更和版本号更新必须在同一个事务中提交：
+
+```text
+BEGIN
+  执行 migration statements
+  更新 user_version 或插入 schema_migrations(version)
+COMMIT
+```
+
+失败时必须整体回滚，不能推进版本号。若整个升级链放入一个大事务，最终版本更新也必须在该事务内；若每个 migration 单独事务，则每个 migration 的版本记录和 SQL 必须同事务提交。
+
+`statements` 中不允许业务自行传入 `BEGIN`、`COMMIT`、`ROLLBACK` 等事务控制语句，事务边界由插件层统一管理。

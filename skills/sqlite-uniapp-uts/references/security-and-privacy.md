@@ -1,13 +1,14 @@
 # 安全与隐私
 
-通用 SQLite 安全原则见 `sqlite-skill/references/security.md`。
+本文件自包含 SQLite UTS 插件安全与隐私最小规则。若另有通用 SQLite skill，可参考其安全资料，但不要依赖外部路径。
 
 ## 插件层规则
 
 - SQLite 不是加密存储。
 - 不明文保存 token、密码、证件号、高敏定位和密钥。
 - 需要加密时，先确认三端可用方案：SQLCipher、系统安全存储、平台 keystore/keychain 或业务侧加密。
-- `OpenDatabaseOptions.keyAlias` 只能引用安全存储中的 key，不应直接传明文 key。
+- `OpenDatabaseOptions.encryption` 只是能力请求，只有能力矩阵明确支持或外部支持时才可启用。
+- `keyAlias` 只能引用安全存储中的 key，不应直接传明文 key。
 
 ## 路径与账号隔离
 

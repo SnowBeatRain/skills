@@ -46,7 +46,7 @@ INTEGER  Unix timestamp，建议明确秒或毫秒
 REAL     Julian day
 ```
 
-本地/端侧场景建议统一使用 UTC ISO 字符串或 Unix 毫秒时间戳。
+本地/端侧场景建议统一使用 UTC ISO 字符串或 Unix 毫秒时间戳。不要存本地时区格式字符串；跨端同步时明确单位（秒/毫秒）和时区。服务端同步游标不要只依赖客户端本地时间，避免设备时间漂移导致漏同步或乱序。
 
 ## STRICT tables
 

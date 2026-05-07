@@ -1,6 +1,6 @@
 # 性能与 Limits
 
-通用性能原则见 `sqlite-skill/references/performance.md` 和 `sqlite-skill/references/limits-and-batching.md`。
+本文件自包含 UTS 插件层性能与 limits 最小规则。若另有通用 SQLite skill，可参考其性能、limits 与批处理资料，但不要依赖外部路径。
 
 ## 插件层关注点
 

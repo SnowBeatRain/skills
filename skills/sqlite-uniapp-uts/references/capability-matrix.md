@@ -7,6 +7,7 @@
 ```ts
 export interface CapabilityReport {
   pluginVersion: string
+  currentPlatform: 'android' | 'ios' | 'harmony'
   platforms: Record<'android' | 'ios' | 'harmony', PlatformCapabilities>
 }
 
@@ -24,7 +25,7 @@ export interface PlatformCapabilities {
   busyTimeout: 'supported' | 'unsupported' | 'unknown'
   fts5: 'supported' | 'unsupported' | 'unknown'
   json1: 'supported' | 'unsupported' | 'unknown'
-  encryption: 'supported' | 'unsupported' | 'external' | 'unknown'
+  encryption: 'supported' | 'unsupported' | 'field-level' | 'platform' | 'unknown'
   backup: 'supported' | 'unsupported' | 'unknown'
   notes?: string[]
 }
@@ -39,7 +40,7 @@ export interface PlatformCapabilities {
 
 ## 文档输出要求
 
-插件 README 或交付说明应列出：
+目标插件项目的 README 或交付说明应列出（这是生成/审查的插件工程文档，不是在本 AgentSkill 目录中新增 README）：
 
 | 能力 | Android | iOS | HarmonyOS | 备注 |
 |---|---|---|---|---|

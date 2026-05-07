@@ -1,6 +1,16 @@
 # SQLite SQL 基础
 
-本文件覆盖常用 SQLite SQL。建表基础可参考官方 SQL 语法和第三方教程，例如 <https://www.runoob.com/sqlite/sqlite-create-table.html>，但实现时以 SQLite 官方文档和当前运行环境为准。
+本文件覆盖常用 SQLite SQL。语法细节以 SQLite 官方文档和当前运行环境为准，入口见 `official-docs-map.md`。
+
+## 目录
+
+- 创建表
+- 增删改查
+- UPSERT
+- JOIN 与聚合
+- 修改表结构
+- CLI 常用命令
+- 参数化原则
 
 ## 创建表
 

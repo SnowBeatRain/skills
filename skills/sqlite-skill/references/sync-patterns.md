@@ -1,5 +1,18 @@
 # 同步模式与冲突处理
 
+## 目录
+
+- Outbox Pattern
+- 同步状态
+- 推送流程
+- 拉取流程
+- 软删除 Tombstone
+- 幂等
+- 时间与游标
+- 冲突检测与策略
+- 附件同步
+
+
 离线优先不是简单缓存，而是本地可写、网络恢复后最终一致的数据系统。
 
 ## Outbox Pattern
@@ -78,6 +91,12 @@ WHERE local_id = ?;
 ## 幂等
 
 每次本地变更应有唯一 `mutation_id` 或 outbox id。服务端应支持重复提交同一个 mutation 不产生重复数据。
+
+## 时间与游标
+
+- `created_at` / `updated_at` 建议统一 UTC epoch ms 或 ISO-8601 UTC 字符串。
+- 客户端时间可用于本地排序和用户体验，但服务端增量游标应优先使用服务端版本、递增 cursor、etag 或 server timestamp。
+- 不要只用客户端 `updated_at` 作为拉取游标；设备时间漂移、离线修改和时区格式差异都可能造成漏拉或重复。
 
 ## 冲突检测
 

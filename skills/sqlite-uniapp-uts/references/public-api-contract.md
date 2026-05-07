@@ -2,6 +2,15 @@
 
 公共 API 要让业务层感知“一个稳定数据库插件”，而不是三套平台实现。API 名称可按项目风格调整，但语义必须一致。
 
+## 目录
+
+- 推荐能力
+- 基础 DTO
+- 查询与执行
+- 关闭、版本与能力
+- 事务与批处理
+- API 规则
+
 ## 推荐能力
 
 ```ts
@@ -30,9 +39,20 @@ export interface DatabaseRef {
 export interface OpenDatabaseOptions {
   name: string
   path?: string
-  encrypted?: boolean
+  sqlite?: SQLiteOpenOptions
+  encryption?: EncryptionOptions
+}
+
+export interface SQLiteOpenOptions {
+  foreignKeys?: boolean
+  busyTimeoutMs?: number
+  journalMode?: 'delete' | 'wal'
+  synchronous?: 'full' | 'normal'
+}
+
+export interface EncryptionOptions {
+  mode: 'none' | 'sqlcipher' | 'field-level' | 'platform'
   keyAlias?: string
-  pragmas?: Record<string, string | number | boolean>
 }
 
 export interface DatabaseHandle {
@@ -81,7 +101,26 @@ export interface SetUserVersionOptions extends DatabaseRef {
 export interface CapabilityReport {
   pluginVersion: string
   currentPlatform: 'android' | 'ios' | 'harmony'
-  platforms: Record<string, unknown>
+  platforms: Record<'android' | 'ios' | 'harmony', PlatformCapabilities>
+}
+
+export interface PlatformCapabilities {
+  available: boolean
+  sqliteVersion?: string
+  wrapper: string
+  minRuntime?: string
+  parameterBinding: boolean
+  transactions: boolean
+  batch: boolean
+  userVersion: boolean
+  foreignKeys: 'supported' | 'unsupported' | 'unknown'
+  wal: 'supported' | 'unsupported' | 'unknown'
+  busyTimeout: 'supported' | 'unsupported' | 'unknown'
+  fts5: 'supported' | 'unsupported' | 'unknown'
+  json1: 'supported' | 'unsupported' | 'unknown'
+  encryption: 'supported' | 'unsupported' | 'field-level' | 'platform' | 'unknown'
+  backup: 'supported' | 'unsupported' | 'unknown'
+  notes?: string[]
 }
 
 export interface HealthReport {
@@ -148,3 +187,6 @@ export interface MigrationResult {
 - DDL、DML、SELECT 可分接口，也可通过 execute/query 区分。
 - 不允许业务层直接拿到 native connection、cursor、statement。
 - 大结果集必须分页或限制。
+- `sqlite` 只接受白名单配置，不暴露任意 `pragmas: Record<string, ...>`；PRAGMA 名称和值不得由外部输入拼接，`journalMode` 设置后必须读取返回值确认。
+- `encryption` 只是能力请求；只有 `getCapabilities().platforms[currentPlatform].encryption` 明确为 `supported`、`field-level` 或 `platform` 且平台实现已验证时才可启用。默认 `mode: 'none'`，不能因为业务传参就假装加密；`keyAlias` 是安全存储中的密钥别名，不是明文 key。
+- `transaction()` / `batch({ transaction: true })` 的 `statements` 禁止包含 `BEGIN`、`COMMIT`、`ROLLBACK`、未受控 `SAVEPOINT`、`PRAGMA foreign_keys = OFF` 等事务/连接控制 SQL；插件层应在开发模式检测并拒绝。

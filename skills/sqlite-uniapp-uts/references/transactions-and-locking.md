@@ -1,6 +1,6 @@
 # 事务与锁
 
-通用 SQLite 事务原则见 `sqlite-skill/references/transactions-and-concurrency.md`。
+本文件自包含 UTS 插件事务与锁的最小规则：事务必须同一连接/同一 store、失败回滚、写入串行化、busy/locked 有限重试。若另有通用 SQLite skill，可参考其更完整并发资料。
 
 ## 插件层要求
 
@@ -32,3 +32,14 @@ callback 事务只有在三端 UTS 异步、异常传播和事务上下文都可
 - 后台同步和 UI 写入需要串行写队列。
 - 对 busy/locked 可做有限退避重试；对 constraint/misuse/corrupt 不盲目重试。
 
+## 禁止事务控制 SQL
+
+`transaction()` 的 statement-list 由插件层统一包裹事务，业务传入的 statements 禁止包含：
+
+- `BEGIN`
+- `COMMIT`
+- `ROLLBACK`
+- 未受控 `SAVEPOINT` / `RELEASE` / `ROLLBACK TO`
+- `PRAGMA foreign_keys = OFF` 等会改变连接/事务语义的控制语句
+
+需要局部回滚时，应设计受控 savepoint API；不支持时明确返回 unsupported，不要允许业务自行混入事务控制 SQL。

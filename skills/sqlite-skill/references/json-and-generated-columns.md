@@ -15,7 +15,14 @@ SELECT sqlite_version();
 PRAGMA compile_options;
 ```
 
-必要时执行小查询 smoke test。
+`PRAGMA compile_options` 中不出现 `ENABLE_JSON1` 不等于 JSON 不可用：SQLite 3.38.0 起 JSON 函数默认内建，且宿主 wrapper 也可能隐藏或裁剪编译选项。必须用实际函数 smoke test 判断：
+
+```sql
+SELECT json_valid('{"a":1}');
+SELECT json_extract('{"a":1}', '$.a');
+```
+
+JSONB 是独立能力，不要用 JSON1 smoke test 推断 JSONB 可用；需要使用项目实际会调用的 `jsonb_*` 函数另做 smoke test，并准备降级为 TEXT JSON。
 
 ## 常见查询
 
@@ -54,3 +61,14 @@ CREATE INDEX idx_events_event_type ON events(event_type);
 - 字段参与高频查询、排序、唯一约束或外键关系。
 - 需要强类型校验或复杂迁移。
 - 需要跨宿主稳定兼容但 JSON 能力不确定。
+
+## JSON 能力检测注意
+
+不要只依赖 `PRAGMA compile_options` 中是否出现 `ENABLE_JSON1`。SQLite 3.38.0 起 JSON 函数通常默认内置，可能没有该编译选项。优先执行 smoke test：
+
+```sql
+SELECT json_valid('{"a":1}');
+SELECT json_extract('{"a":1}', '$.a');
+```
+
+JSONB 需要单独测试，例如目标环境是否支持 `jsonb()`；不要把 JSON1 可用等同于 JSONB 可用。

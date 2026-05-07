@@ -45,3 +45,19 @@ SELECT * FROM tasks WHERE local_id IN (?, ?, ...);
 - 每批提交后记录 checkpoint。
 - 同步或导入失败后能从最近成功批次继续。
 - 事务过大可能导致锁时间长、WAL 膨胀或低端设备卡顿。
+
+## 常见默认值
+
+以下是常见默认值，实际以目标 SQLite 构建和 wrapper 为准：
+
+- `SQLITE_MAX_VARIABLE_NUMBER`：旧版本常见 999，SQLite 3.32.0 后默认 32766。
+- `SQLITE_MAX_COLUMN`：默认 2000。
+- SQL 文本长度、最大 BLOB/TEXT、表达式深度、最大页数可能被编译选项调整。
+
+批量插入可粗略估算：
+
+```text
+chunkSize = floor(maxVariableNumber / columnsPerRow)
+```
+
+仍需结合事务耗时、内存、锁等待和失败恢复能力压测。

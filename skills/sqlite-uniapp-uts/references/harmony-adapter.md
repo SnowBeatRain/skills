@@ -13,7 +13,8 @@ HarmonyOS 侧必须能力核查优先。不要默认 Android SQLite 方案可迁
 2. 确认 UTS 是否支持当前 app-harmony 插件目录和 ArkTS/ETS helper。
 3. 确认可用数据库能力：关系型数据库 API、SQLite wrapper、ohpm 依赖或项目已有封装。
 4. 定义 `app-harmony/index.uts` 作为 UTS API 门面。
-5. 复杂连接、事务、结果集状态机拆到 ArkTS/ETS helper。
+5. 若底层是 HarmonyOS RDB 或非标准 SQLite C API wrapper，先建立 SQL 兼容性清单，再决定对外是否声明 SQLite 兼容。
+6. 复杂连接、事务、结果集状态机拆到 ArkTS/ETS helper。
 
 ## 必查问题
 
@@ -22,7 +23,7 @@ HarmonyOS 侧必须能力核查优先。不要默认 Android SQLite 方案可迁
 - 是否支持事务，事务是否能绑定同一 store/connection。
 - 查询结果如何关闭或释放。
 - 原生错误码如何获取。
-- WAL、FTS5、JSON、加密是否支持或不可用。
+- WAL、FTS5、JSON、backup、错误码、事务隔离、SQL 方言和加密是否支持或不可用。
 
 ## 风险清单
 
@@ -31,4 +32,13 @@ HarmonyOS 侧必须能力核查优先。不要默认 Android SQLite 方案可迁
 - ohpm 或 Kit 能力未随插件声明和打包。
 - API Level 差异导致真机可用性不同。
 - 只在模拟器验证数据库文件和锁行为。
+- 底层不是标准 SQLite wrapper 时仍对外承诺完整 SQLite 兼容。
 
+## SQLite 兼容子集边界
+
+如果 HarmonyOS 端底层使用 RDB 或非标准 SQLite C API wrapper，它只能被视为 SQLite-compatible subset，不得默认等同完整 SQLite：
+
+- `PRAGMA`、WAL、FTS5、JSON1/JSONB、backup API、`sqlite_version()`、`compile_options`、`last_insert_rowid()` 都必须单独探测。
+- 不支持的能力必须在 `getCapabilities()` 中返回 `unsupported` 或 `unknown`，不得静默伪装为支持。
+- 公共 SQL 应限制在三端共同支持的子集；需要平台分支时必须文档化。
+- 错误码、事务行为、文件备份模型和锁行为必须以目标真机验证为准。

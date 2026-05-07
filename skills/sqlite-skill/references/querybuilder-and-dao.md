@@ -1,5 +1,14 @@
 # DAO / QueryBuilder 模式
 
+## 目录
+
+- QueryBuilder 边界
+- 安全排序
+- DAO / Repository 示例
+- 事务边界
+- 常见误区
+
+
 本参考提供平台中立的数据访问层模板，避免在业务代码中散落 SQL 拼接、同步状态更新和事务边界。
 
 ## DAO 原则

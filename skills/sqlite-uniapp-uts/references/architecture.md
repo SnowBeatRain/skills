@@ -25,7 +25,7 @@ Application / Page / Store
 1. **契约优先**：先写 API、DTO、错误码和能力矩阵，再实现三端。
 2. **能力探测优先**：每端实际 SQLite/RDB 能力可能不同，必须在初始化或诊断接口中暴露。
 3. **平台差异内聚**：差异留在 adapter，不让页面和业务 DAO 直接 `#ifdef` 平台数据库行为。
-4. **通用规则复用**：连接生命周期、statement、binding、result mapping、migration、error model 以 `sqlite-skill` 为准。
+4. **自包含最小契约**：连接生命周期、statement、binding、result mapping、migration、error model 遵循当前 skill references 定义的最小契约；若另有 `sqlite-skill` 可作补充参考，但不要形成硬依赖。
 5. **真实环境验证**：移动端数据库问题常出现在真机文件系统、权限、低空间、后台切换和崩溃恢复中。
 
 ## 与相关 skill 的关系

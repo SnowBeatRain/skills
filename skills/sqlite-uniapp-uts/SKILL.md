@@ -1,6 +1,6 @@
 ---
 name: sqlite-uniapp-uts
-description: 用于 uni-app / uni-app x 中通过 UTS 开发 iOS、Android、HarmonyOS 三端共用 SQLite 插件；当用户提到 sqlite-uniapp-uts、UTS SQLite、uni_modules 数据库插件、app-android/app-ios/app-harmony、本地数据库原生封装、三端统一数据库 API、插件事务迁移或真机验证时使用。
+description: 用于 uni-app / uni-app x 中通过 UTS 开发 iOS、Android、HarmonyOS 三端共用 SQLite 插件；当用户提到 sqlite-uniapp-uts、UTS SQLite、uni_modules SQLite 数据库插件、app-android/app-ios/app-harmony、SQLite 本地数据库原生封装、三端统一 SQLite API、SQLite 插件事务迁移或真机验证时使用。
 ---
 
 # SQLite UniApp UTS
@@ -11,11 +11,13 @@ description: 用于 uni-app / uni-app x 中通过 UTS 开发 iOS、Android、Har
 
 ## 协作边界
 
-- **REQUIRED BACKGROUND:** 涉及 schema、SQL、迁移、事务、索引、PRAGMA、WAL、FTS、JSON、安全或 SQLite 错误码时，使用 `sqlite-skill`。
-- **REQUIRED BACKGROUND:** 涉及 uni-app 项目结构、`manifest.json`、条件编译、页面调用、HBuilderX 或发布时，使用 `uniapp-skill`。
-- **REQUIRED BACKGROUND:** 涉及 `utssdk/app-harmony/`、ArkTS/ETS、HarmonyOS Kit、ohpm、权限和真机调试时，使用 `harmony-uts-plugin`。
+本 skill 可以单独分发和使用，必须自包含完成 SQLite UTS 插件工程的最小决策。若运行环境也安装了其他 skill，可按需协作：
 
-本 skill 只负责把 SQLite 能力工程化封装为 iOS、Android、HarmonyOS 三端一致的 UTS 插件。
+- 涉及复杂 schema、SQL 优化、迁移、同步、PRAGMA、WAL、FTS、JSON、安全或 SQLite 错误码时，可参考 `sqlite-skill`，但本 skill 的最小契约仍以当前 references 为准。
+- 涉及 uni-app 项目结构、`manifest.json`、条件编译、页面调用、HBuilderX 或发布时，可参考 `uniapp-skill`。
+- 涉及 `utssdk/app-harmony/`、ArkTS/ETS、HarmonyOS Kit、ohpm、权限和真机调试时，可参考 `harmony-uts-plugin`。
+
+本 skill 只负责把 SQLite 能力工程化封装为 iOS、Android、HarmonyOS 三端一致的 UTS 插件；不要把其他 skill 视为硬依赖。
 
 ## 架构原则
 
@@ -29,7 +31,7 @@ description: 用于 uni-app / uni-app x 中通过 UTS 开发 iOS、Android、Har
 
 1. 先设计统一 API 和错误模型，再写平台实现。
 2. 先输出能力矩阵，再承诺 WAL、FTS5、JSON、加密、backup 等能力。
-3. 平台 Adapter 必须满足 `sqlite-skill` 的连接、statement、参数绑定、结果映射和事务契约。
+3. 平台 Adapter 必须满足连接可控、statement/cursor 可释放、参数绑定、稳定结果映射、统一错误模型和同一事务上下文等最小 SQLite 契约。
 4. 对外只暴露普通 DTO，不泄漏 Android、iOS、HarmonyOS 原生对象。
 5. 三端行为不一致时，以能力探测、显式降级和文档说明处理，不静默伪装一致。
 6. 涉及真实文件、隐私数据、同步队列和迁移时，必须规划真机验证。
@@ -89,8 +91,30 @@ description: 用于 uni-app / uni-app x 中通过 UTS 开发 iOS、Android、Har
 
 - [ ] 已确认三端目标版本、UTS 编译边界和官方文档入口。
 - [ ] 已定义公共 API、DTO、错误码和能力矩阵。
-- [ ] 已复用 `sqlite-skill` 的 SQLite 数据层规则，没有复制冲突版本。
+- [ ] 已内置 SQLite 插件最小数据层规则；如参考其他 skill，未造成硬依赖或冲突版本。
 - [ ] 已按平台实现 Adapter，且不向业务泄漏原生对象。
 - [ ] 已验证参数绑定、事务回滚、批量写入、迁移失败恢复和连接关闭。
 - [ ] 已在 Android、iOS、HarmonyOS 真机或目标真实环境执行验证计划。
 - [ ] 已记录未支持能力和 fallback，不承诺未实测功能。
+
+## References
+
+| 场景 | 读取 |
+|---|---|
+| 架构与能力边界 | `references/architecture.md`、`references/capability-matrix.md`、`references/official-docs.md` |
+| 公共 API 契约 | `references/public-api-contract.md` |
+| 错误模型 | `references/error-model.md` |
+| 结果映射 | `references/result-mapping.md` |
+| 插件结构 | `references/plugin-structure.md` |
+| Android Adapter | `references/android-adapter.md` |
+| iOS Adapter | `references/ios-adapter.md` |
+| HarmonyOS Adapter | `references/harmony-adapter.md` |
+| 三端 API 差异 | `references/native-api-comparison.md` |
+| 连接生命周期 | `references/connection-lifecycle.md` |
+| 事务与锁 | `references/transactions-and-locking.md` |
+| 迁移与版本 | `references/migrations-and-versioning.md` |
+| 性能与限制 | `references/performance-and-limits.md` |
+| 安全与隐私 | `references/security-and-privacy.md` |
+| 测试矩阵 | `references/testing-matrix.md` |
+| 发布与文档 | `references/release-and-docs.md` |
+| 常用模板 | `references/common-recipes.md` |

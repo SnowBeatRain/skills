@@ -1,6 +1,6 @@
 # UTS 插件错误模型
 
-通用 SQLite 错误分类见 `sqlite-skill/references/error-model.md` 和 `sqlite-skill/references/errors-and-diagnostics.md`。
+本文件自包含 UTS 插件对外错误模型。若另有通用 SQLite skill，可参考其 SQLite 原生错误分类，但不要依赖外部路径。
 
 ## 对外错误结构
 

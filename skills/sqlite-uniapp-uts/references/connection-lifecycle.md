@@ -1,6 +1,6 @@
 # 插件连接生命周期
 
-通用规则见 `sqlite-skill/references/connection-lifecycle.md`。本文件只补充 uni-app / UTS 插件层关注点。
+本文件自包含 uni-app / UTS 插件连接生命周期规则。核心是对外使用 `dbId`，内部管理连接/store/helper，确保关闭、释放和账号隔离可控。
 
 ## dbId 管理
 

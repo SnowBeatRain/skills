@@ -7,7 +7,7 @@
 - SQLite 不是加密存储。
 - 不明文保存 token、密码、证件号、高敏定位和密钥。
 - 需要加密时，先确认三端可用方案：SQLCipher、系统安全存储、平台 keystore/keychain 或业务侧加密。
-- `OpenDatabaseOptions.encryption` 只是能力请求，只有能力矩阵明确支持或外部支持时才可启用。
+- `OpenDatabaseOptions.encryption` 只是能力请求，只有能力矩阵明确为 `supported`、`field-level` 或 `platform`，且对应平台实现已验证时才可启用。
 - `keyAlias` 只能引用安全存储中的 key，不应直接传明文 key。
 
 ## 路径与账号隔离

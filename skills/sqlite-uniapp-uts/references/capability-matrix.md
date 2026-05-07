@@ -49,5 +49,5 @@ export interface PlatformCapabilities {
 | WAL | detected | detected | detected | 以实际返回值为准 |
 | FTS5 | optional | optional | optional | 需要真实建表验证 |
 | JSON1 | optional | optional | optional | 需要函数验证 |
-| 加密 | external | external | external | SQLite 官方本身不加密 |
+| 加密 | detected | detected | detected | 值应为 `supported`、`field-level`、`platform`、`unsupported` 或 `unknown`；SQLite 官方本身不加密 |
 

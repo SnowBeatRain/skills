@@ -1,5 +1,7 @@
 # Skills
 
+[![skills.sh](https://skills.sh/b/SnowBeatRain/skills)](https://skills.sh/SnowBeatRain/skills)
+
 > 面向 AI Agent 的中文优先能力库：把常用开发经验、平台规则和踩坑记录整理成可直接复用的 Skills，让 Agent 在处理 uni-app、鸿蒙 UTS、SQLite 等任务时更稳定、更懂上下文。
 
 这个仓库不是普通的代码库，而是一组可以交给 Agent 使用的“工作能力包”。每个 Skill 都包含触发条件、工作流程、检查清单和参考资料，帮助 Agent 在特定场景下少猜测、多验证、按一致的方法完成任务。

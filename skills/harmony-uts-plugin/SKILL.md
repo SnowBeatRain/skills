@@ -44,6 +44,8 @@ description: 用于 uni-app / uni-app x 中通过 UTS 开发鸿蒙 HarmonyOS 插
    - 调试发布：`references/debugging-and-release.md`
    - 场景模板：`references/common-use-cases.md`
    - 审查清单：`references/development-checklists.md`
+   - **API 23 新特性**：`references/api-23-features.md`（HarmonyOS 6.1.0 Release）
+   - **DevEco 6.1 迁移**：`references/deveco-6-1-migration.md`（从 DevEco 5.x 升级）
 5. **设计接口再实现**
    - 先定义 `Options`、`Success`、`Fail`、`Complete` 类型。
    - 对外只返回普通 DTO，不泄漏 `UIAbilityContext`、`Want`、`BusinessError`、Camera session 等原生对象。

@@ -21,5 +21,8 @@
     "typescript",
     "javascript"
   ],
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "archiver": "^8.0.0"
+  }
 }

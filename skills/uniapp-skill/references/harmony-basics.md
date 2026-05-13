@@ -39,6 +39,10 @@ uni-app 从 HBuilderX 4.24 起支持 HarmonyOS Next，4.27 起内置鸿蒙项目
 | 4.61+ | **uni-app x 鸿蒙支持**；调试支持；可视化签名 | 5.0.7.100+ | API 14+ (uni-app x) |
 | 4.71+ | 联编调试（uni-app x + 原生鸿蒙项目） | 5.0.7.210+ | API 14+ |
 | 4.81+ | JSVM 逻辑层移至子线程；元服务热重载 | 5.1.0.849+ | API 14+ |
+| 5.0+ | DevEco 6.0 支持；API 22 | 6.0.0.x | API 22+ |
+| **5.1+** | **DevEco 6.1 支持；API 23 正式版** | **6.1.0+** | **API 23+** |
+
+> **2026 年 4 月更新：** HarmonyOS 6.1.0 Release 与 DevEco Studio 6.1.0 Release 同步发布，API 23 正式可用。详见 `references/harmony-development.md` 中 API 23 相关章节。
 
 ---
 

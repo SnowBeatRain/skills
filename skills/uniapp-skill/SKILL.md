@@ -20,6 +20,7 @@ description: 将此技能应用于所有 uni-app / uniapp / uni-app x / UTS / HB
 - `pages.json`、`manifest.json`、条件编译、`uni.request`、`uni.navigateTo`、easycom、uni-ui。
 - Pinia、生命周期、路由、网络请求、组件、媒体文件、设备 API、web-view、RenderJS、WXS、subNVue。
 - uni-automator、Vitest、CI/CD、安全、性能优化、发布打包。
+- nvue 横竖屏切换、横屏布局、横屏样式错位、rpx 横屏放大、overlay 浮层定位异常。
 - 需要通过 UTS / ArkTS / ETS 封装鸿蒙能力时，同时使用 `harmony-uts-plugin`。
 - 需要通过 UTS 封装 iOS、Android、HarmonyOS 三端共用 SQLite 插件时，同时使用 `sqlite-uniapp-uts`。
 
@@ -70,7 +71,8 @@ description: 将此技能应用于所有 uni-app / uniapp / uni-app x / UTS / HB
 | 样式、性能、RenderJS、WebView、SSR | `references/advanced-features.md` |
 | App 原生能力 | `references/app-native.md`、`references/native-resources.md` |
 | uniCloud、UniPush、统计、一键登录 | `references/cloud-services.md` |
-| uni-app x / UTS | `references/uniapp-x-uts.md` |
+|- uni-app x / UTS | `references/uniapp-x-uts.md` |
+|| **nvue 横竖屏兼容** | `references/nvue-landscape-layout.md` |
 | 鸿蒙基础/开发/发布/迁移 | `references/harmony-basics.md`、`references/harmony-development.md`、`references/harmony-advanced.md`、`references/harmony-migration.md` |
 | 媒体、文件、设备系统 API | `references/media-file-api.md`、`references/system-device-api.md` |
 | web-view / Native.js / WXS / subNVue | `references/webview.md`、`references/native-js.md`、`references/wxs.md`、`references/subnvue.md` |
@@ -87,3 +89,5 @@ description: 将此技能应用于所有 uni-app / uniapp / uni-app x / UTS / HB
 - [ ] 请求、登录态、权限、隐私数据处理符合目标平台限制。
 - [ ] 对涉及硬件、App、鸿蒙的能力已规划真机验证。
 - [ ] 文档表述与真实功能一致，没有承诺未验证能力。
+- [ ] nvue 横屏页面：横竖屏样式已分开，横屏只用 `px`，关键 overlay 有独立直接类选择器。
+- [ ] nvue 横屏页面：父页全局样式不污染子组件，子组件接收 `isLandscape` 控制尺寸。

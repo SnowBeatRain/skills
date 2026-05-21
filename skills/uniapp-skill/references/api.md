@@ -238,16 +238,14 @@ console.log('扫码结果:', result)
 
 ## 权限（App 端）
 
-```js
-// #ifdef APP-PLUS
-// 检查权限
-plus.android.requestPermissions(
-  ['android.permission.CAMERA'],
-  (e) => { console.log('授权成功') },
-  (e) => { console.log('用户拒绝') }
-)
-// #endif
-```
+App 权限判断不仅包括运行时权限申请，还包括：
+
+- Android / iOS / 鸿蒙 App 的权限授权状态判断；
+- 用户拒绝、永久拒绝或“不再询问”后的设置页引导；
+- 定位、蓝牙等系统服务总开关检测；
+- `uni.getAppAuthorizeSetting()` / `uni.getSystemSetting()` 与 `plus.android` / `plus.ios` / 鸿蒙 UTS 插件的配合。
+
+详见 `references/app-permissions.md`。
 
 ## 小程序专属
 

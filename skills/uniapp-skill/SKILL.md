@@ -69,7 +69,7 @@ description: 将此技能应用于所有 uni-app / uniapp / uni-app x / UTS / HB
 | 条件编译与平台标识 | `references/conditional-compilation.md` |
 | Vue3 写法与迁移 | `references/vue3-patterns.md` |
 | 样式、性能、RenderJS、WebView、SSR | `references/advanced-features.md` |
-| App 原生能力 | `references/app-native.md`、`references/native-resources.md` |
+| App 原生能力 / 权限判断 | `references/app-native.md`、`references/native-resources.md`、`references/app-permissions.md` |
 | uniCloud、UniPush、统计、一键登录 | `references/cloud-services.md` |
 |- uni-app x / UTS | `references/uniapp-x-uts.md` |
 || **nvue 横竖屏兼容** | `references/nvue-landscape-layout.md` |
@@ -87,6 +87,7 @@ description: 将此技能应用于所有 uni-app / uniapp / uni-app x / UTS / HB
 - [ ] 平台差异已用条件编译隔离。
 - [ ] 页面、组件、store、utils 的职责清晰。
 - [ ] 请求、登录态、权限、隐私数据处理符合目标平台限制。
+- [ ] 涉及 App 权限时，已区分“权限授权状态”和“系统服务开关状态”，并规划拒绝后的设置页引导。
 - [ ] 对涉及硬件、App、鸿蒙的能力已规划真机验证。
 - [ ] 文档表述与真实功能一致，没有承诺未验证能力。
 - [ ] nvue 横屏页面：横竖屏样式已分开，横屏只用 `px`，关键 overlay 有独立直接类选择器。

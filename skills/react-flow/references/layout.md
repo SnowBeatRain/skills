@@ -306,3 +306,113 @@ requestAnimationFrame(() => fitView({ duration: 400 }));
 setNodes(layoutedNodes);
 setTimeout(() => fitView({ duration: 400 }), 0);
 ```
+
+
+---
+
+## useAutoLayout Hook（dagre 自动布局）
+
+可复用的自动布局 hook，初始化时自动执行，并暴露 `runLayout` 函数供手动触发：
+
+```typescript
+import { useCallback, useEffect, useRef } from 'react';
+import { useReactFlow, useNodesInitialized } from '@xyflow/react';
+import dagre from '@dagrejs/dagre';
+
+interface UseAutoLayoutOptions {
+  direction?: 'TB' | 'BT' | 'LR' | 'RL';
+  nodesep?: number;
+  ranksep?: number;
+}
+
+export function useAutoLayout(options: UseAutoLayoutOptions = {}) {
+  const { direction = 'TB', nodesep = 50, ranksep = 80 } = options;
+  const { getNodes, getEdges, setNodes, fitView } = useReactFlow();
+  const nodesInitialized = useNodesInitialized();
+  const layoutApplied = useRef(false);
+
+  const runLayout = useCallback(() => {
+    const nodes = getNodes();
+    const edges = getEdges();
+    if (nodes.length === 0) return;
+
+    const g = new dagre.graphlib.Graph();
+    g.setGraph({ rankdir: direction, nodesep, ranksep });
+    g.setDefaultEdgeLabel(() => ({}));
+
+    nodes.forEach((node) => {
+      g.setNode(node.id, {
+        width:  node.measured?.width  ?? 150,
+        height: node.measured?.height ?? 50,
+      });
+    });
+    edges.forEach((edge) => g.setEdge(edge.source, edge.target));
+    dagre.layout(g);
+
+    const layouted = nodes.map((node) => {
+      const pos = g.node(node.id);
+      const w = node.measured?.width  ?? 150;
+      const h = node.measured?.height ?? 50;
+      return { ...node, position: { x: pos.x - w / 2, y: pos.y - h / 2 } };
+    });
+
+    setNodes(layouted);
+    window.requestAnimationFrame(() => fitView({ duration: 300, padding: 0.2 }));
+  }, [direction, nodesep, ranksep, getNodes, getEdges, setNodes, fitView]);
+
+  // 节点测量完成后自动布局一次
+  useEffect(() => {
+    if (nodesInitialized && !layoutApplied.current) {
+      runLayout();
+      layoutApplied.current = true;
+    }
+  }, [nodesInitialized, runLayout]);
+
+  return { runLayout };
+}
+```
+
+用法：
+
+```typescript
+function Flow() {
+  const { runLayout } = useAutoLayout({ direction: 'LR', ranksep: 100 });
+  return (
+    <>
+      <button onClick={runLayout}>重新布局</button>
+      <ReactFlow ... />
+    </>
+  );
+}
+```
+
+---
+
+## 布局动画过渡
+
+布局切换时为节点位置变化添加平滑动画：
+
+```css
+/* 全局 CSS */
+.react-flow__node {
+  transition: transform 300ms ease-out;
+}
+```
+
+或在自定义节点组件中通过 style prop 控制：
+
+```typescript
+// 仅在布局更新时应用过渡，避免拖拽时也出现动画延迟
+function AnimatedNode({ data, dragging }: NodeProps) {
+  return (
+    <div
+      style={{
+        padding: 8,
+        transition: dragging ? 'none' : 'transform 300ms ease-out',
+      }}
+    >
+      {data.label}
+    </div>
+  );
+}
+```

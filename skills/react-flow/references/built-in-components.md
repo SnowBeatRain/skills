@@ -280,3 +280,134 @@ type PanelPosition =
   | 'bottom-center'
   | 'bottom-right';
 ```
+
+
+---
+
+## useViewport Hook
+
+响应式订阅视口状态：
+
+```typescript
+import { useViewport } from '@xyflow/react';
+
+function ViewportInfo() {
+  const { x, y, zoom } = useViewport();
+  // 视口每次变化都重渲染此组件
+  return <div>缩放: {zoom.toFixed(2)}</div>;
+}
+```
+
+> 若只需读取视口而不需响应式更新，使用 `useReactFlow().getViewport()` 更轻量。
+
+---
+
+## fitBounds
+
+将视口适配到任意矩形区域（不限于节点集合）：
+
+```typescript
+import { useReactFlow, type Rect } from '@xyflow/react';
+
+function FitToRegion() {
+  const { fitBounds } = useReactFlow();
+
+  const fitToCustomArea = () => {
+    const rect: Rect = { x: 0, y: 0, width: 400, height: 300 };
+    fitBounds(rect, { padding: 0.2, duration: 400 });
+  };
+
+  return <button onClick={fitToCustomArea}>适配到区域</button>;
+}
+```
+
+---
+
+## useStore / useStoreApi
+
+```typescript
+import { useStore, useStoreApi } from '@xyflow/react';
+import { shallow } from 'zustand/shallow';
+
+// useStore：响应式订阅（有 selector 才高效）
+const nodeCount = useStore((s) => s.nodes.length);
+
+// 用 shallow 比较避免引用变化引起的多余渲染
+const selectedIds = useStore(
+  (s) => s.nodes.filter((n) => n.selected).map((n) => n.id),
+  shallow,
+);
+
+// useStoreApi：按需读取，不产生订阅（适合事件处理器）
+const storeApi = useStoreApi();
+
+const handleSave = () => {
+  const { nodes, edges } = storeApi.getState();
+  console.log('当前状态:', nodes.length, edges.length);
+};
+```
+
+> **规则**：在组件外定义 selector 函数保持引用稳定；不要在 selector 中创建新数组/对象而不用 `shallow`。
+
+---
+
+## 新增组件（v12.9+）
+
+### EdgeToolbar
+
+在边的特定位置渲染浮动 UI（**只能在自定义边组件内使用**）：
+
+```typescript
+import { EdgeToolbar, BaseEdge, getBezierPath, type EdgeProps } from '@xyflow/react';
+
+function ToolbarEdge({ id, ...props }: EdgeProps) {
+  const [edgePath, labelX, labelY] = getBezierPath(props);
+
+  return (
+    <>
+      <BaseEdge id={id} path={edgePath} />
+      <EdgeToolbar edgeId={id} x={labelX} y={labelY}>
+        <button onClick={() => console.log('edit edge', id)}>✏️</button>
+        <button onClick={() => deleteEdge(id)}>🗑️</button>
+      </EdgeToolbar>
+    </>
+  );
+}
+```
+
+`EdgeToolbar` 在 v12.9.0 中新增。与 `EdgeLabelRenderer` 的区别：`EdgeToolbar` 会跟随边移动并保持位置，`EdgeLabelRenderer` 需手动计算坐标。
+
+---
+
+## ReactFlowProvider 高级用法
+
+### 多个流共享状态
+
+同一页面多个流需要独立 Provider：
+
+```typescript
+function MultiFlowPage() {
+  return (
+    <div style={{ display: 'flex' }}>
+      <ReactFlowProvider>
+        <FlowA />
+      </ReactFlowProvider>
+      <ReactFlowProvider>
+        <FlowB />
+      </ReactFlowProvider>
+    </div>
+  );
+}
+```
+
+### Provider 初始化选项（v12.6+）
+
+```typescript
+<ReactFlowProvider
+  initialMinZoom={0.1}
+  initialMaxZoom={4}
+  initialFitViewOptions={{ padding: 0.2 }}
+>
+  <Flow />
+</ReactFlowProvider>
+```

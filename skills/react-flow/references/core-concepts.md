@@ -28,7 +28,8 @@ type MyNode = Node<{ label: string; value: number }, 'myType'>;
 | `type` | `string` | 节点类型，对应 `nodeTypes` map 的 key |
 | `style` | `CSSProperties` | 内联样式 |
 | `className` | `string` | CSS 类名 |
-| `width` / `height` | `number` | 显式设置节点尺寸（影响连接点位置计算） |
+| `width` / `height` | `number` | **可选输入**：预设尺寸（SSR/SSG）；实测尺寸存在 `node.measured` |
+| `initialWidth` / `initialHeight` | `number` | 测量前的占位尺寸（渲染时立即使用，无需等测量） |
 | `selected` | `boolean` | 是否选中 |
 | `draggable` | `boolean` | 是否可拖拽（默认 `true`） |
 | `connectable` | `boolean` | 是否可连接（默认 `true`） |
@@ -36,8 +37,15 @@ type MyNode = Node<{ label: string; value: number }, 'myType'>;
 | `hidden` | `boolean` | 是否隐藏（节点和关联边都隐藏） |
 | `parentId` | `string` | 父节点 ID（子流程/分组场景） |
 | `extent` | `'parent' \| CoordinateExtent` | 限制节点在父节点内或指定范围内拖拽 |
+| `expandParent` | `boolean` | 拖拽到父节点边缘时自动扩展父节点 |
 | `zIndex` | `number` | 层叠顺序 |
 | `origin` | `[number, number]` | 节点原点（默认 `[0, 0]` 即左上角，`[0.5, 0.5]` 为中心） |
+| `sourcePosition` | `Position` | 默认 source Handle 位置（省略时为 `Bottom`） |
+| `targetPosition` | `Position` | 默认 target Handle 位置（省略时为 `Top`） |
+| `dragHandle` | `string` | 拖拽手柄 CSS 选择器（如 `'.my-drag-handle'`） |
+| `ariaLabel` | `string` | 无障碍标签 |
+| `domAttributes` | `Record<string, string>` | 任意 DOM 属性（v12.7+） |
+| `ariaRole` | `string` | ARIA role（v12.7+，默认 `'treeitem'`） |
 
 ### 内置节点类型
 
@@ -121,6 +129,7 @@ type MyEdge = Edge<{ weight: number }, 'weighted'>;
 | `'straight'` | 直线 |
 | `'step'` | 正交折线（直角） |
 | `'smoothstep'` | 正交折线（圆角） |
+| `'simplebezier'` | 简化贝塞尔曲线（无控制点偏移） |
 
 ```typescript
 const edges: Edge[] = [

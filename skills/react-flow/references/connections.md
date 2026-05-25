@@ -236,6 +236,50 @@ import { ConnectionMode } from '@xyflow/react';
 <ReactFlow connectionMode={ConnectionMode.Loose} />
 ```
 
+## 防止循环依赖（DAG 校验）
+
+使用官方工具函数 `getOutgoers` 做 BFS 循环检测：
+
+```typescript
+import { useCallback } from 'react';
+import { getOutgoers, useReactFlow, type Connection } from '@xyflow/react';
+
+function useNoCycleValidation() {
+  const { getNodes, getEdges } = useReactFlow();
+
+  return useCallback(
+    (connection: Connection) => {
+      if (connection.source === connection.target) return false;
+
+      const nodes = getNodes();
+      const edges = getEdges();
+      const target = nodes.find((n) => n.id === connection.target);
+      if (!target) return false;
+
+      // BFS：从 target 沿出边遍历，若抵达 source 则说明存在环
+      const hasCycle = (node: typeof target, visited = new Set<string>()): boolean => {
+        if (visited.has(node.id)) return false;
+        visited.add(node.id);
+        for (const outgoer of getOutgoers(node, nodes, edges)) {
+          if (outgoer.id === connection.source) return true;
+          if (hasCycle(outgoer, visited)) return true;
+        }
+        return false;
+      };
+
+      return !hasCycle(target);
+    },
+    [getNodes, getEdges],
+  );
+}
+
+// 使用
+const isValidConnection = useNoCycleValidation();
+<ReactFlow isValidConnection={isValidConnection} />
+```
+
+---
+
 ## 删除边
 
 ### 键盘删除

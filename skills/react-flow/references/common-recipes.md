@@ -380,6 +380,164 @@ function FlowWithContextMenu() {
 
 ---
 
+---
+
+## 10. 导出为图片
+
+用 `html-to-image` 把画布截图为 PNG：
+
+```bash
+npm install html-to-image
+```
+
+```typescript
+import { useCallback } from 'react';
+import { Panel, useReactFlow, getNodesBounds, getViewportForBounds } from '@xyflow/react';
+import { toPng } from 'html-to-image';
+
+const IMAGE_WIDTH  = 1024;
+const IMAGE_HEIGHT = 768;
+
+function ExportButton() {
+  const { getNodes } = useReactFlow();
+
+  const onClick = useCallback(() => {
+    const nodes    = getNodes();
+    const bounds   = getNodesBounds(nodes);
+    // 计算将所有节点适配进目标图片尺寸的 viewport
+    const viewport = getViewportForBounds(bounds, IMAGE_WIDTH, IMAGE_HEIGHT, 0.5, 2, 0.1);
+
+    const el = document.querySelector<HTMLElement>('.react-flow__viewport');
+    if (!el) return;
+
+    toPng(el, {
+      backgroundColor: '#ffffff',
+      width: IMAGE_WIDTH,
+      height: IMAGE_HEIGHT,
+      style: {
+        width:     `${IMAGE_WIDTH}px`,
+        height:    `${IMAGE_HEIGHT}px`,
+        transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+      },
+    }).then((dataUrl) => {
+      const a    = document.createElement('a');
+      a.download = 'diagram.png';
+      a.href     = dataUrl;
+      a.click();
+    });
+  }, [getNodes]);
+
+  return (
+    <Panel position="top-right">
+      <button onClick={onClick}>导出 PNG</button>
+    </Panel>
+  );
+}
+```
+
+**关键**：目标是 `.react-flow__viewport`（非外层 wrapper），并手动设置 transform 以适配图片尺寸。
+
+---
+
+## 11. 节点详情侧边栏
+
+```typescript
+import { useState, useCallback } from 'react';
+import { ReactFlow, useReactFlow, type Node, type NodeMouseHandler } from '@xyflow/react';
+
+function FlowWithDetailPanel() {
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const { updateNodeData } = useReactFlow();
+
+  const onNodeClick: NodeMouseHandler = useCallback((_, node) => {
+    setSelectedNode(node);
+  }, []);
+
+  return (
+    <div style={{ display: 'flex', height: '100vh' }}>
+      <div style={{ flex: 1 }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodeClick={onNodeClick}
+          onPaneClick={() => setSelectedNode(null)}
+        />
+      </div>
+
+      {selectedNode && (
+        <aside style={{ width: 280, padding: 16, borderLeft: '1px solid #e2e8f0' }}>
+          <h3>节点: {selectedNode.id}</h3>
+          <label>
+            标签:
+            <input
+              className="nodrag"
+              value={String(selectedNode.data.label ?? '')}
+              onChange={(e) => {
+                updateNodeData(selectedNode.id, { label: e.target.value });
+                setSelectedNode((n) => n && { ...n, data: { ...n.data, label: e.target.value } });
+              }}
+            />
+          </label>
+        </aside>
+      )}
+    </div>
+  );
+}
+```
+
+**提示**：若节点数据由计算流动态更新，在详情面板中使用 `useNodesData(selectedNode.id)` 订阅实时变化，而非依赖 `selectedNode` 快照。
+
+```typescript
+import { useCallback } from 'react';
+import { NodeMouseHandler, useReactFlow } from '@xyflow/react';
+
+function useNodeHighlight() {
+  const { setNodes, setEdges, getEdges } = useReactFlow();
+
+  const highlightConnected = useCallback((nodeId: string) => {
+    const edges = getEdges();
+    const connectedNodeIds = new Set<string>();
+    const connectedEdgeIds = new Set<string>();
+
+    edges.forEach((edge) => {
+      if (edge.source === nodeId || edge.target === nodeId) {
+        connectedNodeIds.add(edge.source);
+        connectedNodeIds.add(edge.target);
+        connectedEdgeIds.add(edge.id);
+      }
+    });
+
+    setNodes((nds) =>
+      nds.map((n) => ({
+        ...n,
+        style: {
+          ...n.style,
+          opacity: connectedNodeIds.has(n.id) || n.id === nodeId ? 1 : 0.25,
+        },
+      })),
+    );
+
+    setEdges((eds) =>
+      eds.map((e) => ({
+        ...e,
+        style: {
+          ...e.style,
+          opacity: connectedEdgeIds.has(e.id) ? 1 : 0.1,
+        },
+      })),
+    );
+  }, [setNodes, setEdges, getEdges]);
+
+  const clearHighlight = useCallback(() => {
+    setNodes((nds) => nds.map((n) => ({ ...n, style: { ...n.style, opacity: 1 } })));
+    setEdges((eds) => eds.map((e) => ({ ...e, style: { ...e.style, opacity: 1 } })));
+  }, [setNodes, setEdges]);
+
+  return { highlightConnected, clearHighlight };
+}
+```
+
+
 ## 9. 高亮相关节点和边
 
 ```typescript

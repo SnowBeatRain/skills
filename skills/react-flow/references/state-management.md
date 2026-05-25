@@ -286,6 +286,88 @@ function usePersistFlow(key: string) {
 
 ---
 
+## 不可变更新要求
+
+React Flow 通过引用比较检测变更，**必须**创建新对象，mutation 不会被检测到：
+
+```typescript
+// ❌ 错误：mutation 不被检测
+const node = get().nodes.find((n) => n.id === id);
+node!.data.label = '更新';
+set({ nodes: get().nodes }); // 引用未变，React Flow 不重渲染
+
+// ✅ 正确：创建新对象
+set({
+  nodes: get().nodes.map((n) =>
+    n.id === id ? { ...n, data: { ...n.data, label: '更新' } } : n,
+  ),
+});
+
+// ✅ 更简洁：使用 useReactFlow().updateNodeData
+const { updateNodeData } = useReactFlow();
+updateNodeData(id, { label: '更新' });
+```
+
+---
+
+## toObject 序列化
+
+`useReactFlow().toObject()` 返回完整流状态，可直接 JSON 序列化：
+
+```typescript
+import { useReactFlow, type ReactFlowJsonObject } from '@xyflow/react';
+
+function useSaveRestore() {
+  const { toObject, setNodes, setEdges, setViewport } = useReactFlow();
+
+  const save = () => {
+    const flow: ReactFlowJsonObject = toObject();
+    // { nodes: Node[], edges: Edge[], viewport: { x, y, zoom } }
+    localStorage.setItem('flow', JSON.stringify(flow));
+  };
+
+  const restore = () => {
+    const raw = localStorage.getItem('flow');
+    if (!raw) return;
+    const { nodes, edges, viewport } = JSON.parse(raw) as ReactFlowJsonObject;
+    setNodes(nodes);
+    setEdges(edges);
+    setViewport(viewport);
+  };
+
+  return { save, restore };
+}
+```
+
+---
+
+## useStore 细粒度订阅
+
+用 selector + `shallow` 减少重渲染：
+
+```typescript
+import { useStore } from '@xyflow/react';
+import { shallow } from 'zustand/shallow';
+
+// ❌ 任何 store 变化都触发重渲染
+const state = useStore((s) => s);
+
+// ✅ 只在选中节点 ID 列表变化时重渲染
+const selectedIds = useStore(
+  (s) => s.nodes.filter((n) => n.selected).map((n) => n.id),
+  shallow,
+);
+
+// ✅ 只在节点数量变化时重渲染
+const nodeCount = useStore((s) => s.nodes.length);
+
+// ✅ useStoreApi：按需读取，不订阅
+const storeApi = useStoreApi();
+const getNodeCount = () => storeApi.getState().nodes.length;
+```
+
+---
+
 ## 选择状态管理
 
 ```typescript

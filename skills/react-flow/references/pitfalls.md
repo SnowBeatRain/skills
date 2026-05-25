@@ -242,6 +242,56 @@ const edge = { source: 'node-1', target: 'node-2', sourceHandle: 'output' }; // 
 
 ---
 
+## 11. 滚动容器被画布缩放劫持
+
+**症状**：节点内的滚动列表无法正常滚动，滚轮操作变成了画布缩放。
+
+**原因**：React Flow 默认捕获滚轮事件用于缩放视口。
+
+```typescript
+// ❌ 滚动被画布缩放劫持
+<div style={{ overflow: 'auto', maxHeight: 100 }}>
+  {items.map(item => <div key={item}>{item}</div>)}
+</div>
+
+// ✅ 添加 nowheel 类名阻止缩放劫持
+<div className="nowheel nodrag" style={{ overflow: 'auto', maxHeight: 100 }}>
+  {items.map(item => <div key={item}>{item}</div>)}
+</div>
+```
+
+---
+
+## 12. Handle 使用 display:none 导致边位置错误
+
+**症状**：边连接到节点但位置完全错误；Handle 存在但边的起止点偏移。
+
+**原因**：`display: none` 会使元素脱离布局，React Flow 无法正确计算 Handle 的位置。
+
+```typescript
+// ❌ display: none 破坏 Handle 位置计算
+<Handle
+  type="source"
+  position={Position.Bottom}
+  style={{ display: needsHide ? 'none' : 'block' }}
+/>
+
+// ✅ 用 opacity:0 或 visibility:hidden，保留布局占位
+<Handle
+  type="source"
+  position={Position.Bottom}
+  style={{ opacity: needsHide ? 0 : 1, pointerEvents: needsHide ? 'none' : 'auto' }}
+/>
+// 或
+<Handle
+  type="source"
+  position={Position.Bottom}
+  style={{ visibility: needsHide ? 'hidden' : 'visible' }}
+/>
+```
+
+---
+
 ## 10. 混用 v11 和 v12 API
 
 **症状**：TypeScript 编译报错；运行时节点类型不符；某些事件/方法不存在。

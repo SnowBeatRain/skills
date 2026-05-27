@@ -218,7 +218,7 @@ app/components/
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      dbPassword: 'secret', // 会暴露到浏览器！
+      dbPassword: '<your-password>', // 会暴露到浏览器！
     },
   },
 })
@@ -226,7 +226,7 @@ export default defineNuxtConfig({
 // ✅ 敏感信息放在顶层
 export default defineNuxtConfig({
   runtimeConfig: {
-    dbPassword: 'secret', // 仅服务端可见
+    dbPassword: '<your-password>', // 仅服务端可见
     public: {
       apiBase: '/api',    // 安全的公开信息
     },

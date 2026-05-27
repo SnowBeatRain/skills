@@ -21,6 +21,8 @@
 | [`harmony-uts-plugin`](skills/harmony-uts-plugin) | 你需要在 uni-app / uni-app x 中封装 HarmonyOS / OpenHarmony 原生能力 | UTS 插件结构、ArkTS/ETS 对接、权限、Ability、Want、系统 Kit、真机调试与发布 |
 | [`sqlite-skill`](skills/sqlite-skill) | 你需要设计或审查平台中立的 SQLite 数据层 | schema、migration、事务并发、索引、PRAGMA/WAL/FTS/JSON、备份恢复、安全隐私 |
 | [`sqlite-uniapp-uts`](skills/sqlite-uniapp-uts) | 你需要给 uni-app / uni-app x 做 iOS、Android、HarmonyOS 三端统一 SQLite 插件 | 原生 SQLite 封装、三端 API 合同、事务迁移、错误模型、性能限制和真机验证 |
+| [`design-system`](skills/design-system) | 你需要建立或更新设计系统、配色方案、字体选型、间距布局、组件规范、品牌视觉语言 | 配色系统、字体排版、间距/圆角/阴影、组件设计规范、品牌参考、设计令牌 |
+| [`design-ui-gallery`](skills/design-ui-gallery) | 你需要选择或探索 UI 视觉风格方向 | 9 种主流风格目录（Glassmorphism、Brutalism、Claymorphism 等）、落地页/Dashboard/移动端场景参考 |
 
 查看机器可读列表：
 

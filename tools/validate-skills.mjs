@@ -9,10 +9,10 @@ const minDescriptionLength = 12;
 const maxSkillLines = 220;
 const allowedLinkedDirs = new Set(['references', 'scripts', 'assets']);
 const sensitivePatterns = [
-  /sk-[A-Za-z0-9_-]{20,}/,
+  /\bsk-[A-Za-z0-9_-]{20,}\b/,
   /AKIA[0-9A-Z]{16}/,
   /Bearer\s+[A-Za-z0-9._-]{20,}/i,
-  /(api[_-]?key|token|secret|password|passwd|pwd)\s*[:=]\s*['"][^'"]{6,}/i
+  /\b(?:api[_-]?key|token|secret|password|passwd|pwd)\s*[:=]\s*['"][^'"]{6,}/i
 ];
 
 function parseFrontmatter(content) {

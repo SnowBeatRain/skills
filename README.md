@@ -2,13 +2,13 @@
 
 [![skills.sh](https://skills.sh/b/SnowBeatRain/skills)](https://skills.sh/SnowBeatRain/skills)
 
-> 面向 AI Agent 的中文优先能力库：把常用开发经验、平台规则和踩坑记录整理成可直接复用的 Skills，让 Agent 在处理 uni-app、鸿蒙 UTS、SQLite 等任务时更稳定、更懂上下文。
+> 面向 AI Agent 的中文优先能力库：把常用开发经验、平台规则和踩坑记录整理成可直接复用的 Skills，让 Agent 在处理前端框架、跨端开发、鸿蒙 UTS、SQLite、Stripe、UI 设计等任务时更稳定、更懂上下文。
 
 这个仓库不是普通的代码库，而是一组可以交给 Agent 使用的“工作能力包”。每个 Skill 都包含触发条件、工作流程、检查清单和参考资料，帮助 Agent 在特定场景下少猜测、多验证、按一致的方法完成任务。
 
 ## 你可以用它做什么
 
-- **让 Agent 更懂你的项目栈**：例如 uni-app、uni-app x、UTS、HarmonyOS、SQLite 本地数据库。
+- **让 Agent 更懂你的项目栈**：例如 Next.js、Nuxt、React Flow、uni-app、uni-app x、UTS、HarmonyOS、SQLite、Stripe。
 - **减少重复解释**：常见约定、平台限制、测试方式和安全注意事项都沉淀在 Skill 里。
 - **提升交付稳定性**：每个 Skill 都要求 Agent 先识别场景、再读取必要参考、最后做验证。
 - **方便迁移和分享**：单个 Skill 可以复制目录使用，也可以打包成 zip 分发。
@@ -17,10 +17,14 @@
 
 | Skill | 适合你在什么时候使用 | 能帮你解决什么 |
 |------|----------------------|----------------|
+| [`nextjs`](skills/nextjs) | 你在构建或维护 Next.js App Router 应用 | SSR/SSG/ISR/SPA、Server Components、Server Actions、路由处理器、Metadata、缓存、图片字体优化和部署 |
+| [`nuxt`](skills/nuxt) | 你在构建或维护 Nuxt 4 / Vue 3 全栈应用 | `app/` 目录、文件路由、`useFetch`/`useAsyncData`、Nitro API、中间件、插件、SEO、渲染模式和部署 |
+| [`react-flow`](skills/react-flow) | 你需要构建节点图、流程图、DAG、工作流编辑器或交互式流程 UI | `@xyflow/react` v12、自定义节点/边、Handle、状态管理、布局算法、性能优化、TypeScript 和 E2E 测试 |
 | [`uniapp-skill`](skills/uniapp-skill) | 你在做 uni-app / uni-app x / 小程序 / H5 / App / HarmonyOS 跨端开发 | 页面结构、`pages.json`、`manifest.json`、uni API、Pinia、条件编译、测试与发布检查 |
 | [`harmony-uts-plugin`](skills/harmony-uts-plugin) | 你需要在 uni-app / uni-app x 中封装 HarmonyOS / OpenHarmony 原生能力 | UTS 插件结构、ArkTS/ETS 对接、权限、Ability、Want、系统 Kit、真机调试与发布 |
 | [`sqlite-skill`](skills/sqlite-skill) | 你需要设计或审查平台中立的 SQLite 数据层 | schema、migration、事务并发、索引、PRAGMA/WAL/FTS/JSON、备份恢复、安全隐私 |
 | [`sqlite-uniapp-uts`](skills/sqlite-uniapp-uts) | 你需要给 uni-app / uni-app x 做 iOS、Android、HarmonyOS 三端统一 SQLite 插件 | 原生 SQLite 封装、三端 API 合同、事务迁移、错误模型、性能限制和真机验证 |
+| [`stripe`](skills/stripe) | 你在构建、审查、升级、测试或排查 Stripe 集成 | Payments、Billing、Connect、Tax、Terminal、Webhooks、SDK/API 版本、风控、争议、报表和上线检查 |
 | [`design-system`](skills/design-system) | 你需要建立或更新设计系统、配色方案、字体选型、间距布局、组件规范、品牌视觉语言 | 配色系统、字体排版、间距/圆角/阴影、组件设计规范、品牌参考、设计令牌 |
 | [`design-ui-gallery`](skills/design-ui-gallery) | 你需要选择或探索 UI 视觉风格方向 | 9 种主流风格目录（Glassmorphism、Brutalism、Claymorphism 等）、落地页/Dashboard/移动端场景参考 |
 
@@ -32,6 +36,15 @@ npm run list
 
 ## 快速使用
 
+### 前置条件
+
+维护脚本使用 Node.js 运行，建议安装：
+
+```text
+Node.js >= 20
+npm
+```
+
 ### 方式一：一键添加整个 Skills 集合
 
 如果你使用支持 `skills` CLI 的环境，可以直接从 GitHub 添加本仓库：
@@ -40,16 +53,20 @@ npm run list
 npx skills add SnowBeatRain/skills
 ```
 
-这会保持仓库里的 Skill 名称不变，并把 `SnowBeatRain/skills` 作为 Skills 集合来源使用。后续你可以在对话中让 Agent 按需加载 `uniapp-skill`、`sqlite-skill` 等能力。
+这会保持仓库里的 Skill 名称不变，并把 `SnowBeatRain/skills` 作为 Skills 集合来源使用。后续你可以在对话中让 Agent 按需加载 `nextjs`、`nuxt`、`react-flow`、`uniapp-skill`、`sqlite-skill`、`stripe` 等能力。
 
 ### 方式二：复制单个 Skill 目录
 
-如果你的 Agent 支持本地 Skills，也可以直接复制需要的目录：
+如果你的 Agent 支持本地 Skills，也可以直接复制需要的目录。例如：
 
 ```text
+skills/nextjs/
 skills/uniapp-skill/
 skills/sqlite-skill/
+skills/stripe/
 ```
+
+完整列表以“当前可用 Skills”表格和 `npm run list` 输出为准。
 
 复制时请保留整个目录，包括：
 
@@ -90,6 +107,21 @@ dist/uniapp-skill.zip
 
 ## 推荐使用场景
 
+### 做 Next.js / Nuxt 前端或全栈项目
+
+当你要让 Agent 修改 App Router、Server Components、Server Actions、Nuxt `app/` 目录、Nitro API、SEO 或部署配置时，优先加载对应框架 Skill：
+
+```text
+nextjs
+nuxt
+```
+
+如果任务涉及节点图、流程编辑器、DAG 或工作流画布，再配合：
+
+```text
+react-flow
+```
+
 ### 做 uni-app 跨端项目
 
 当你要让 Agent 修改页面、排查打包问题、处理 `pages.json` / `manifest.json` / 条件编译时，优先加载：
@@ -116,6 +148,14 @@ sqlite-skill
 
 ```text
 sqlite-uniapp-uts
+```
+
+### 做 Stripe 支付和计费集成
+
+当你要实现或审查支付、订阅、Connect 平台分账、Webhook、发票、税务、Terminal、争议处理或上线检查时，加载：
+
+```text
+stripe
 ```
 
 ## 每个 Skill 里面有什么
@@ -158,12 +198,15 @@ skills/my-skill-name/SKILL.md
 - `SKILL.md` 正文优先中文。
 - 长说明放进 `references/`，不要把所有内容塞进 `SKILL.md`。
 
-提交前运行：
+提交前请至少运行：
 
 ```bash
 npm run validate
 npm run test:validate
+git diff --check
 ```
+
+`npm run validate` 会做结构校验、引用检查和常见敏感信息模式扫描；它是轻量防线，不替代完整 secret scanning 或人工安全审查。
 
 常用维护命令：
 
@@ -186,7 +229,7 @@ npm run pack:skill -- my-skill-name
 
 > **注意**：`pack:skill` 使用 Node.js 内置的 `archiver` 库进行打包，无需依赖系统 `zip` 命令，支持 Windows / macOS / Linux 全平台。打包时会自动排除 `.gitkeep`、`.DS_Store` 等占位文件和系统文件。
 
-更多维护模式见：[`docs/skill-patterns.md`](docs/skill-patterns.md)。
+更多维护模式见：[`docs/README.md`](docs/README.md)。
 
 ## 项目结构
 

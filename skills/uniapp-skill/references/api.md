@@ -278,3 +278,4 @@ query.select('#myElement').boundingClientRect((rect) => {
 
 // 页面滚动
 uni.pageScrollTo({ scrollTop: 0, duration: 300 })
+```

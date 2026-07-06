@@ -157,6 +157,59 @@ const channel = plus.runtime.channel
 - 功能：代码加密、防篡改、防重打包
 - 测试版免费（15 天有效），正式版 600 元/次
 
+### Android 16KB 页面大小
+
+自 2025 年 11 月 1 日起，提交到 Google Play 且以 Android 15（API 35+）为目标平台的应用必须支持 16 KB 页面大小。
+
+- **HBuilderX 4.81+** 已适配 16 KB。
+- 适配后最低支持版本由 Android 4.4（API 19）提升到 **Android 5.0（API 21）**；如需兼容 Android 4.4，请继续使用 HBuilderX 4.76。
+
+#### 提交 Google Play 时需规避的模块
+
+以下模块/SDK 尚未适配 16 KB，若应用目标为 Google Play，请避免勾选：
+
+| 模块 | 说明 |
+|------|------|
+| 国内广告渠道（穿山甲、优量汇、快手等） | 仅国内环境使用 |
+| `applovin`、`pangle(海外穿山甲)` | 海外广告渠道未适配 |
+| `uni-push` 中的卓信 ID SDK | 只勾选 Google FCM 推送即可规避 |
+| `uni实人认证` | 仅国内环境使用 |
+| 友盟统计 | SDK 版本较旧，无更新计划 |
+| OAID | 默认在 Google Play 渠道包中不包含 |
+
+> 高德地图在 HBuilderX 5.0+ 已更新 Google Play 渠道 SDK 版本，支持 16 KB。
+
+### X5 内核（腾讯 TBS）
+
+X5 内核用于拉齐低端 Android 设备的 WebView 能力，解决字体、CSS 兼容性、视频格式等问题。
+
+#### 启用方式
+
+在 `manifest.json` → App 模块配置 → 勾选 **Android X5 Webview(腾讯 TBS)**。
+
+```json
+// manifest.json
+{
+  "app-plus": {
+    "webView": {
+      "x5": {
+        "timeOut": 3000,
+        "showTipsWithoutWifi": true,
+        "allowDownloadWithoutWifi": false
+      }
+    }
+  }
+}
+```
+
+#### 注意事项
+
+- **不能提交 Google Play**：X5 使用动态热更新加载内核，违反 Google Play 政策。
+- 不支持 x86，建议 CPU 类型配置 `armeabi-v7a`、`arm64-v8a`。
+- 首次安装可能未下载完成，需杀进程重启后才生效。
+- X5 内核存在自更新机制，不同版本可能带来兼容性问题。
+- 云打包/APK 集成后才可通过 wgt 升级；否则需整包升级。
+
 ---
 
 ## iOS 原生资源
@@ -234,13 +287,28 @@ nativeResources/
 
 ### dSYM 符号表
 
-- 用于崩溃分析，将内存地址映射为源码位置
-- HBuilderX 3.5.0+：发行 → 云打包 → 勾选"生成 iOS 符号表"
-- 生成后自动下载，有效期 2 天
+dSYM 文件存储着 iOS 应用的源码文件名、函数名、行号与内存地址的映射关系，是线上崩溃分析的关键。
 
----
+#### 生成方式
 
-## HarmonyOS（鸿蒙）配置
+1. **HBuilderX 云端打包**：
+   - 打开 `manifest.json` → App 常用其它设置 → 勾选"生成 iOS 符号表（dsym）文件"。
+   - 提交云打包后，HBuilderX 控制台会输出 dsym 文件下载地址。
+   - 下载文件为 zip 格式，解压后获得 `.dSYM` 文件。
+
+2. **Xcode 本地打包**：
+   - 发布生成的 `.xcarchive` 文件中默认包含 `xxxx.app.dSYM`。
+
+#### 使用场景
+
+- 通过 Xcode → Organizer → Devices and Simulators → View Device Logs，导出 crash 文件。
+- 使用崩溃分析平台（Firebase Crashlytics、Bugly 等）时，上传 dSYM 文件以解析源码堆栈。
+
+#### 注意事项
+
+- 生成 dSYM 会消耗云端打包 CDN 资源，需单独计费。
+- 下载地址有效期为 **2 天**，过期自动删除，生成后请及时备份。
+- 每次发布新版本都应保留对应版本的 dSYM 文件。
 
 ### 前提条件
 
@@ -428,3 +496,115 @@ App 和小程序**不存在**跨域问题，只有 H5 需要处理。
 1. HBuilderX 内置浏览器（自动跳过 CORS）
 2. Vite 代理：`vite.config.js` → `server.proxy`
 3. 浏览器 CORS 扩展（仅简单请求有效）
+
+---
+
+## App 上架与合规
+
+### Google Play 上架要点
+
+#### 1. 必须适配 Android 11（API 30+）
+
+在 `manifest.json` → App 常用其它设置中，将 `targetSdkVersion` 设置为 **30 或更高**。
+
+#### 2. 不能包含安装应用权限
+
+在 App 权限配置中**不要勾选**：
+
+- `android.permission.INSTALL_PACKAGES`
+- `android.permission.REQUEST_INSTALL_PACKAGES`
+
+#### 3. 不要使用以下模块/SDK
+
+| 模块 | 原因 |
+|------|------|
+| QQ 登录/分享 | 未安装 QQ 时会引导下载 APK，违反 Google Play 政策 |
+| 国内增强广告 SDK（穿山甲、优量汇、快手等） | 广告落地页可能引导下载 APK |
+| X5 内核 | 使用动态热更新 |
+| 未适配 16 KB 的模块 | 2025-11-01 起强制要求 |
+
+#### 4. 使用 Google Play（AAB）渠道包
+
+云端打包时勾选 **Google Play(AAB)**，输出 AAB 格式上传到 Google Play Console。
+
+#### 5. 避免动态加载代码
+
+应用内不能直接下载 APK 安装，也不能使用热更新加载可执行代码。
+
+---
+
+### App Store 上架要点
+
+1. **uni-app 不是 H5 套壳**：前端代码在本地 IPA 包内运行，属于 C/S 架构，可正常上架。
+2. **避免体验不佳**：不要做成简单网页封装；应提供原生级交互和精美 UI。
+3. **避免相似度过高**：不要使用通用模板直接上架；如被 4.3 拒绝，需申诉说明独特价值。
+4. **注意 IDFA 使用**：如使用广告标识，需在隐私政策中披露，并在 App Store 后台正确勾选。
+5. **移除 UIWebView**：iOS 已废弃 UIWebView，确保使用 WKWebView。
+
+---
+
+### Android 国内市场上架合规
+
+#### 隐私协议自查清单
+
+1. 使用 **HBuilderX 3.2.15+** 重新打包。
+2. 配置 `androidPrivacy.json` 隐私弹窗，`prompt` 必须为 `template`。
+3. 《隐私政策》中必须披露：
+   - 基于 DCloud uni-app 开发
+   - 收集设备唯一识别码（IMEI/Android ID/DEVICE_ID/IDFA/IMSI）用于统计分析
+   - 集成的第三方 SDK 及其隐私协议链接
+4. 用户点击"同意"前，App 和 SDK 不得初始化或收集任何用户信息。
+5. 权限申请遵循最小必要原则：无对应功能不申请权限；用户拒绝后不得强制退出。
+
+#### 常见拒审原因与处理
+
+| 拒审原因 | 处理方案 |
+|----------|----------|
+| 强制/频繁/过度索取权限 | 按功能申请权限；用户拒绝后不重复弹窗；不在 `onShow` 中触发权限申请 |
+| 隐私政策前获取用户信息 | 升级 HBuilderX；使用 template 弹窗；检查三方 SDK/原生插件合规 |
+| 应用存在获取软件安装列表 | 升级 HBuilderX 3.2.15+；补充隐私协议说明 |
+| 集成了广告但被检测未声明 | 去除误勾选的广告模块，或在隐私协议中补充广告 SDK 说明 |
+| 华为市场仍检测旧版本 | 联系华为应用市场技术支持，要求重新检测 |
+
+---
+
+### 域名与 App 备案
+
+#### 需要域名备案的场景
+
+- 云函数绑定自定义域名
+- 发布 H5 站点
+- App 备案（填写后端服务器域名）
+- 开通扩展存储
+
+#### uniCloud 域名备案
+
+- 已有备案域名：直接解析到 uniCloud 空间。
+- 新注册域名：
+  - 阿里云/支付宝云空间：可通过支付宝云获取[备案码](https://doc.dcloud.net.cn/uniCloud/price.html#备案码)，在阿里云备案系统完成备案。
+  - 腾讯云空间：需购买一台腾讯云服务器用于备案。
+
+#### App 备案流程
+
+1. 先完成**域名备案**。
+2. 前往云厂商（阿里云/腾讯云/华为云）App 备案入口。
+3. 填写 App 信息、备案码、后端域名（与 App 主体一致）。
+4. 提交审核。
+
+#### 小程序备案
+
+小程序备案在各自平台管理控制台完成，通常无需域名和固定 IP。
+
+---
+
+### 上架前检查清单
+
+- [ ] targetSdkVersion 符合目标商店要求（Google Play ≥ 30）
+- [ ] 已移除不必要的敏感权限和安装权限
+- [ ] 已配置 `androidPrivacy.json` 隐私弹窗
+- [ ] 《隐私政策》已补充 DCloud 及第三方 SDK 披露
+- [ ] 已生成并备份 iOS dSYM 文件
+- [ ] 已选择正确的渠道包（Google Play 用 AAB）
+- [ ] 域名已完成 ICP 备案
+- [ ] 已完成 App 备案（国内上架）
+- [ ] 已完成应用加固（国内部分市场要求）

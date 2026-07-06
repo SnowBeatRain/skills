@@ -17,47 +17,45 @@
 
 ```
 uniapp-skill/
-├── SKILL.md                              主入口（713 行）
-│   ├── 第一部分：学习路径规划              4 阶段路线图（环境→核心→实战→进阶），附参考文件指针
-│   ├── 第二部分：项目搭建                  目录结构、pages.json/manifest.json 核心配置示例
-│   ├── 第三部分：核心功能实现              生命周期/路由/Pinia/网络请求/CRUD/条件编译/样式完整代码示例
-│   ├── 第四部分：调试与发布                各平台运行命令、调试工具、打包发布清单
-│   ├── 第五部分：避坑指南（含 uni-app x）  18 大常见问题速查表
-│   ├── 第六部分：进阶功能速查              Vue3/RenderJS/WXS/i18n/SSR/PWA/WebSocket/webView/subNVue 等
-│   ├── 第七部分：社区最佳实践              热更新/性能优化/自定义导航栏/合规/登录/图片上传/分页加载
-│   ├── 第八部分：uni-app x 与 UTS 插件     架构对比/uvue/UTS 语言/混编/选型/版本兼容矩阵
-│   ├── 第九部分：测试方案                  Vitest 单元测试 + uni-automator E2E 快速配置
-│   ├── 第十部分：安全实践                  Token 加密/接口签名/XSS 防护/平台安全要点
-│   ├── 第十一部分：CI/CD 与 Vite 配置      GitHub Actions/环境变量/Vite 构建优化
-│   └── 参考文件完整索引                    33 个参考文件一句话摘要
+├── SKILL.md                              主入口（意图、触发场景、工作流、关键规则、references 索引、检查清单）
+│   ├── 意图与触发场景                      何时加载本 skill、覆盖的平台与技术栈
+│   ├── 工作流                              识别平台→选官方能力→读取 references→条件编译→验证
+│   ├── 关键规则                            禁用 axios、switchTab、页面生命周期、条件编译等 11 条铁律
+│   ├── 常用 references                     38 个参考文件按场景索引
+│   └── 开发检查清单                        13 项上线前必检
 │
-├── references/                           33 个参考文件（~12,900 行）
+├── references/                           38 个参考文件（~17,200 行）
 │   ├── project-setup.md         (173)    环境搭建、项目创建、目录结构、UI 库
 │   ├── pages-config.md          (315)    pages.json 全部字段：globalStyle/tabBar/分包/easycom/宽屏适配/路由守卫
 │   ├── manifest.md              (455)    manifest.json 完整参考：核心字段、各平台配置、OAuth/Push/Maps、模板
 │   ├── lifecycle.md             (521)    应用/页面/组件生命周期、时序图、Vue3 用法、Pinia 交互、平台差异、陷阱
 │   ├── api.md                   (282)    网络请求、路由、UI、存储、位置、设备
-│   ├── components.md            (356)    内置组件 + uni-ui 常用组件
-│   ├── more-components.md       (405)    扩展组件、媒体组件、nvue 高性能组件
+│   ├── network-advanced.md      (266)    WebSocket / SocketTask / UDP / mDNS 进阶网络能力
+│   ├── components.md            (475)    内置组件 + uni-ui 常用组件
+│   ├── more-components.md       (433)    扩展组件、媒体组件、nvue 高性能组件、广告组件
 │   ├── conditional-compilation.md (201)  条件编译语法与平台标识
 │   ├── vue3-patterns.md         (335)    Composition API、组合函数、Vue2→3 迁移、Vue 3.4+ 新特性
-│   ├── advanced-features.md     (824)    nvue/RenderJS/WXS/i18n/a11y/暗黑/TS/SSR/PWA/WebSocket
-│   ├── app-native.md            (265)    登录/支付/推送/分享/安全加固/隐私合规
+│   ├── advanced-features.md     (824)    nvue/RenderJS/WXS/i18n/a11y/暗黑/TS/SSR/PWA/WebSocket（概览）
+│   ├── app-native.md            (418)    微信/QQ/Apple/一键登录/Facebook/Google 登录、微信/支付宝/Apple IAP/PayPal/Stripe 支付、推送、分享
+│   ├── advertising.md           (385)    uni-ad 信息流/激励视频/插屏/全屏视频/小程序广告
 │   ├── cloud-services.md        (295)    UniPush/一键登录/uni统计/uniCloud/uni-AD
 │   ├── media-file-api.md        (275)    图片/视频/音频/录音/相机/文件操作
+│   ├── canvas-api.md            (355)    Canvas 2D 绘图、导出图片、离屏画布、海报生成
+│   ├── hardware-open-api.md     (447)    BLE/WiFi/NFC/iBeacon/生物认证/截屏/内存告警/通讯录
 │   ├── system-device-api.md     (374)    设备信息/蓝牙/传感器/UI控制/DOM查询
-│   ├── native-resources.md      (367)    Android/iOS/鸿蒙原生配置、地图、CORS
-│   ├── debug-publish.md         (203)    各平台运行调试与打包发布
+│   ├── native-resources.md      (610)    Android/iOS/鸿蒙原生配置、地图、CORS、Android 16KB/X5、App 上架与合规
+│   ├── debug-publish.md         (308)    各平台运行调试、打包发布、内存泄漏/OOM/真机运行 FAQ
 │   ├── pitfalls.md              (282)    13 大常见问题（含 uni-app x 坑点）
 │   ├── community-practices.md  (1,048)   社区精华实战（热更新/性能/登录等）
-│   ├── uniapp-x-uts.md          (442)    uni-app x 架构/uvue/UTS/插件开发/混编/鸿蒙/迁移
+│   ├── uniapp-x-uts.md          (442)    uni-app x 架构/uvue/UTS 插件开发/混编/鸿蒙/迁移
 │   ├── harmony-basics.md        (283)    鸿蒙基础：环境搭建/项目配置/签名/条件编译/错误排查
 │   ├── harmony-development.md   (431)    鸿蒙核心开发：UTS 插件/原生组件/华为登录/URL Scheme
-│   ├── harmony-advanced.md      (254)    鸿蒙进阶：元服务/调试/发布/地图
+│   ├── harmony-advanced.md      (346)    鸿蒙进阶：元服务/支付/签名/App Linking/调试/发布/地图
 │   ├── harmony-migration.md   (1,637)    鸿蒙适配迁移：日常适配/老项目迁移/架构师笔记
 │   ├── testing.md               (422)    Vitest 单元测试 + uni-automator E2E 测试
 │   ├── security.md              (383)    Token 安全/接口签名/XSS 防护/UGC 检测
 │   ├── cicd.md                  (391)    GitHub Actions/环境变量/Vite 配置/包体积管控
+│   ├── dev-center.md            (259)    DCloud 开发者中心：账号/应用/云打包计费/发票
 │   ├── native-js.md             (319)    Native.js：直接调用 Android/iOS 原生 API
 │   ├── webview.md               (272)    web-view 双向通信：evalJS/postMessage/动态创建/层级覆盖
 │   ├── wxs.md                   (305)    WXS/SJS/Filter：视图层脚本，避免逻辑层通信损耗
@@ -69,7 +67,7 @@ uniapp-skill/
 └── README.md                             本说明文件
 ```
 
-**总计：35 个文件，约 14,100 行**
+**总计：40 个文件，约 17,800 行**
 
 ## 快速上手
 
@@ -101,11 +99,11 @@ uniapp-skill/
 
 | 模块 | 覆盖内容 |
 |------|----------|
-| 网络请求 | uni.request + 拦截器、路由守卫、请求封装 |
+| 网络请求 | uni.request + 拦截器、路由守卫、请求封装、WebSocket / SocketTask / UDP / mDNS |
 | UI 交互 | showToast/showModal/showLoading/showActionSheet |
 | 本地存储 | getStorage/setStorage（同步/异步） |
-| 媒体文件 | 图片选择压缩预览、视频处理、音频播放录音、文件上传下载 |
-| 系统设备 | 设备信息、网络、蓝牙、传感器、电池、剪贴板、振动 |
+| 媒体文件 | 图片选择压缩预览、视频处理、音频播放录音、文件上传下载、Canvas 2D 绘图 |
+| 系统设备 | 设备信息、网络、蓝牙、传感器、电池、剪贴板、振动、BLE、WiFi、NFC、iBeacon、生物认证、内存告警 |
 | UI 控制 | 导航栏、TabBar、动画、滚动、字体、键盘、DOM 查询 |
 
 ### 鸿蒙开发
@@ -136,11 +134,12 @@ uniapp-skill/
 | 类别 | 组件 |
 |------|------|
 | 基础 | view、text、image、scroll-view、swiper |
-| 表单 | input、textarea、button、picker、form、switch、slider |
+| 表单 | input、textarea、button、picker、picker-view、form、switch、slider、checkbox、radio、label、editor |
 | 导航 | navigator、tabBar、custom-tab-bar |
-| 媒体 | video、camera、live-pusher、live-player、animation-view |
-| 覆盖 | cover-view、movable-view |
-| 页面 | page-meta、navigation-bar、match-media |
+| 媒体 | video、audio、camera、live-pusher、live-player、animation-view |
+| 覆盖 | cover-view、coverage-image、movable-view |
+| 页面 | page-meta、navigation-bar、custom-tab-bar、match-media |
+| web-view | web-view 内嵌网页、双向通信 |
 | uni-ui | 30+ 组件（badges/cards/lists/forms/popups/tables 等） |
 | nvue | list、waterfall、recycle-list（自动内存回收） |
 | Datacom | unicloud-db（云数据驱动）、uni-data-select/checkbox/picker、与 uni-forms 结合 |
@@ -206,7 +205,7 @@ uniapp-skill/
 | TypeScript | @dcloudio/types + lang="ts" |
 | SSR | 服务端渲染、SEO 优化、onServerPrefetch 数据获取 |
 | PWA/H5 离线 | Service Worker + vite-plugin-pwa + NetworkFirst/CacheFirst 策略 |
-| WebSocket | uni.connectSocket 实时通信 |
+| WebSocket / UDP / mDNS | `uni.connectSocket` 实时通信、UDP、mDNS；详见 `network-advanced.md` |
 | WebView 深度通信 | evalJS 注入、postMessage 双向、uni.webview.js、动态创建 webview、层级覆盖 |
 | subNVue | 原生子窗体，高于 WebView 层级，侧边栏/抽屉/父子通信、动画 |
 | Native.js | importClass/newObject/invoke/implements 全套 API，直接调用 Android/iOS 原生 API，无需插件 |
@@ -219,7 +218,7 @@ uniapp-skill/
 
 | 模块 | 覆盖内容 |
 |------|----------|
-| 登录 | 微信/QQ/Apple/一键登录(univerify) |
+| 登录 | 微信/QQ/Apple/Facebook/Google/一键登录(univerify) |
 | 支付 | 微信/支付宝/Apple IAP/Stripe/PayPal |
 | 推送 | UniPush 2.0 + 厂商离线通道 |
 | 分享 | 系统分享 + 平台分享 + 小程序分享 |
@@ -238,7 +237,7 @@ uniapp-skill/
 | UniPush 2.0 | 全平台推送，客户端+服务端完整代码 |
 | 一键登录 | 运营商网关认证，换取手机号完整流程 |
 | uni 统计 | 开源全平台统计，自定义事件上报 |
-| uni-AD | Banner/信息流/激励视频/贴片视频/开屏等广告 |
+| uni-AD | Banner/信息流/激励视频/插屏/全屏视频/沉浸视频流/小程序广告；详见 `advertising.md` |
 
 ### 社区实战
 

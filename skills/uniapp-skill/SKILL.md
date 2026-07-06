@@ -65,19 +65,21 @@ description: 将此技能应用于所有 uni-app / uniapp / uni-app x / UTS / HB
 | `manifest.json` | `references/manifest.md` |
 | 生命周期 | `references/lifecycle.md` |
 | 网络、路由、存储、UI API | `references/api.md` |
+| 进阶网络（WebSocket / UDP / mDNS） | `references/network-advanced.md` |
 | 组件与 uni-ui | `references/components.md`、`references/more-components.md` |
 | 条件编译与平台标识 | `references/conditional-compilation.md` |
 | Vue3 写法与迁移 | `references/vue3-patterns.md` |
 | 样式、性能、RenderJS、WebView、SSR | `references/advanced-features.md` |
 | App 原生能力 / 权限判断 | `references/app-native.md`、`references/native-resources.md`、`references/app-permissions.md` |
-| uniCloud、UniPush、统计、一键登录 | `references/cloud-services.md` |
-|- uni-app x / UTS | `references/uniapp-x-uts.md` |
-|| **nvue 横竖屏兼容** | `references/nvue-landscape-layout.md` |
+| uniCloud、UniPush、统计、一键登录、广告变现 | `references/cloud-services.md`、`references/advertising.md` |
+| uni-app x / UTS | `references/uniapp-x-uts.md` |
+| nvue 横竖屏兼容 | `references/nvue-landscape-layout.md` |
 | 鸿蒙基础/开发/发布/迁移 | `references/harmony-basics.md`、`references/harmony-development.md`、`references/harmony-advanced.md`、`references/harmony-migration.md` |
-| 媒体、文件、设备系统 API | `references/media-file-api.md`、`references/system-device-api.md` |
+| 媒体、文件、设备系统 API | `references/media-file-api.md`、`references/system-device-api.md`、`references/canvas-api.md`、`references/hardware-open-api.md` |
 | web-view / Native.js / WXS / subNVue | `references/webview.md`、`references/native-js.md`、`references/wxs.md`、`references/subnvue.md` |
 | 富文本、共享元素、Datacom | `references/editor.md`、`references/share-element.md`、`references/datacom.md` |
 | 测试、安全、CI/CD | `references/testing.md`、`references/security.md`、`references/cicd.md` |
+| DCloud 开发者中心（账号/应用/云打包/发票） | `references/dev-center.md` |
 | 调试发布与避坑 | `references/debug-publish.md`、`references/pitfalls.md`、`references/community-practices.md` |
 
 ## 开发检查清单

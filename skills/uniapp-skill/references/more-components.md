@@ -46,6 +46,23 @@ const onScale = (e) => { console.log('缩放:', e.detail.scale) }
 
 ---
 
+## 广告组件
+
+`uni-ad` 相关组件和 API 详见 `references/advertising.md`。以下是组件速查：
+
+| 组件 | 用途 | 接入方式 |
+|------|------|----------|
+| `ad` | 信息流 / Banner 广告 | 组件：`adpid`（App/H5）、`unit-id`（小程序） |
+| `ad-draw` | 沉浸视频流广告 | 组件：`adpid` |
+| `ad-content-page` | 短视频内容联盟 | 组件：`adpid` |
+| `ad-video` | 微信视频广告 | 组件：`unit-id`（小程序） |
+| `ad-grid` | 微信格子广告 | 组件：`unit-id`（小程序） |
+| `uni.createRewardedVideoAd` | 激励视频广告 | API：`adpid` / `adUnitId` |
+| `uni.createInterstitialAd` | 插屏广告 | API：`adpid` / `adUnitId` |
+| `uni.createFullScreenVideoAd` | 全屏视频广告 | API：`adpid` |
+
+---
+
 ## 页面配置组件
 
 ### page-meta — 页面元数据
@@ -361,6 +378,17 @@ const onScale = (e) => { console.log('缩放:', e.detail.scale) }
 | `uni-group` | 内容分组 |
 | `uni-title` | 章节标题（支持统计上报） |
 | `uni-tooltip` | 悬停提示框 |
+| `uni-combox` | 可输入下拉组合框 |
+| `uni-data-picker` | 级联/树形数据选择器 |
+| `uni-dateformat` | 日期格式化显示 |
+| `uni-easyinput` | 增强输入框（带清空、密码切换、图标） |
+| `uni-fav` | 收藏按钮 |
+| `uni-goods-nav` | 商品底部导航栏 |
+| `uni-grid` | 九宫格/栅格布局 |
+| `uni-link` | 超链接文本 |
+| `uni-notice-bar` | 通告栏/滚动通知 |
+| `uni-row` | 配合 `uni-col` 的栅格行 |
+| `uni-swiper-dot` | 轮播图指示点样式 |
 
 ---
 

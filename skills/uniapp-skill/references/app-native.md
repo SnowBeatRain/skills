@@ -32,6 +32,47 @@ uni.getUserInfo({
 4. 调用 `uni.login()` 获取授权码
 5. 后端验证授权码，返回业务 token
 
+### Facebook 登录
+
+适用平台：App（iOS/Android）
+
+1. **开通条件**：海外网络环境、Facebook 账号。
+2. **创建应用**：
+   - 访问 [Facebook 开发者中心](https://developers.facebook.com/)。
+   - 点击"我的应用" → "创建应用"，选择应用类型并填写信息。
+   - 创建后获取"应用编号"（App ID）。
+   - 在"应用审核" → "权限和功能"中开启 `public_profile` 和 `email` 的高级访问权限。
+3. **添加平台**：
+   - **iOS**：设置 → 基本 → 添加平台 → iOS，填写 Bundle ID。
+   - **Android**：设置 → 基本 → 添加平台 → Android，应用商店选择 Google Play，填写包名、类名（固定）和密钥散列。
+4. **获取 Android 密钥散列**：
+   ```bash
+   keytool -exportcert -alias hbuilder -keystore ./HBuilder.keystore | openssl dgst -sha1 -binary | openssl base64
+   ```
+5. **manifest.json 配置**：App 模块配置 → OAuth → Facebook，填入 App ID。
+6. **前端调用**：
+   ```js
+   uni.login({ provider: 'facebook' })
+   ```
+
+### Google 登录
+
+适用平台：App（iOS/Android）
+
+1. **开通条件**：海外网络环境、Google 账号。
+2. **Android 配置**：
+   - 访问 [Google 登录 Android 引导页](https://developers.google.com/identity/sign-in/android/sign-in?hl=zh-cn)。
+   - 选择或新建 Firebase / Google API 项目。
+   - 添加 Android 应用，填写包名和 SHA-1 指纹。
+3. **iOS 配置**：
+   - 访问 [Google 登录 iOS 引导页](https://developers.google.com/identity/sign-in/ios/start-integrating?hl=zh-cn)。
+   - 创建 OAuth 客户端 ID，选择 iOS 平台，填写 Bundle ID，获取 Client ID。
+4. **manifest.json 配置**：App 模块配置 → OAuth → Google，填入 Android/iOS 对应参数。
+5. **前端调用**：
+   ```js
+   uni.login({ provider: 'google' })
+   ```
+
 ### 一键登录（univerify）
 
 ```js
@@ -98,7 +139,66 @@ uni.requestPayment({
 // #endif
 ```
 
-> 推荐：使用 uniCloud 的 `uniPay` 服务统一处理服务端支付逻辑。
+### PayPal 支付
+
+适用平台：App（iOS 13.0+ / Android）
+
+1. **开通**：
+   - 登录 [PayPal 开发者中心](https://developer.paypal.com/developer/applications) 创建应用，获取 Client ID。
+   - 配置 return URL，格式为 `包名://paypalpay`，必须全小写；Android/iOS 可分别配置。
+2. **manifest.json 配置**：App 模块配置 → Payment → PayPal，填入 `returnURL_android` 和 `returnURL_ios`。
+3. **服务端生成订单**：参考 PayPal 官方文档 [Create Order](https://developer.paypal.com/api/orders/v2/#orders_create) 获取 `orderId`。
+4. **前端发起支付**：
+   ```js
+   uni.requestPayment({
+     provider: 'paypal',
+     orderInfo: {
+       clientId: 'your-client-id',
+       orderId: 'order-id-from-server',
+       currency: 'USD',
+       environment: 'sandbox', // sandbox | live
+       userAction: 'continue'  // paynow | continue
+     },
+     success: (res) => {
+       const raw = JSON.parse(res.rawdata)
+       console.log('PayPal 订单:', raw.orderId)
+       // 服务端需继续调用 authorize/capture 完成扣款
+     }
+   })
+   ```
+5. **完成扣款**：App 端返回订单 ID 后，服务端需调用 PayPal 接口 [Authorize](https://developer.paypal.com/api/orders/v2/#orders_authorize) 或 [Capture](https://developer.paypal.com/api/orders/v2/#orders_capture) 完成付款。
+
+### Stripe 支付
+
+适用平台：App（iOS 13.0+ / Android）
+
+1. **开通**：
+   - 注册 [Stripe](https://dashboard.stripe.com/login) 账号，获取开发测试 API 密钥（Publishable Key、Secret Key）。
+   - 激活账户后获取正式密钥，并设置 [支付方式](https://dashboard.stripe.com/settings/payment_methods)。
+2. **manifest.json 配置**：App 模块配置 → Payment → Stripe，填入 `returnURL`（格式：`your-app-scheme://stripe`）。
+3. **服务端生成 PaymentIntent**：参考 Stripe 官方文档 [Add an endpoint](https://stripe.com/docs/payments/accept-a-payment?platform=android&ui=payment-sheet#add-server-endpoint)。
+4. **前端发起支付**：
+   ```js
+   uni.requestPayment({
+     provider: 'stripe',
+     orderInfo: {
+       publishKey: 'pk_test_xxx',
+       paymentIntent: 'pi_xxx_secret_xxx',
+       customer: 'cus_xxx',           // 可选，与 ephemeralKey 成对出现
+       ephemeralKey: 'ek_xxx',        // 可选
+       merchantName: 'DCloud',
+       isAllowDelay: true,            // 是否支持延迟支付
+       billingDetails: {
+         name: '',
+         email: '',
+         phone: '',
+         address: { city: '', country: 'CN', line1: '', line2: '', postalCode: '', state: '' }
+       }
+     },
+     success: (res) => console.log('Stripe 支付成功', res),
+     fail: (err) => console.error('Stripe 支付失败', err)
+   })
+   ```
 
 ### uni-pay 2.x（uniCloud 云端一体支付）
 

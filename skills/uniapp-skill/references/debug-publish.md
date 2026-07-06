@@ -201,3 +201,108 @@ npm run build:mp-qq          # QQ 小程序
 **元服务图标要求：** 必须使用华为标准图标底板（216x216 上传开发者中心，512x512 代码中）。
 
 详细鸿蒙发布文档见 `references/harmony-advanced.md`（调试、发布、元服务）。
+
+---
+
+## 运行排错
+
+### 内存泄漏排查
+
+HBuilderX 4.81+ 调试运行过程中，如果代码发生内存泄漏，控制台会提示"发现内存泄漏"，点击链接可查看详情。
+
+常见内存泄漏场景：
+
+- 全局事件监听器未移除（`uni.$on`、`addEventListener`）
+- 页面/组件卸载时未清理定时器、WebSocket、BLE 连接
+- 循环引用导致 Vue 组件无法回收
+- 大图/长列表缓存未释放
+
+排查建议：
+
+```js
+// 页面卸载时统一清理
+onUnload(() => {
+  clearInterval(timer)
+  socketTask?.close()
+  uni.offMemoryWarning(callback)
+  uni.offUserCaptureScreen(callback)
+})
+```
+
+### OOM（内存溢出）处理
+
+如果 HBuilderX 在运行或构建过程中出现 OOM，可尝试：
+
+1. **增加 Node 启动内存**：
+   - macOS：HBuilderX 顶部菜单 → 偏好设置 → 运行配置 → node 启动内存参数
+   - Windows：HBuilderX 工具 → 设置 → 运行配置 → node 启动内存参数
+2. **关闭运行日志回显**：减少运行时的额外内存占用。
+3. **升级电脑内存**或关闭其他占用内存较大的软件。
+
+### 真机运行常见问题
+
+#### 1. 电脑检测不到手机
+
+- 更换数据线（部分线仅支持充电）。
+- 更换 USB 口，避免 USB 口电压不足或坏口。
+- Android 需安装手机驱动；Windows + iOS 需安装 iTunes。
+- 鸿蒙需安装 DevEco Studio 并配置 `harmony.devTools.path`。
+
+#### 2. Android 手机 USB 调试授权
+
+- 开启"开发者选项"：连续点击版本号/OS 版本。
+- 打开 **USB 调试**、**"仅充电"模式下允许 ADB 调试**、**ADB 安装应用**。
+- 连接电脑时，在弹出的"是否允许该电脑调试本手机"对话框中点击同意。
+
+#### 3. HBuilderX 检测不到 Android 手机
+
+- 关闭其他占用 adb 端口的软件（手机助手、QQ、搜狗输入法等）。
+- 在 cmd 中执行 HBuilderX 自带的 adb：`adb.exe devices`。
+- 检查是否出现多个 `adb.exe`/`tadb.exe`/`kadb.exe` 进程，强制结束后重试。
+- 以管理员模式运行 HBuilderX。
+- 某些手机对 adb 版本有要求，可尝试替换 HBuilderX 自带的 adb 版本。
+
+#### 4. 安装调试基座失败
+
+- 部分 ROM（如小米）有独立的"USB 安装应用"权限，需在手机设置中开启。
+- 安装弹窗有倒计时，需及时在手机端点击同意。
+- 可手动安装 HBuilderX 安装目录下的 `android_base.apk`。
+
+#### 5. 资源同步失败
+
+- 手机端防火墙或安全软件拦截基座与 HBuilderX 的 socket 连接。
+- 基座未自动启动时，手动在手机端点击基座 App。
+- 卸载旧基座后重新运行。
+
+#### 6. iOS 模拟器无法检测（Mac）
+
+- Xcode 必须安装在 `/Applications` 目录。
+- Xcode 16.0+ 才能正常启动 iOS 模拟器。
+- 在 Xcode → Settings → Locations 中设置正确的 Command Line Tools。
+
+#### 7. 运行到鸿蒙常见问题
+
+- 检测不到真机/模拟器：确认 DevEco Studio 可识别设备；先启动模拟器再运行。
+- 签名问题：检查 `harmony-configs/build-profile.json5` 中的签名证书、profile、设备 UUID 和包名是否匹配；卸载旧签名应用后重试。
+
+#### 8. 控制台不输出日志
+
+参考 [DCloud 控制台日志排查文档](https://ask.dcloud.net.cn/article/1336)。
+
+#### 9. Android 真机联调 Permission denied
+
+- 重新插拔数据线并重新打开 USB 调试。
+- 重启手机和 HBuilderX。
+- 检查手机是否 root 导致 sdcard 目录权限异常。
+
+#### 10. 真机运行成功但屏幕未显示应用
+
+- Android 首次安装基座时，手机杀毒软件可能拦截，需等待片刻。
+- 检查基座是否安装在外置 SD 卡上，应转移至手机内存或内置存储。
+
+### 调试建议
+
+- 优先使用**真机**测试硬件相关能力（蓝牙、相机、定位、生物认证等）。
+- 涉及原生插件、广告、支付、推送时，必须使用**自定义基座**或正式打包测试。
+- 遇到问题时，先查看 HBuilderX 控制台完整错误日志，再到 [DCloud Ask 论坛](https://ask.dcloud.net.cn/)搜索或发帖。
+- 发帖时附上：操作系统、HBuilderX 版本、项目类型、基座类型、手机型号、系统版本、错误截图/日志。

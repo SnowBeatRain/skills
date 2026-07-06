@@ -317,6 +317,125 @@ onReady(() => {
 </script>
 ```
 
+> 详细 Canvas API 与实战见 `references/canvas-api.md`。
+
+---
+
+## 其他内置组件
+
+### web-view — 内嵌网页
+
+```vue
+<web-view
+  src="https://uniapp.dcloud.net.cn"
+  :webview-styles="{ progress: { color: '#FF3333' } }"
+  @message="onMessage"
+  @load="onLoad"
+  @error="onError"
+/>
+```
+
+- 小程序仅支持加载**网络网页**，需在后台配置业务域名白名单。
+- App 支持网络和本地网页；本地网页放在 `hybrid/html/` 或 `static/` 目录。
+- nvue 中必须显式设置宽高。
+- 详细双向通信见 `references/webview.md`。
+
+### audio — 音频（Vue2 / 部分平台）
+
+```vue
+<audio
+  :src="audioSrc"
+  :poster="poster"
+  name="音乐名"
+  author="作者"
+  controls
+  @play="onPlay"
+  @pause="onPause"
+  @ended="onEnded"
+/>
+```
+
+- Vue3 项目已废弃，建议使用 `uni.createInnerAudioContext` API。
+- 微信小程序 1.6.0+ 不再维护 audio 组件，推荐用 API 方式。
+- App-nvue 不支持。
+
+### editor — 富文本编辑器
+
+```vue
+<editor
+  id="editor"
+  placeholder="开始输入..."
+  :show-img-size="true"
+  :show-img-toolbar="true"
+  :show-img-resize="true"
+  @ready="onEditorReady"
+  @input="onInput"
+/>
+```
+
+- 支持平台：App-vue、H5、微信小程序、百度小程序（需引入动态库）、小红书小程序。
+- 导出格式：`html`、`text`、`delta`。
+- 支持的标签：`span`、`strong`、`p`、`img`、`a`、`ul/ol/li` 等；不支持 `class`/`id`。
+- H5 端需自行托管 Quill 资源以解决 unpkg 加载问题。
+- 完整 EditorContext API 见 `references/editor.md`。
+
+### label — 表单标签
+
+```vue
+<checkbox-group @change="onCheckChange">
+  <label v-for="item in items" :key="item.value">
+    <checkbox :value="item.value" :checked="item.checked" />
+    {{ item.label }}
+  </label>
+</checkbox-group>
+
+<!-- 使用 for 属性 -->
+<label for="switch1">打开通知</label>
+<switch id="switch1" @change="onSwitchChange" />
+```
+
+- 可绑定的控件：`button`、`checkbox`、`radio`、`switch`。
+- `for` 优先级高于内部控件；内部多个控件时默认触发第一个。
+- app-nvue 不支持 `for` 属性。
+
+### picker-view — 嵌入页面的选择器
+
+```vue
+<picker-view
+  :value="value"
+  :indicator-style="indicatorStyle"
+  @change="onChange"
+  style="height: 600rpx;"
+>
+  <picker-view-column>
+    <view v-for="y in years" :key="y" style="line-height: 100rpx; text-align: center;">{{ y }}年</view>
+  </picker-view-column>
+  <picker-view-column>
+    <view v-for="m in months" :key="m" style="line-height: 100rpx; text-align: center;">{{ m }}月</view>
+  </picker-view-column>
+  <picker-view-column>
+    <view v-for="d in days" :key="d" style="line-height: 100rpx; text-align: center;">{{ d }}日</view>
+  </picker-view-column>
+</picker-view>
+```
+
+- 比 `picker` 更灵活，可自定义弹出方式和 UI。
+- 仅支持 `picker-view-column` 作为子节点。
+- 增强版可使用 uni-ui 的 `uni-data-picker`。
+
+### 开放能力组件
+
+| 组件 | 用途 | 平台 |
+|------|------|------|
+| `official-account` | 关注公众号 | 微信小程序 |
+| `open-data` | 展示微信开放数据（用户头像、昵称） | 微信小程序（已逐步回收） |
+
+```vue
+<!-- #ifdef MP-WEIXIN -->
+<official-account />
+<!-- #endif -->
+```
+
 ## uni-ui 扩展组件（easycom 自动引入）
 
 安装：`npm install @dcloudio/uni-ui`

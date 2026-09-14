@@ -1,71 +1,38 @@
-# Liquid Glass 性能指南
+# 光学性能与生命周期
 
-## 1. 项目预算（不是平台保证）
+性能结论只能来自目标浏览器/设备的实际录制。以下是项目起始预算，不是 Apple 标准或已测帧率。
 
-| 指标 | 目标 | 复查阈值 |
-|---|---|---|
-| 同屏玻璃元素数 | ≤3 | 5 |
-| 嵌套 | 1 层 | 3 层 |
-| 单元素 blur | 24px | 40px |
-| 高光帧率 | 60fps | 低于 50fps 降级 |
-| 首屏玻璃附加合成时间 | <8ms | 达到 16ms 重评 |
-
-先记录测试设备、屏幕刷新率、DPR、浏览器/引擎、视口和背景。高刷新率屏幕帧预算更短；以上为配方目标，不是静态校验器能测出的结果。
-
-## 2. 成本模型
-
-浏览器/引擎通常需要采样下方内容、离屏过滤、颜色调整、合成。大面积、大模糊、多个重叠层和动态背景更昂贵。`面积 × 半径² × 数量` 只能当粗略风险提示，现代引擎可能降采样、缓存、用不同模糊算法，不能作为精确复杂度或毫秒预测。嵌套不会在所有实现上“指数级变慢”，但会增加采样/合成负担并改变 backdrop root。
-
-## 3. 优化
-
-模态遮罩只用颜色，面板做模糊：
-
-```css
-.overlay { position: fixed; inset: 0; background: var(--lg-overlay); }
-.panel { backdrop-filter: blur(var(--lg-medium-blur)) saturate(var(--lg-medium-saturate)); }
-```
-
-只给固定容器一次玻璃，行项目普通填充。不要把整页装饰成全屏动态模糊。动画只改变 transform / opacity；径向渐变变量会产生 paint，应限制区域并按 rAF 合并。不要在每个 pointermove 先读 getBoundingClientRect 再写样式，更不要动画化 blur、width、height。
-
-`will-change: backdrop-filter` 是否有帮助取决于引擎，不应常驻，可能浪费合成内存。先测量再优化；transform 也会改变定位包含块，不能随意用来“强制 GPU”。
-
-移动端/粗指针在局部强度类之后覆盖，避免只改 :root 而根本未生效：
-
-```css
-@media (max-width: 768px), (pointer: coarse) {
-  .lg-surface { --lg-blur: var(--lg-subtle-blur); --lg-saturate: var(--lg-subtle-saturate); }
-  .lg-surface .lg-surface { -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .lg-surface::after { display: none; }
-}
-```
-
-设备探测只能辅助，不应无条件拦截：
-
-```js
-const lowEndHint = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
-  || (navigator.deviceMemory && navigator.deviceMemory <= 4);
-// 结合实测或应用内“减少效果”设置决定；不是所有四核设备都低端。
-if (lowEndHint) document.documentElement.classList.add('lg-reduced');
-```
-
-脚本不会自动采集设备信息或设置此类。`.lg-reduced` 降到 subtle、禁持续跟踪/扫光，粗指针可单次高光；若仍慢，用 `.lg-opaque` 完全不透明。
-
-## 4. 排查
-
-Chrome/Edge DevTools：Rendering 的 Paint flashing 检查重绘区域；Performance 录制滚动/触摸，检查长帧、绘制与合成任务；Layers 检查合成区域与内存。Safari Web Inspector 的 Timelines 检查帧与绘制。Flutter 用 DevTools frame timeline；原生用 Instruments。
-
-1. 同样背景下，对比关闭玻璃与开启玻璃的录制。
-2. 每次只减面积、半径或数量中的一项。
-3. 最低目标设备连续滚动并触摸，不只看静态截图。
-4. 记录结论；没有真机/录制时标待验证，不编造 60fps。
-
-## 5. 陷阱
-
-| 情况 | 排查方向 |
+| 项目 | 起点 |
 |---|---|
-| 父级 opacity/filter/mask/clip 或复合层 | 检查 backdrop root 和可采样范围，不能断言 overflow 一定让所有玻璃失效 |
-| 父级 transform + fixed/sticky | 新包含块/滚动祖先可能改变定位；不随意加 transform |
-| 自身 overflow:hidden | 可裁切子内容与焦点，但通常不会裁掉自身 box-shadow；优先裁切装饰层 |
-| 父容器裁切外阴影 | 外部绘制阴影、内部裁切玻璃 |
-| fixed 背景与滚动玻璃 | 可能重采样，需实测，不保证 sticky 一定更快 |
-| MutationObserver 清理只覆盖初始节点 | 后加入节点泄漏；观察器停止要清理其持有的所有节点 |
+| 独立透镜 | 同屏 1–3 个；本 shader 硬上限 4 |
+| 嵌套/重叠 | 不嵌套，不重叠；不把多层重叠称为流体融合 |
+| 光学画布 | 限制到实际背景/控件区域，避免无目的全屏高 DPR |
+| DPR | 默认上限 1.5，可按实测调整 |
+| 纹理上传 | 背景像素变化时上传，静态背景只在来源/尺寸变化时上传 |
+| 动画 | 输入/过渡期间更新，收敛后停止 rAF |
+
+## 1. 主要成本
+
+WebGL 的成本受画布像素数、片元采样次数、透镜数量、纹理上传与平台 GPU 影响。本 shader 对透镜内做少量采样，不能承诺任何设备都 60fps。背景视频每帧上传的成本与静态 Canvas 不同。
+
+普通 backdrop-filter 也有采样与合成成本；“面积×半径²×数量”只能当风险提示，不能预测实际毫秒值。不要用历史 CSS blur=24px 的预算推算新的重采样 shader。
+
+## 2. 调度
+
+- resize/source 改变时更新纹理与缓存几何，不在每帧读 getBoundingClientRect。
+- 动画只更改 GPU 几何参数与 DOM transform/opacity。菜单内容的固定布局提前建立，不逐帧改变文档流宽高。
+- 背景静止时不重复重画/上传。变化的视频源由调用方按实际帧调度。
+- 页面隐藏/卸载时取消自己的 rAF、媒体查询监听、ResizeObserver 与指针状态；destroy 清理 GL 资源。
+- WebGL context lost 时停用光学输出，显示基础/实底控件；恢复后重新上传来源，不能继续显示 stale 纹理。
+
+## 3. 低性能与辅助功能
+
+先降分辨率与区域，再减少采样/透镜数量；如果最终关闭位移采样，必须把能力级别标为基础降级。不要静默把 optical 改成 blur 后仍宣称相同效果。
+
+减少动态：直接设置最终几何，保留静态折射；减少透明度/强制颜色：用实底控件。触摸拖动是明确交互，可以更新位置；不要把无目的的触摸高光追踪与用户主动拖动混为一谈。
+
+## 4. 录制
+
+记录设备、浏览器版本、viewport、DPR、来源类型与透镜数量；比较光学开/关、拖动、展开、滚动/背景更新。Chrome/Safari 录制绘制/合成与长帧，原生使用 Instruments，Flutter/RN 使用目标平台工具。
+
+报告实际结果；只截静态图不能声称高帧率，桌面通过不能代替低端手机真机。发现资源恢复或尺寸变化问题时先修正确性，再调参数。

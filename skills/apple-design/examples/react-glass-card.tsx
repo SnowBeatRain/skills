@@ -1,5 +1,7 @@
 'use client';
 
+// BASIC compatibility example: frosted material and pointer highlight, no optical refraction.
+
 import { forwardRef, useCallback, useEffect, useState, type ComponentPropsWithoutRef, type ForwardedRef } from 'react';
 import '../assets/liquid-glass.css';
 import '../assets/liquid-glass.js';

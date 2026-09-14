@@ -7,7 +7,7 @@
 | 文档 | 适合什么时候读 | 内容 |
 |------|----------------|------|
 | [`skill-patterns.md`](skill-patterns.md) | 你要新增、拆分、重构或审查 Skill 时 | Skill 目录组织、frontmatter 描述、渐进式披露、脚本/参考资料使用方式、质量门禁 |
-| [`apple-design` 实现说明](../skills/apple-design/LIQUID_GLASS_AUDIT.md) | 维护 Apple 风格与 Liquid Glass 资源时 | 中性配色、三档 Tokens、示例入口、同步与校验方式、验证边界 |
+| [`apple-design` 实现说明](../skills/apple-design/LIQUID_GLASS_AUDIT.md) | 维护 Apple 风格与 Liquid Glass 资源时 | 官方定义、光学与基础路线、验收截图、来源哈希、独立复制与验证边界 |
 
 ## 常用维护流程
 
@@ -66,10 +66,12 @@ git diff --check
 修改 `apple-design` 时，另外执行其示例校验。命令从仓库根目录运行：
 
 ```bash
-node skills/apple-design/scripts/validate.mjs skills/apple-design/examples/card.html skills/apple-design/examples/navbar.html skills/apple-design/examples/modal.html skills/apple-design/examples/react-glass-card.tsx skills/apple-design/examples/liquid-glass-demo.html skills/apple-design/examples/liquid-glass-comparison.html
+node skills/apple-design/scripts/validate.test.mjs
+node skills/apple-design/scripts/validate.mjs --profile optical --evidence skills/apple-design/references/qa/optical.json skills/apple-design/examples/optical-reference.html
+node skills/apple-design/scripts/validate.mjs --profile basic skills/apple-design/examples/card.html skills/apple-design/examples/navbar.html skills/apple-design/examples/modal.html skills/apple-design/examples/react-glass-card.tsx skills/apple-design/examples/liquid-glass-demo.html skills/apple-design/examples/liquid-glass-comparison.html
 ```
 
-修改 `assets/tokens.json` 后先运行 `node skills/apple-design/scripts/validate.mjs --sync-tokens`，不要手改 CSS 自动生成的令牌区。检查默认背景是否保持中性灰阶；实测强度切换、键盘焦点和降级行为，不能仅凭静态规则声称可访问性通过。会话自动生成的 `.claude/` 状态文件不属于 Skill 发布内容，暂存时按明确文件范围选择。
+修改 `assets/tokens.json` 后先运行 `node skills/apple-design/scripts/validate.mjs --sync-tokens`，不要手改 CSS 自动生成的令牌区。渲染/样式/来源代码变化后重新做相应视觉验收，更新截图与哈希；不能仅更新哈希沿用未经复查的 pass。基础模板不能通过 optical 验收。会话自动生成的 `.claude/` 状态文件不属于 Skill 发布内容，暂存与归档时按明确范围选择。
 
 ## 文档维护约定
 

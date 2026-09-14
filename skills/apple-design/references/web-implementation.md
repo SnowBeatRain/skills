@@ -1,124 +1,105 @@
-# Web 实现指南
+# Web：可复用光学路径与兼容路径
 
-## 1. 起步与文件
+## 1. 选择起点
 
-`../assets/liquid-glass.css` 是完整且唯一的样式实现，避免在文档复制另一套易失配 CSS。`../assets/tokens.json` 是材质令牌源；修改后运行 `node scripts/validate.mjs --sync-tokens` 同步 CSS 令牌区，再校验。
+明确要求 Liquid Glass 时从 [optical-reference.html](../examples/optical-reference.html) 开始。它展示同背景折射开/关、拖动透镜、导航选中态连续移动、按钮展开为面板，以及基础/实底/减少动态模式。
+
+复制该 HTML 及 `../assets/liquid-glass-optics.js`、`../assets/liquid-glass-optics.css`、`../assets/liquid-glass.css`，保留相对关系即可运行；本地 Canvas 背景无需联网或 CORS。`tokens.json` 与本包校验资源应随 Skill 一起保留。
+
+基础 CSS/JS 示例只演示普通毛玻璃、组件生命周期与语义，不含折射。不以这些页面的静态通过作为 Liquid Glass 交付。
+
+## 2. 背景合同（不可省略）
+
+渲染器接受已加载的 Canvas、Image、ImageBitmap 或 Video 纹理。它按 cover 方式绘制这个来源，并在透镜边缘重采样**同一份像素**。
+
+- 网页/图片由应用拥有且允许采样：可使用此渲染器。
+- 图片/视频跨域：服务端必须提供正确 CORS，图片在加载前设置 crossOrigin；上传失败会明确退到 fallback。不要替换无关图片假装继续透出真实内容。
+- 背景是任意 DOM：本渲染器不能捕捉它。先决定是否将所需背景渲染为可控画布/媒体，保持交互与文字的语义 DOM；无法接受该合同则说明限制。
+- 图片已变化、视频已有新帧或受控内容重绘：调用 setSource 更新纹理，按实际变化安排渲染；静止时不循环上传。
+- 源图和页面显示内容须一致；位置、cover 裁切、缩放、DPR 均需对照检查。复制纹理错位不是折射。
+
+## 3. 最小接入
 
 ```html
-<!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Liquid Glass</title>
-  <link rel="stylesheet" href="../assets/liquid-glass.css">
-</head>
-<body class="lg-demo lg-demo--center">
-  <article class="lg-surface lg-surface--medium lg-radius--lg lg-card">
-    <div class="lg-surface__content">
-      <h1>液态玻璃卡片</h1>
-      <p>在柔和背景上保留清晰内容。</p>
-    </div>
-  </article>
-  <script src="../assets/liquid-glass.js" data-lg-auto="true" defer></script>
-</body>
-</html>
+<link rel="stylesheet" href="assets/liquid-glass-optics.css">
+<div id="scene" class="lg-optical-scene" style="height: 400px">
+  <canvas id="source" aria-hidden="true"></canvas>
+  <canvas id="optics" class="lg-optical-output" aria-hidden="true"></canvas>
+  <button class="lg-optical-control" type="button"
+    style="left: 24px; top: 24px; width: 180px; height: 60px; border-radius: 30px">
+    <span class="lg-optical-backplate" aria-hidden="true"></span>
+    <span class="lg-optical-label">打开工具</span>
+  </button>
+</div>
+<script src="assets/liquid-glass-optics.js"></script>
 ```
 
-此结构按 examples 目录的位置引用资源。复制进项目时一并复制 assets 并调整路径。五份 HTML 示例无外部图片或包依赖，支持直接 file:// 打开；更完整的本地调试可在 Skill 根运行 `python -m http.server 8765 --bind 127.0.0.1`，访问 `/examples/liquid-glass-demo.html`。TSX 必须经 React 构建，见 React 指南。
-
-## 2. 分层与组件形态
-
-`.lg-surface` 承载 blur + saturate、渐变、边框、inset 与外阴影，`::before` 径向高光，`::after` 一次扫光，`.lg-surface__content` 的 z-index 最高。使用 isolation；伪元素 inset 为 0、自带 radius，组件不依赖 overflow:hidden 裁切后代焦点或下拉菜单。
-
-| 组件 | 组合与语义 |
-|---|---|
-| card | article / section + lg-card + medium |
-| button | 原生 button + lg-button + strong；内容用 span.lg-surface__content |
-| navbar | nav + lg-navbar + medium；默认浮动圆角、sticky；lg-navbar--edge 才允许 0px |
-| tabbar | nav + lg-tabbar + strong，保留底部安全区；导航链接不要伪装成 ARIA tabs |
-| modal | dialog + lg-modal + medium，通过 showModal 打开，见 modal.html |
-| sheet | dialog/语义容器 + lg-sheet，定位和开合按实际任务实现 |
-| sidebar | aside + lg-sidebar + subtle，列表项用普通内容 |
-| tooltip | lg-tooltip + subtle；由触发器 aria-describedby 关联，焦点与 Escape 可关闭 |
-| segmented | lg-segmented；表单用 radio，开关用 aria-pressed，真正分页再用 tabs 键盘模式 |
-
-不要让 `.lg-button { border:none }` 覆盖亮边。所有交互内容都在内容层内。不要在每个滚动列表项上加 backdrop-filter。
-
-## 3. Tokens 与背景
-
-默认 medium 为 24px、180%、背景 α .14、边框 α .35；半径 md 24px / lg 32px；外阴影 md `0 20px 50px rgba(0,0,0,.22)`。颜色、间距、高光与时长通过 `--lg-*` 读取。
-
-`.lg-demo` 默认采用中性灰阶：浅色纸白/浅灰，深色炭灰/石墨灰，通过低对比度明暗渐变提供可透内容。无彩色光球、多色渐变或循环背景动画。“必须有背景内容”不要求彩色；不要因为生成玻璃 UI 就主动换成大红大紫大蓝底色。图片/视频只在用户或业务需要时使用获准素材，并测试其明暗极值；视频应有 poster 与停止播放策略。保留用户的纯色或品牌选择，必要时说明材质可见度取舍。
-
-readable 遮罩保护文字：浅色白 α .56、深色中性炭灰 α .80，不能把最终合成背景误称为纯 .14 的透明层。若调整它，应重新估算整个高光周期的最坏对比度。
-
-[强度切换演示](../examples/liquid-glass-demo.html) 使用原生 radio 控制预览卡片的强度类，保留键盘方向键和 checked 状态；桌面可比三档，移动端仍遵守性能降级。减少透明度开关使用 `.lg-opaque`。导航保持链接语义；可操作按钮有真实反馈，说明卡片不伪装成按钮。[材质对比](../examples/liquid-glass-comparison.html) 展示实底与玻璃各自适用的情境，实底卡片不是错误实现。
-
-## 4. JS 接口与生命周期
-
-资源是经典脚本，同时可由 ESM 副作用导入。**没有命名 ESM exports**，不要写 `import { initLiquidGlass } ...`。
+下面的 JavaScript 需与上面 HTML 一起使用。产品按钮应接实际动作；完整交互参考示例。
 
 ```js
-import './assets/liquid-glass.js';
-
-const stop = globalThis.LiquidGlass.initLiquidGlass(document.querySelector('main'));
-// DOM 替换或页面卸载时：
-stop();
+const scene = document.querySelector('#scene');
+const source = document.querySelector('#source');
+const canvas = document.querySelector('#optics');
+source.width = 800;
+source.height = 400;
+const ctx = source.getContext('2d');
+const theme = getComputedStyle(document.documentElement);
+ctx.fillStyle = theme.getPropertyValue('--lg-optics-scene');
+ctx.fillRect(0, 0, 800, 400);
+ctx.strokeStyle = theme.getPropertyValue('--lg-optics-contour');
+for (let x = 0; x < 800; x += 32) {
+  ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 400); ctx.stroke();
+}
+const renderer = LiquidGlassOptics.createRenderer(canvas, {
+  source,
+  onStatus({ mode, reason }) {
+    scene.dataset.renderer = mode;
+    // 产品中展示所选能力级别；reason 留给诊断，不声称 fallback 有折射。
+  },
+});
+const lenses = [{ x: 24, y: 24, width: 180, height: 60, radius: 30 }];
+const observer = new ResizeObserver(() => {
+  renderer.resize(scene.clientWidth, scene.clientHeight);
+  renderer.render(lenses);
+});
+observer.observe(scene);
+// 组件卸载时：observer.disconnect(); renderer.destroy();
 ```
 
-| API | 行为 |
+脚本支持经典 script 与 ESM 副作用 import，接口在 `globalThis.LiquidGlassOptics`；没有命名 ESM exports。模块顶层无 document/window 访问，可在 SSR 工程导入，实际创建实例放在客户端挂载阶段。
+
+## 4. 接口
+
+| 接口 | 合同 |
 |---|---|
-| attachLiquidGlass(element) | 绑定单节点，返回幂等 cleanup；多持有者计数，避免互相拆监听 |
-| initLiquidGlass(root) | 包含 root 自身及其已有后代，返回 cleanup |
-| observeLiquidGlass(root) | 监听子树增删；移除节点及时清理；stop 包括后加节点 |
+| createRenderer(canvas, { source, maxDpr, onStatus }) | 创建隔离实例，默认 DPR 上限 1.5。status.mode 为 webgl / fallback / destroyed |
+| resize(width, height) | CSS 像素尺寸，布局变化时调用；会更新绘制缓冲 |
+| render(lenses, { refraction, light }) | 一次渲染；不创建永久 rAF。最多 4 个不重叠透镜，目标 ≤3 |
+| setSource(source) | 上传新纹理并重绘；可在来源恢复后重试初始化 |
+| destroy() | 幂等清理 GL 资源与上下文监听；调用方还须清理自身事件/计时器/观察器 |
 
-框架优先单节点绑定，避免全局观察器重复扫描。经典脚本只有 `data-lg-auto="true"` 才自动初始化；副作用 import 没有自动 DOM 扫描。
+每个透镜：`{x,y,width,height,radius,refraction,blur,tint}`，x/y 是相对画布左上角的 CSS 坐标。默认 refraction=15px、blur=1.2px、tint=.045 是可观察的近似配方；radius 限制在短边一半内。DOM 控件必须与其几何对齐。
 
-- 细指针桌面：enter/move 激活；事件只记录坐标，rAF 合并写入绘制变量。
-- 触摸/粗指针：仅 pointerdown 定位，600ms 后清除；pointermove 不持续追踪，不 preventDefault 滚动。
-- 矩形在首次刷新读取，滚动/窗口与元素尺寸变化时失效；若宿主动画主动改变位置，在交互开始前重新绑定或关闭该场景跟踪。
-- leave、cancel、窗口失焦、偏好 change：取消 rAF/计时器并移除 active 与变量。
-- 禁用：框架 interactive=false，或 `data-lg-interactive="false"`；低端模式在根设 `.lg-reduced`；不透明开关 `.lg-opaque`。不要把 hardwareConcurrency 当精确设备分级。
+这不是自动采样 DOM、自动测量控件、原生 Regular/Clear 引擎或自动玻璃融合库。不要省略这些范围说明。
 
-更改 CSS 渐变变量仍可能触发 paint，rAF 并不意味着只用 GPU；它避免事件内反复读写和布局属性变更，不保证零渲染成本。
+## 5. 连续变化与输入
 
-## 5. 降级代码
+参考示例用可收敛弹簧插值参数，选中态在同一纹理上移动，按钮展开成更大面板。不要在动画中替换静态背景截图。
 
-下列规则已在资源中。深浅 Token 由主题级联配置，所以改变底色时文字仍正确。
+DOM 交互使用原生按钮、aria-expanded、inert/hidden。指针拖动用 pointer capture；pointerup/cancel/lostcapture 均释放；方向键提供移动替代。弹性只是非必要反馈，reduce-motion 时直接应用最终几何。
 
-```css
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .lg-surface { background: var(--lg-fallback); border-color: var(--lg-fallback-border); }
-}
-@media (prefers-reduced-transparency: reduce) {
-  .lg-surface { background: var(--lg-solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .lg-surface::before, .lg-surface::after { display: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .lg-surface, .lg-surface::before, .lg-surface::after { transition: none !important; animation: none !important; }
-  .lg-surface::before, .lg-surface::after { display: none; }
-  .lg-button:active:not(:disabled) { transform: none; }
-}
-```
+用 ResizeObserver 更新缓存坐标与纹理尺寸。不要在每个 pointermove 中交替读布局和写文档流尺寸；渲染器本身不逐帧读取 DOM 矩形。
 
-`rgba(255,255,255,.92)` 仍有透明度；要满足真正不透明的要求，使用 solid Token。减少透明度媒体查询支持存在差异，应用内开关作为补充。强制颜色、深色、移动端、低性能规则见完整 CSS 与 [无障碍](accessibility.md)。
+## 6. 降级
 
-## 6. 验证与差异
+`onStatus` 必须接入：WebGL 创建、着色器编译、纹理上传或上下文异常会返回 fallback。CSS 支持声明通过不代表 GPU 光学路径可用。背景源仍可见、真实 DOM 控件仍可操作；状态须明确为基础毛玻璃。
 
-```sh
-node scripts/validate.mjs examples/card.html examples/navbar.html examples/modal.html examples/react-glass-card.tsx
-node scripts/validate.mjs examples/liquid-glass-demo.html examples/liquid-glass-comparison.html
-```
+`prefers-reduced-transparency` 与 forced-colors 隐藏光学画布，显示实底控件；应用内可用 `data-effects="solid"` 做同样处理。减少动态的 JS 条件必须同步停止弹簧/光反馈，CSS 媒体查询不能暂停 WebGL 动画。
 
-校验器递归读取相对 CSS/JS/import，支持 CSS 变量，并检查引用、常见配方和经典脚本语法；非完整 CSS/HTML/TSX 解析器，存在候选样式而未应用时可能通过。TSX 另外执行 tsc/构建；实际对比度、层数、主题级联、触摸、键盘和帧率需运行检查。不要把静态结果当成完整无障碍认证。
+基础资源仍提供 `@supports not`、减少透明度/动态和强制颜色规则；它们证明的是降级覆盖，不是光学完成。
 
-| 特性 | Apple 系统材质 | 本 Web 配方 |
-|---|---|---|
-| 模糊/饱和 | 系统处理 | CSS 近似 |
-| 边缘位移折射 | 系统渲染 | 不提供 |
-| 内容自适应色调 | 系统处理 | 仅手动主题/遮罩 |
-| 玻璃融合与流体形变 | 原生容器与动画 | 不提供 |
-| 光源响应 | 系统交互 | 径向高光与一次淡入淡出模拟 |
+## 7. 验收
 
-本 Web 端无法复刻 Apple 官方折射效果。Canvas/WebGL 等仅在用户确需自绘渲染管线且接受成本时讨论，不能承诺能通用折射任意 DOM。
+按 [visual-validation.md](visual-validation.md) 做折射 A/B、透光、形变、输入与降级检查。`--profile optical` 静态退出 0 之后仍会要求视觉验收；只有匹配当前代码版本的记录才能通过 evidence 检查。
+
+官方材质定义与能力区别见 [official-liquid-glass.md](official-liquid-glass.md)。不要将 Web shader 的圆角距离场与像素重采样描述为 Apple 官方光学算法。

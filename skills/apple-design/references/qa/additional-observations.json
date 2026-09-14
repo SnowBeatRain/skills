@@ -1,0 +1,15 @@
+{
+  "mobile": {
+    "height": 1100,
+    "mode": "webgl",
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "portable": {
+    "mode": "webgl",
+    "script": "../assets/liquid-glass-optics.js",
+    "scrollWidth": 2560,
+    "width": 2560,
+    "url": "http://127.0.0.1:8771/examples/optical-reference.html"
+  }
+}

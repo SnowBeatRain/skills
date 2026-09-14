@@ -1,144 +1,112 @@
 ---
 name: apple-design
-description: 基于 Apple 设计原则与人机界面指南（HIG）设计、实现和评审 App、网页与设计系统。用户提到“Apple 风格”“苹果风”“HIG”“人机界面指南”“iOS 设计”“SF 字体”“液态玻璃”“Liquid Glass”“液态屏幕”“苹果毛玻璃”“iOS 26 风格”“玻璃拟态”“glassmorphism”“玻璃卡片”“玻璃导航栏”“高光玻璃按钮”“玻璃弹窗”时使用。覆盖 HTML/CSS、React、Vue、SwiftUI、UIKit、Flutter、React Native；不用于 Liquid Retina 硬件屏幕参数。
+description: 基于 Apple 设计原则与 HIG 设计、实现和评审 App、网页与设计系统。用户提到“Apple 风格”“苹果风”“HIG”“人机界面指南”“iOS 设计”“SF 字体”“液态玻璃”“Liquid Glass”“液态屏幕”“苹果毛玻璃”“iOS 26 风格”“玻璃拟态”“glassmorphism”“玻璃卡片”“玻璃导航栏”“高光玻璃按钮”“玻璃弹窗”时使用。覆盖 HTML/CSS、React、Vue、SwiftUI、UIKit、Flutter、React Native；不用于 Liquid Retina 硬件屏幕参数。
 ---
 
-# Apple Design（Apple 设计风格与思想）
+# Apple Design
 
-用 Apple 的设计语言做界面设计：**目标感、能动性、责任感、熟悉感、灵活、简洁、匠心、愉悦感** 八大原则为判断依据，HIG（人机界面指南）为基础与组件规范，产出干净、克制、层级清晰、内容至上的设计。
+以内容、层级、交互和平台惯例为基础，产出简约、素净、可操作的界面。**Apple 风格页面、普通毛玻璃与 Liquid Glass 是不同交付目标，必须先识别目标。**
 
-## 工作流（每次设计都按此推进）
+## 通用工作流
 
-1. **明确意图**：一句话说清产品用途与目标用户；确定主任务和最重要的功能（目标感）。
-2. **定信息架构**：内容优先，建立清晰层级——用户随时知道"我在哪、能做什么"（简洁·层级）。
-3. **视觉设计**：按 `references/design-system.md` 的设计令牌（色彩/字体/间距/材质/图标）落地；网页场景追加读 `references/web-adaptation.md`，可用 `assets/apple-web-template.css` 起步。
-   明确要求 Liquid Glass 时走下文专用流程，按平台读取参考；普通 Apple 页面不必全部玻璃化。
-4. **交互与反馈**：每个操作有明确反馈（加载/成功/失败/空状态）；允许撤销与返回（能动性）。
-5. **无障碍与适配**：动态字号、对比度、旁白/语义化、多输入方式、深色模式（灵活·责任感）。
-6. **自检**：用文末《设计自检清单》逐项核对后再交付。
+1. 明确产品用途、目标用户、主任务和现有技术栈；保留已有品牌与用户改动。
+2. 阅读 `references/design-system.md`；普通网页追加 `references/web-adaptation.md`，可复用 `assets/apple-web-template.css`。
+3. 建立信息层级，完成真实操作、空状态、错误与恢复路径，不以装饰替代功能。
+4. 检查语义、焦点、字号、深色、触摸和响应式；按交付目标验证真实效果。
 
-## 设计原则（判断一切的价值观）
+| 原则 | 判断依据 |
+|---|---|
+| 目标感 | 主任务清楚，功能确有用途 |
+| 能动性 | 可探索、返回、撤销和恢复 |
+| 责任感 | 意图透明，不伪造能力或结果 |
+| 熟悉感 | 平台惯例、用语与反馈一致 |
+| 灵活 | 多输入方式、辅助功能与环境适配 |
+| 简洁 | 信息层级清晰，删除无目的装饰 |
+| 匠心 | 细节、状态与真实运行经过检查 |
+| 愉悦感 | 适量反馈服务任务，不增加干扰 |
 
-| 原则 | 含义 | 落地要点 |
+默认黑白灰、留白和同色系明暗变化。**不主动添加大红大紫大蓝底色、多色光球、彩虹渐变、霓虹或循环背景动画。** 品牌色只在用户/品牌确有要求时使用。字体用系统栈，中文覆盖苹方和 Microsoft YaHei；布局沿用项目 spacing/radius Tokens。
+
+## Liquid Glass：先定义材质，再选技术
+
+“液态玻璃 / 液态屏幕”在此指 Apple 的 Liquid Glass 材质语言。必须先读 `references/official-liquid-glass.md` 与 `references/design-principles.md`。**不能仅凭 blur、白边和软阴影就声称实现了 Liquid Glass。**
+
+核心是四件事：
+
+1. **Lensing（透镜感）**：背景细节在材质边缘发生可见弯折，中央仍能辨认来源内容；白色描边不能代替折射。
+2. **连续运动**：触摸弹性、选择态移动、按钮展开为面板时保持同一块材质的连续性；相关状态通过几何变化衔接。
+3. **环境适应**：原生系统根据内容调整材质；Web 必须说明已实现的范围，用局部可读性措施和实际背景验证，不能假装具备系统级适应。
+4. **正确层级**：用于浮在内容之上的导航与功能控件。**不要把文章、表格、任务面板或整张内容卡片都玻璃化；避免玻璃叠玻璃。**
+
+官方语义材质为 **Regular / Clear**：默认 Regular；Clear 仅在富媒体背景、可接受必要压暗、前景文字/符号粗亮时采用。具体条件见官方参考。已有 subtle / medium / strong 是历史 Web 毛玻璃调参档位，不对应官方材质，也不是效果验收标准。
+
+## 实现路由与能力边界
+
+| 实际条件 | 路线 | 必须披露 |
 |---|---|---|
-| 目标感 | 创造有意义的产品 | 提供价值、保持专注、找到差异化新方法 |
-| 能动性 | 让用户随心所欲 | 不妨碍工作、允许自由探索、误操作可恢复 |
-| 责任感 | 以用户最佳利益为核心 | 意图透明、权限与数据最小化、保护隐私 |
-| 熟悉感 | 基于用户既有认知 | 用已知概念、全站一致、清晰反馈 |
-| 灵活 | 适应不同情境与需求 | 无障碍先行、保留情境、多输入方式、认真对待每个平台 |
-| 简洁 | 清晰直接 | 只留必要内容、措辞精简、层级一目了然 |
-| 匠心 | 重视每个细节 | 动画/措辞/空状态都打磨、原型迭代、持续维护 |
-| 愉悦感 | 融入人文关怀 | 明确情绪基调、创造决定性时刻、不让愉悦妨碍任务 |
+| Apple 原生 26+ 与相应 SDK | glassEffect / GlassEffectContainer / UIGlassEffect | 优先系统 API；仍测试自定义布局、颜色、动画与辅助功能 |
+| Web，背景是自己绘制或可加载的图片/Canvas | `assets/liquid-glass-optics.js` + `assets/liquid-glass-optics.css` | 对同一背景纹理做 WebGL 重采样，提供真实可见的近似折射；不是 Apple 渲染器 |
+| Web，背后是任意 DOM | 先确定能否把需要折射的背景变成受控渲染源；保留语义 DOM 控件 | 当前渲染器不能自动读取任意 DOM；不要放一张无关纹理冒充背景 |
+| WebGL/采样源不可用，或用户只要基础毛玻璃 | `assets/liquid-glass.css` + `assets/liquid-glass.js` | 明确标为**基础毛玻璃降级**，不能宣布理想 Liquid Glass 已完成 |
+| Flutter / React Native | 优先目标 SDK 的原生 Liquid Glass 桥接；否则自绘受控纹理或明确降级 | BackdropFilter / BlurView 单独使用不等于 Liquid Glass |
 
-## 核心设计系统（速查）
+平台未知时先读项目；无项目默认 Web 受控背景示例。只在背景来源、平台限制会改变结果时询问最小问题，不因例行选择重复确认。
 
-- **色彩**：默认简约、素净，以黑白灰和同色系明暗变化为主；已有品牌色优先保留，仅在关键操作或状态中适量使用强调色。不得为“AI 设计感”主动生成大红、大紫、大蓝的底色、多色渐变或发光色团。语义色和深色模式见 `references/design-system.md`，对比度满足 WCAG AA。
-- **字体**：SF Pro（西文）+ 苹方 PingFang SC（中文）；网页用 `-apple-system` 字体栈；正文 ≥ 常规重量，标题用加粗/大字重，不用纯颜色做唯一区分。
-- **间距与布局**：8pt 栅格；内容边距 iOS ≈16pt、macOS ≈20pt；安全区适配圆角/刘海/灵动岛。
-- **材质**：传达导航、控件、浮层的层级。Apple 原生优先系统 Liquid Glass；Web 用模糊 + 饱和 + 边缘高光近似。正文内容优先实底，避免整页玻璃化。
-- **图标**：语义化、几何统一、线条简洁；iOS 优先 SF Symbols，网页用同风格线性图标（1.5–2px 描边）。
-- **动效**：自然、克制、有原因（表达层级/状态变化）；时长 150–300ms，支持减弱动态效果。
+**不能承诺任意浏览器、任意背景都像 Apple。能保证的是路由明确、模板可复用、能力不足会暴露、验收未通过不会被标成完成。**
 
-## 交付形态指引
+## Web 首选起点
 
-- **App/界面设计稿**：输出结构描述 + 视觉规范（色值/字体/间距）+ 关键页面说明；如需要可视稿，用 HTML/CSS 还原高保真界面。
-- **网页设计**：直接产出可运行的 HTML（内联 CSS），遵循 `references/web-adaptation.md`，优先用 `assets/apple-web-template.css` 作为起点。
-- **设计评审**：对照《设计自检清单》逐条给出问题与修改建议，标注优先级。
+读 `references/web-implementation.md`，复制 [折射与形变基准](examples/optical-reference.html) 及其资源，先运行原样基准，再替换为目标产品。
 
-## 参考文件
+- `assets/liquid-glass-optics.js`：WebGL 透镜渲染器，输入受控背景与 CSS 像素坐标中的圆角矩形；实例隔离、清理、上下文恢复、失败状态。
+- `assets/liquid-glass-optics.css`：画布/真实 DOM 控件分层、基础与实底降级。
+- `assets/tokens.json`：保留配方来源；optics 与历史 intensity 分开，数值是起点而非 Apple 官方参数。
+- 背景必须与透镜采样源一致；先用灰阶网格、线条或文字暴露折射，再用产品内容复验。禁止用“改成彩色背景”掩盖材质缺失。
+- 不在整个透镜上叠加 56%/80% 等厚遮罩。需要保护文字时使用局部衬底、已验证前景或受控背景；整体不透明只用于明确降级。
+- DOM 内容保持清晰与可访问，不能对文字套 filter:blur；画布只承载材质。普通应用应默认使用真实 button/nav，而不是 Canvas 点击区域。
+- 连续几何变化只驱动渲染器参数与 transform/opacity；不要每帧改文档流尺寸。动画休止时停止 rAF，减少动态时直接切到目标几何。
+- 不默认采用 SVG backdrop URL 滤镜：CSS.supports 通过不证明浏览器实际执行；使用该路线必须做同背景折射开/关对照。
 
-- `references/design-system.md` — HIG 设计系统全量参考（色彩色值、字体字阶、间距、材质、组件、图标、无障碍）。**做任何视觉设计前先读。**
-- `references/web-adaptation.md` — Apple 风格网页适配（字体栈、CSS 令牌、布局、组件、示例代码）。**网页设计任务必读。**
-- `assets/apple-web-template.css` — 可直接复制的 Apple 风格 CSS 起点模板（令牌 + 基础组件）。
+## 验收门槛（不可用静态检查替代）
 
-## Liquid Glass 专用流程
+交付前读 `references/visual-validation.md`，按目标平台记录证据：
 
-本分支把“液态玻璃 / 液态屏幕 / Liquid Glass”解释为 WWDC25 随 iOS 26、macOS 26 引入的材质语言，不是 Liquid Retina 屏幕。用于 card、button、navbar、tabbar、modal、sheet、sidebar、tooltip、segmented；普通模糊效果用简版，其他视觉风格遵循用户要求。
-
-1. **平台**：沿用项目技术栈；未知时默认 HTML/CSS，说明默认，可在交付末尾询问其他平台需求，不阻塞实施。
-2. **背景**：检查玻璃背后的实际内容。优先真实页面内容或低对比度灰阶渐变、细微纹理；“有背景可透”不等于“必须彩色”。只有用户或品牌明确需要时才使用彩色图片/渐变，不默认添加光球、彩虹渐变或循环背景动画。用户坚持纯色时说明玻璃感会减弱，保留其选择。
-3. **强度与形态**：默认 medium；大容器 subtle，小控件 strong。同屏通常不超过两档。以下数值是本 Skill 的近似配方，**不是 Apple 官方参数**；不要求固定 60% 透明度、150% 饱和度。
-4. **分层**：页面背景 → 玻璃主体（模糊、饱和、边框、阴影）→ 装饰高光 → 不透明文字/图标。用 isolation 与内容层 z-index 隔离；高光不能遮挡点击或溢出圆角。
-5. **Tokens**：先读 `assets/tokens.json`；Web 复制 `assets/liquid-glass.css`。材质颜色、圆角、动效从令牌取值；适配现有品牌时修改令牌并记录，不散落魔法数字。
-6. **交互**：Web 复用 `assets/liquid-glass.js`；原生用系统 API。细指针按 rAF 更新绘制变量；触摸只在 pointerdown 定位一次；卸载清理监听、rAF、计时器和观察器。
-7. **降级**：按下面矩阵处理透明度、动态、能力、输入方式与主题；低端设备或移动端默认 subtle、避免嵌套、关闭持续跟踪。
-8. **验收**：运行静态校验，再检查真实背景、键盘与视觉状态。静态通过不能代表对比度、帧率或辅助技术通过。
-
-| 档位 | blur | saturate | 背景 α | 边框 α | 适用 |
-|---|---|---|---|---|---|
-| subtle | 12px | 140% | 0.08 | 0.20 | 大面积容器、侧栏 |
-| medium | 24px | 180% | 0.14 | 0.35 | 卡片、导航栏、弹窗 |
-| strong | 36px | 220% | 0.22 | 0.50 | 按钮、TabBar、浮动小控件 |
-
-### 强制约束
-
-- Web 模糊与饱和成对；常用 20–30px / 160–200%，三档具体值以 Tokens 为准。
-- 1px 半透明亮边、至少一条顶部 inset 高光、柔和外阴影；最多四组阴影，不堆五层以上模拟厚度。
-- 浮动容器圆角通常 20–32px，最小 16px；药丸与贴边导航（0px）是明确例外。SwiftUI 显式 continuous shape；Web radius 只是近似。
-- 正文对比度 ≥4.5:1，大字 ≥3:1；优先调整文字/实底遮罩，其次加深局部底色；不能只靠文字投影。可读性优先于通透度。
-- 玻璃嵌套最多 3 层、目标 1 层；同屏目标 ≤3 个、上限 5 个。禁止滚动列表逐项模糊。
-- 高光不修改布局属性；扫光一次 900ms，悬停 200ms，按压 120ms；不持续循环，不动画化 blur，不常驻 `will-change: backdrop-filter`。
-- 禁止用 `filter: blur()` 模糊组件内容，禁止霓虹、彩虹描边、过量发光、重投影。
-- 悬浮/按压反馈只用于真实可操作控件；装饰卡片不加假按钮手势。强度选择用原生 radio 或完整的单选语义；导航用真实链接，无对应面板与键盘行为时不要使用 tablist。
-- **Web 端无法复刻 Apple 官方折射效果**：本模板只近似模糊、饱和与高光，不含系统级边缘位移折射、背景自适应色调或玻璃流体融合。不得承诺像素级复刻。
-
-### 降级矩阵
-
-| 条件 | 必须处理 |
-|---|---|
-| `prefers-reduced-transparency: reduce` | 移除模糊与高光，提供真正不透明底色；同步文字颜色。可另提供应用内开关弥补浏览器支持差异 |
-| `prefers-reduced-motion: reduce` | 关闭扫光、跟踪、视差与按压缩放；保留静态顶部高光，JS 响应偏好运行时变化 |
-| 不支持标准/前缀 `backdrop-filter` | `@supports not` 改高不透明度纯色、提高边框可见度，同时修正文字色 |
-| 移动端 / 粗指针 / 低性能 | subtle、单层、无扫光和持续跟踪；触摸可做一次定位 |
-| 深色模式 | 背景 α 0.06、边框 α 0.18、加深柔和阴影；规则在强度类之后生效 |
-| Windows 强制颜色 | Canvas / CanvasText，移除模糊、装饰与阴影，保留焦点 |
-
-### 平台与资源路由（按需读取）
-
-| 场景 | 参考 |
-|---|---|
-| 视觉原理、层级、圆角与高光 | `references/design-principles.md` |
-| HTML/CSS、变体、背景、运行方式 | `references/web-implementation.md` |
-| React 组件与 useGlassHighlight | `references/react-implementation.md` |
-| Vue SFC 与 v-glass-highlight | `references/vue-implementation.md` |
-| SwiftUI 26+ glassEffect / GlassEffectContainer、旧版 Material、UIKit | `references/swiftui-implementation.md` |
-| Flutter BackdropFilter、装饰 ShaderMask 与降级 | `references/flutter-implementation.md` |
-| 性能预算与排查 | `references/performance.md` |
-| 对比度、焦点、弹窗、辅助技术 | `references/accessibility.md` |
-| React Native、能力矩阵与平台决策 | `references/platform-matrix.md` |
-
-可复制资源：`assets/tokens.json`、`assets/liquid-glass.css`、`assets/liquid-glass.js`。示例见 [卡片](examples/card.html)、[导航栏](examples/navbar.html)、[弹窗](examples/modal.html)、[强度切换演示](examples/liquid-glass-demo.html)、[材质对比](examples/liquid-glass-comparison.html)、[React](examples/react-glass-card.tsx)。五份 HTML 可直接打开；TSX 需 React 构建环境，不能作为 HTML 打开。
-
-校验入口：`scripts/validate.mjs`。在本 Skill 目录运行：
+- [ ] 折射开启/关闭的同位置对照：背景边缘细节实际发生位移。
+- [ ] 中央透光：看得出背景来源，不能只看到厚白/厚黑卡片。
+- [ ] 相关控件变化连续：选中态移动、按钮展开、输入反馈经过实际操作。
+- [ ] 文字对比度、键盘、焦点归还与输入取消正确。
+- [ ] 降低透明度、减少动态、能力不足时的状态可辨认且可操作。
+- [ ] 目标视口无溢出；性能、触摸与未测平台如实记录。
+- [ ] 截图/录制/结果与当前文件哈希对应；修改渲染代码后旧证据失效。
 
 ```sh
-node scripts/validate.mjs examples/card.html examples/navbar.html examples/modal.html examples/react-glass-card.tsx
-node scripts/validate.mjs examples/liquid-glass-demo.html examples/liquid-glass-comparison.html
+# 光学代码静态预检：退出 0 也只代表静态结果，仍须视觉验收
+node scripts/validate.mjs --profile optical examples/optical-reference.html
+# 同时核对对应版本的验收记录
+node scripts/validate.mjs --profile optical --evidence references/qa/optical.json examples/optical-reference.html
+# 历史毛玻璃模板只能按 basic 检查
+node scripts/validate.mjs --profile basic examples/card.html
 ```
 
-### Liquid Glass 交付契约
+**缺少折射/相关形变或视觉证据时，不得声称“已实现理想 Liquid Glass”。** 应继续修正；若平台条件确实阻断，说明当前降级级别和需要的背景/平台条件。不能自动给未执行项目打勾。
 
-实现任务交付六项，可简洁合并表述：①完整可运行代码与依赖/启动方式；②Token 档位与实际值；③高光触发和动效时长；④三类降级代码及深色处理；⑤以下自检结果；⑥与 Apple 官方效果的差异。评审/咨询只交付用户所需分析，不擅自创建代码。
+## 按需参考
 
-- [ ] 页面有实际可见的非纯色背景
-- [ ] blur 与 saturate 成对；亮边、顶部 inset 与柔和外阴影齐全
-- [ ] 圆角 ≥16px（贴边例外注明）；嵌套 ≤3、同屏 ≤5
-- [ ] 对比度附最坏情况采样/估算；未测项目标“待验证”，不伪造勾选
-- [ ] 减少透明度、减少动态、特性查询降级均可读
-- [ ] 深色、触摸、强制颜色与键盘焦点可用
-- [ ] 高光不写布局属性，离开/卸载/偏好改变时正确清理
-- [ ] 无霓虹、彩虹渐变、多重发光；已说明 Web 折射限制
-- [ ] 默认素净灰阶；使用彩色底色时有明确的用户要求或品牌依据
+| 内容 | 文件 |
+|---|---|
+| 官方定义、Regular/Clear、来源与更新时间 | `references/official-liquid-glass.md` |
+| 光学线索、素净背景与层级 | `references/design-principles.md` |
+| Web 渲染源合同、复用步骤和 fallback | `references/web-implementation.md` |
+| React / Vue 生命周期和组件接入 | `references/react-implementation.md`、`references/vue-implementation.md` |
+| SwiftUI / UIKit 原生与兼容 | `references/swiftui-implementation.md` |
+| Flutter 与跨平台选择 | `references/flutter-implementation.md`、`references/platform-matrix.md` |
+| 性能、辅助功能与视觉验收 | `references/performance.md`、`references/accessibility.md`、`references/visual-validation.md` |
+| 清单入口 | `references/liquid-glass-checklist.md` |
 
-`references/liquid-glass-checklist.md` 是检查入口；[实现说明与验证记录](LIQUID_GLASS_AUDIT.md) 记录配方选择、示例用途与验证边界。演示页统一使用三档 Tokens，不把任何 Web CSS 参数称为 Apple 官方规范。
+普通毛玻璃示例为 [卡片](examples/card.html)、[导航](examples/navbar.html)、[弹窗](examples/modal.html)、[参数切换](examples/liquid-glass-demo.html)、[实底对比](examples/liquid-glass-comparison.html)、[React 兼容示例](examples/react-glass-card.tsx)。它们保留作 basic 路线，不能作为光学交付的起点。
 
-## 设计自检清单（交付前逐项核对）
+## 交付契约
 
-**目标感**：用途一句话说清了吗？最重要功能是否被优先打磨？
-**能动性**：能自由探索、随时返回吗？误操作可撤销吗？
-**责任感**：权限/数据收集是否透明且最小化？
-**熟悉感**：是否用了用户已知的概念？视觉与交互全局一致吗？状态变化有反馈吗？
-**灵活**：动态字号、对比度、旁白/语义化达标吗？适配多设备与多输入方式吗？
-**简洁**：有没有可删的元素或文案？层级是否一眼可见？
-**匠心**：空状态/错误态/加载态打磨了吗？动效是否流畅自然？
-**愉悦感**：明确了想激发的情绪吗？有没有值得记住的决定性时刻？
+提供：①完整可运行代码/资源和启动方式；②所选原生/光学/降级路线与背景合同；③材质与动效参数；④降级代码；⑤真实视觉/交互证据及未测项；⑥与 Apple 原生的差异。普通咨询或评审只回答所需分析，不擅自生成代码。
+
+最后复查内容层级、主任务、恢复路径、可访问性与视觉一致性。已完成的普通功能不能替代材质目标的验收。

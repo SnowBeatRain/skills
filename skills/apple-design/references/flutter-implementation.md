@@ -1,5 +1,7 @@
 # Flutter 实现
 
+**本页 BackdropFilter 代码是 basic 标准毛玻璃降级，不包含 lensing，也不是理想 Liquid Glass 的交付模板。** 对 Liquid Glass 的明确要求，先核对项目原生桥接；自绘光学需要可采样背景与 shader，并按 [视觉验收](visual-validation.md) 验证。不能把单纯模糊组件放大成内容卡片来替代功能层材质。
+
 ## 1. 实现边界
 
 Flutter 的通用 BackdropFilter 方案是近似，不等于 Apple Liquid Glass。先按项目平台分支：若已有原生 iOS 26 材质桥接，优先复用；否则使用本配方并说明无边缘折射、自适应色调或流体融合。

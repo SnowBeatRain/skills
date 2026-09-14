@@ -2,7 +2,7 @@
 
 把 Apple 设计语言落到网页（HTML/CSS）。**做网页设计任务时必读**，并优先使用 `assets/apple-web-template.css` 作为起点。
 
-明确要求液态玻璃 / Liquid Glass 时，追加读 [专用 Web 实现](web-implementation.md)，使用 `../assets/liquid-glass.css` 与 `../assets/liquid-glass.js`。本文件保留通用 Apple 风格模板；两套类名分别为 `.nav/.modal` 与 `.lg-*`，不要在同一节点叠加材质。
+明确要求液态玻璃 / Liquid Glass 时，追加读 [专用 Web 实现](web-implementation.md)，从 `../examples/optical-reference.html` 与 `../assets/liquid-glass-optics.js` 起步。本文件和旧 `liquid-glass.css/js` 保留作标准毛玻璃模板，不是光学实现；不要混用材质层。
 
 **背景选择**：默认简约素净，以黑白灰和低对比度灰阶渐变、轻微纹理或真实内容表现透光；不要求彩色背景，不主动添加红紫蓝底色、多色光球或循环渐变。完全均匀的背景会减弱玻璃感，但应尊重用户选择。已有品牌强调色只用于必要操作/状态。
 

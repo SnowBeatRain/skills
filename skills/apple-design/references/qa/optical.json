@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "profile": "optical",
+  "renderer": "webgl",
+  "entry": "examples/optical-reference.html",
+  "files": {
+    "assets/liquid-glass-optics.css": "c1a739e1a1cdaaad71781304ac1047b56dd41e18e90f6363e069477e38347cfc",
+    "assets/liquid-glass-optics.js": "74a3f1681c0fa468af430dccb83372e89b2975b3266f7c098fb98b73fcdd3e13",
+    "assets/liquid-glass.css": "011b8c22958ea6c1eb0c4786b2e63bb23c48de921a5a8786adb463a179e18cd9",
+    "assets/tokens.json": "829738ded1353ea866caa23ccb736fad962a81b8d066dfb563c50107c2a75056",
+    "examples/optical-reference.html": "e18e657a98aced27d162507649da0149f24d6ce7bbfcf5326de6cf39d8fb5d27"
+  },
+  "testedAt": "2026-09-14T08:30:52.610Z",
+  "environment": {
+    "browser": "Chrome via connected browser runtime",
+    "width": 1280,
+    "height": 1040,
+    "source": "local origin-clean Canvas, fixed grayscale pattern",
+    "maxDpr": 1.5
+  },
+  "cases": [
+    {
+      "id": "lensing",
+      "status": "pass",
+      "notes": "同一位置/视口开启与关闭位移采样，网格在透镜边缘产生可见弯折。所测边缘带 9648 像素中有 1913 像素的最大通道差超过 4/255。统计只支持本次对照，不是美学评分。",
+      "evidence": [
+        "optical-on.png",
+        "optical-off.png",
+        "optical-comparison.png"
+      ]
+    },
+    {
+      "id": "transmission",
+      "status": "pass",
+      "notes": "透镜中央网格可辨认；拖动到同心轮廓区域后仍采样对应轮廓，没有替换背景或全区域厚遮罩。局部文字衬底只覆盖标签。",
+      "evidence": [
+        "optical-on.png",
+        "input-moved.png"
+      ]
+    },
+    {
+      "id": "morph",
+      "status": "pass",
+      "notes": "实际点击观察同一控件展开。DOM 中间几何 scale(0.989566,0.979214)，最终 scale(1,1)；导航平移观察到起终点之间的 translateX(23.2772px)。morph-during 截图采样已接近最终态，连续性证据同时来自实际操作与记录的中间几何。",
+      "evidence": [
+        "optical-on.png",
+        "morph-during.png",
+        "expanded.png"
+      ]
+    },
+    {
+      "id": "input",
+      "status": "pass",
+      "notes": "ArrowRight 将透镜 x 从 472.12 移到 488.12；鼠标拖动并释放后位置为 765,344，尺寸恢复 250×92。展开后 Tab 到 grid-toggle；Escape 关闭并回焦 menu-toggle。真实触摸设备未测。",
+      "evidence": [
+        "input-moved.png",
+        "expanded.png",
+        "mobile.png",
+        "portable.png"
+      ]
+    },
+    {
+      "id": "fallback",
+      "status": "pass",
+      "notes": "基础兼容模式销毁光学实例，状态明确显示未启用折射；实底模式显示不透明降级。控件仍存在并能切回光学。Node 单位测试另外覆盖无 WebGL 和着色器编译失败路径。",
+      "evidence": [
+        "fallback.png",
+        "solid.png"
+      ]
+    },
+    {
+      "id": "motion",
+      "status": "pass",
+      "notes": "应用内减少动态开启后，展开直接达到 translate(0px,0px) scale(1,1)，保留静态折射。该开关与系统查询采用同一 JS 决策路径；本轮没有实际切换 OS 辅助功能设置。",
+      "evidence": [
+        "reduced-motion.png"
+      ]
+    },
+    {
+      "id": "contrast",
+      "status": "pass",
+      "notes": "标签使用局部白色 alpha .56 衬底和 #1d1d1f 前景。以极端黑背板做简化 sRGB 合成的保守估算为约 5.19:1；在采集的网格/轮廓和展开态截图中标签清晰。未把该估算推广到任意外部图片/主题。",
+      "evidence": [
+        "optical-on.png",
+        "expanded.png",
+        "input-moved.png"
+      ]
+    }
+  ],
+  "untested": [
+    "Safari/Firefox、真实触摸设备、OS 辅助功能、强制颜色与读屏。",
+    "原生平台编译、跨域媒体、视频帧上传与目标硬件帧率。"
+  ],
+  "additionalChecks": {
+    "mobile": {
+      "height": 1100,
+      "mode": "webgl",
+      "scrollWidth": 390,
+      "width": 390
+    },
+    "portable": {
+      "mode": "webgl",
+      "script": "../assets/liquid-glass-optics.js",
+      "scrollWidth": 2560,
+      "width": 2560,
+      "url": "http://127.0.0.1:8771/examples/optical-reference.html"
+    }
+  }
+}

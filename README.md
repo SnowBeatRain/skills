@@ -27,7 +27,7 @@
 | [`stripe`](skills/stripe) | 你在构建、审查、升级、测试或排查 Stripe 集成 | Payments、Billing、Connect、Tax、Terminal、Webhooks、SDK/API 版本、风控、争议、报表和上线检查 |
 | [`design-system`](skills/design-system) | 你需要建立或更新设计系统、配色方案、字体选型、间距布局、组件规范、品牌视觉语言 | 配色系统、字体排版、间距/圆角/阴影、组件设计规范、品牌参考、设计令牌 |
 | [`design-ui-gallery`](skills/design-ui-gallery) | 你需要选择或探索 UI 视觉风格方向 | 9 种主流风格目录（Glassmorphism、Brutalism、Claymorphism 等）、落地页/Dashboard/移动端场景参考 |
-| [`apple-design`](skills/apple-design) | 你需要 Apple 风格、HIG 评审或 Liquid Glass 界面 | 简约素净的视觉规则、三档玻璃 Tokens、Web/React/Vue 资源、SwiftUI/UIKit/Flutter/React Native 路由、无障碍降级与示例校验 |
+| [`apple-design`](skills/apple-design) | 你需要 Apple 风格、HIG 评审或 Liquid Glass 界面 | 官方材质路由、受控背景 WebGL 折射、连续形变、语义控件、明确降级及绑定代码版本的视觉验收 |
 
 查看机器可读列表：
 
@@ -164,23 +164,24 @@ stripe
 
 加载 [`apple-design`](skills/apple-design/SKILL.md)。默认以黑白灰、留白和低对比度明暗变化为主；保留已有品牌色，不主动生成艳丽红紫蓝底色、彩色光球或循环渐变。Liquid Glass 优先用于导航、控件与浮层，正文可保持实底。
 
-可直接打开的示例：
+首选 [折射与形变基准](skills/apple-design/examples/optical-reference.html)：拖动透镜、对比同背景折射开/关、展开控件、切换基础/实底/减少动态模式。背景来自本地 Canvas，复制完整 Skill 即可运行，无外部图片依赖。
 
-- [强度切换演示](skills/apple-design/examples/liquid-glass-demo.html)：三档材质、键盘可操作的单选控件、减少透明度开关。
-- [实底与玻璃对比](skills/apple-design/examples/liquid-glass-comparison.html)：比较各自适用场景。
-- [卡片](skills/apple-design/examples/card.html)、[导航栏](skills/apple-design/examples/navbar.html)、[弹窗](skills/apple-design/examples/modal.html)。
+该 WebGL 路线重采样同一受控背景，不能自动捕获任意 DOM，也不是 Apple 原生渲染器。原生平台优先系统 API。详见 [背景合同](skills/apple-design/references/web-implementation.md) 与 [官方定义](skills/apple-design/references/official-liquid-glass.md)。
 
-HTML 无外部图片或包依赖，保留相对路径即可本地打开。React 示例是 TSX，需要 React/TypeScript 构建环境；平台接入见 [Web 指南](skills/apple-design/references/web-implementation.md) 与 [实现说明](skills/apple-design/LIQUID_GLASS_AUDIT.md)。Web 材质仅为近似，不能复刻 Apple 官方折射。
+[卡片](skills/apple-design/examples/card.html)、[导航](skills/apple-design/examples/navbar.html)、[弹窗](skills/apple-design/examples/modal.html)、[三档参数](skills/apple-design/examples/liquid-glass-demo.html)、[材质对比](skills/apple-design/examples/liquid-glass-comparison.html) 与旧 React 示例保留为 **basic 基础毛玻璃**；这些示例不含透镜折射，不能作为 Liquid Glass 光学交付。
 
-修改 Tokens 后同步样式，再检查所有示例：
+运行和验收：
 
 ```bash
 cd skills/apple-design
 node scripts/validate.mjs --sync-tokens
-node scripts/validate.mjs examples/card.html examples/navbar.html examples/modal.html examples/react-glass-card.tsx examples/liquid-glass-demo.html examples/liquid-glass-comparison.html
+node scripts/validate.test.mjs
+node scripts/validate.mjs --profile optical examples/optical-reference.html
+node scripts/validate.mjs --profile optical --evidence references/qa/optical.json examples/optical-reference.html
+node scripts/validate.mjs --profile basic examples/card.html examples/navbar.html examples/modal.html examples/react-glass-card.tsx examples/liquid-glass-demo.html examples/liquid-glass-comparison.html
 ```
 
-校验器支持相对资源引用和 CSS 变量；静态通过不代表对比度、原生编译或真机性能通过。
+没有视觉记录时，optical 静态预检明确返回 `NEEDS_VISUAL_QA`。验收记录核对截图、用例与代码哈希，代码变化会让旧证据失效；脚本不会代替看图。检查流程和未测边界见 [视觉验收](skills/apple-design/references/visual-validation.md) 与 [实现记录](skills/apple-design/LIQUID_GLASS_AUDIT.md)。
 
 ## 每个 Skill 里面有什么
 

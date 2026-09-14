@@ -4,6 +4,8 @@
 
 iOS / macOS 26+、相应 SDK 支持时优先官方 Liquid Glass；不要把 Material 手绘冒充官方材质。系统负责真实材质渲染、背景适应与容器融合，Web Tokens 只映射布局尺度，不用于覆盖系统模糊内部参数。
 
+先按 [官方定义](official-liquid-glass.md) 选 Regular/Clear 与使用位置：导航/功能控件可使用，文章、任务、普通内容卡片不应套玻璃。避免父工具栏与子按钮各加一层完整玻璃。
+
 以下 SwiftUI 示例面向 iOS 15+ / macOS 12+，使用包含 26 API 的 SDK 构建。`#available` 是运行时判断，**不能让旧 SDK 编译它不认识的符号**；旧 SDK 项目只采用兼容分支，或升级工具链后再接原生 API。
 
 ## 2. iOS 26+ 官方用法
@@ -12,14 +14,15 @@ iOS / macOS 26+、相应 SDK 支持时优先官方 Liquid Glass；不要把 Mate
 import SwiftUI
 
 @available(iOS 26.0, macOS 26.0, *)
-struct GlassCard: View {
+struct GlassToolbar: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("标题").font(.headline)
-            Text("内容").font(.subheadline).foregroundStyle(.secondary)
+        HStack(spacing: 20) {
+            Button("查找", systemImage: "magnifyingglass") { }
+            Button("收藏", systemImage: "bookmark") { }
         }
-        .padding(24)
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .buttonStyle(.plain)
+        .padding(16)
+        .glassEffect(.regular, in: Capsule())
     }
 }
 
@@ -80,14 +83,15 @@ struct AdaptiveGlass<Content: View>: View {
     }
 }
 
-struct CompatGlassCard: View {
+struct CompatGlassToolbar: View {
     var body: some View {
         AdaptiveGlass {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("标题").font(.headline)
-                Text("内容").font(.subheadline)
+            HStack(spacing: 12) {
+                Button("查找") { }
+                Button("收藏") { }
             }
-            .padding(24)
+            .buttonStyle(.plain)
+            .padding(16)
             .foregroundStyle(.primary)
         }
     }

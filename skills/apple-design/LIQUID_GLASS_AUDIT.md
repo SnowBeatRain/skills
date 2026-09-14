@@ -1,71 +1,48 @@
-# Liquid Glass 实现说明与验证记录
+# Liquid Glass v2：实现与验收记录
 
-本 Skill 在原有 Apple/HIG 指引中加入 Liquid Glass 路由、三档 Tokens、跨平台参考、可复制资源和示例校验。默认风格是简约、素净；材质通过明暗层次呈现，不依赖艳丽底色。
+本次修订针对旧版“规则齐全但像厚白卡片”的问题。默认继续素净灰阶，主路线改为官方材质定义、受控背景光学重采样和真实视觉验收。
 
-## 设计依据
+## 改正的判断
 
-- 用户确定采用 subtle / medium / strong 三档配方，替代此前固定 60% / 150% 的要求。
-- 用户提供的 HTML 可借鉴强度选择、悬浮导航、指针高光与按压反馈；不采用彩色光球、彩虹徽标、发光圆点、背景循环动画或全页玻璃堆叠。
-- “玻璃背后需要内容”不等于“背景必须彩色”。默认浅色纸白/浅灰、深色炭灰/石墨灰；已有品牌色用于必要操作或状态。
-- 仅真正可操作的元素带按钮语义与按压反馈；强度选择采用原生 radio，导航采用真实链接。实底内容不是错误设计。
-- 这些 Web 数值是项目配方，不是 Apple 官方参数。旧版报告中“完全符合官方规范”“必须 60% / 150%”等结论已撤回。
+- blur、白边、阴影和三档 intensity 只属于基础毛玻璃配方，不能定义 Liquid Glass。
+- 官方材质以 Regular/Clear 及其语义场景区分；核心包括 lensing、连续运动、环境适应与功能层级。
+- 整张文章、任务或普通内容卡片不应当作 Liquid Glass。导航/功能控件浮在内容上方，不玻璃叠玻璃。
+- 删除“整个透镜必须覆盖厚白/黑遮罩”的默认要求；只在必要的前景区域做可读性处理。
+- “Web 无法做到 Apple 系统级一致”不能成为交付完全没有折射的效果的理由。可控纹理的实际重采样已提供，任意 DOM 采样仍不在能力范围内。
 
-## 资源与示例
+## 可直接复用的资源
 
-| 路径 | 用途 |
+| 资源 | 用途 |
 |---|---|
-| [SKILL.md](SKILL.md) | 触发条件、平台路由、视觉约束与交付要求 |
-| [tokens.json](assets/tokens.json) | 材质强度、圆角、高光、动效与中性背景的唯一令牌源 |
-| [liquid-glass.css](assets/liquid-glass.css) | 组件形态、内容分层、主题与辅助功能降级 |
-| [liquid-glass.js](assets/liquid-glass.js) | 指针/触摸高光、动态偏好与生命周期清理 |
-| [强度切换演示](examples/liquid-glass-demo.html) | 原生单选、预览卡片、透明度开关和收藏反馈 |
-| [材质对比](examples/liquid-glass-comparison.html) | 同背景下比较实底与玻璃的适用场景 |
-| [卡片](examples/card.html) / [导航](examples/navbar.html) / [弹窗](examples/modal.html) | 最小可运行 HTML |
-| [React 示例](examples/react-glass-card.tsx) | 组件、Hook、语义标签与类型声明；需构建环境 |
-| [校验器](scripts/validate.mjs) | 相对引用、Token 同步、样式候选与经典脚本语法检查 |
+| [官方定义](references/official-liquid-glass.md) | 官方来源、语义材质与使用层级 |
+| [光学渲染器](assets/liquid-glass-optics.js) | WebGL 纹理重采样、圆角透镜、局部边缘光学、失败与清理 |
+| [光学样式](assets/liquid-glass-optics.css) | 画布/语义 DOM 分层及基础/实底降级 |
+| [光学基准](examples/optical-reference.html) | A/B、拖动、方向键、导航移动、按钮展开、降级开关 |
+| [视觉流程](references/visual-validation.md) | 必查用例、截图条件、哈希记录与未测说明 |
+| [脚本](scripts/validate.mjs) / [回归测试](scripts/validate.test.mjs) | basic/optical 分级、依赖和证据完整性检查 |
 
-五份 HTML 可直接本地打开，资源引用无需联网。React 和 Vue 的接入、SSR 与类型要求分别见 [React](references/react-implementation.md)、[Vue](references/vue-implementation.md)。Apple 原生优先系统 API，见 [SwiftUI/UIKit](references/swiftui-implementation.md)。
+旧 CSS/JS 与六个基础入口保留为 basic。它们的历史交互检查不构成光学证据。未把工作区外的个人工作台 Demo 作为 Skill 的光学起点。
 
-通用 `assets/apple-web-template.css` 保留原有 `.nav/.modal` 等项目样式；明确请求 Liquid Glass 时使用 `.lg-*` 资源。不要在同一个节点混用两套材质参数。
+## 当前基准的证据
 
-## 校验与维护
+2026-09-14，在 Chrome、1280×1040 视口完成基准检查。可查看 [折射开/关局部对照](references/qa/optical-comparison.png)、[开启](references/qa/optical-on.png)、[关闭](references/qa/optical-off.png)、[展开态](references/qa/expanded.png)、[移动到轮廓背景](references/qa/input-moved.png) 和 [基础降级](references/qa/fallback.png)。
 
-在 Skill 目录执行：
+同位置 A/B 在所测透镜的边缘带中，有 1913 / 9648 个像素的最大 RGB 通道差超过 4/255，平均最大通道差约 4.651/255。该数值只证明此基准对照存在局部变化；结合截图里的网格弯折判断折射，不能作为所有设计的美学评分。
 
-```sh
-node scripts/validate.mjs --sync-tokens
-node scripts/validate.mjs examples/card.html examples/navbar.html examples/modal.html examples/react-glass-card.tsx examples/liquid-glass-demo.html examples/liquid-glass-comparison.html
-```
+按钮展开过程中观察到中间几何 `scale(0.989566, 0.979214)`，最终为 `scale(1,1)`；导航选择态也观察到起终点之间的平移。减少动态开关启用后直接进入目标几何。Escape 回焦触发器，Tab 到展开内容；方向键与鼠标拖动可改变透镜位置。
 
-`--sync-tokens` 只用于修改 JSON 后更新 CSS 令牌区。仓库级检查从仓库根目录执行：
+[optical.json](references/qa/optical.json) 记录截图与当前源码哈希，[observations.json](references/qa/observations.json) 保留观察到的 DOM 几何，[ab-metrics.json](references/qa/ab-metrics.json) 保留 A/B 统计。验证器核对完整性，不自动判断图像是否好看。
 
-```sh
-npm run validate
-npm run test:validate
-git diff --check
-```
+回归测试 8 项通过，覆盖 basic 不能通过 optical、CSS 引用、SSR 导入、无 GPU/编译失败、非法尺寸、过期证据与跨 cwd 调用。React Hook 与 Vue SFC 接入代码分别通过 TypeScript 5.9.3 和 vue-tsc 检查；这是类型证据，不是 React/Vue 版本的浏览器视觉验收。
 
-浏览器检查应覆盖桌面与窄屏、强度单选的鼠标/键盘切换、减少透明度、收藏反馈、弹窗 Escape 与焦点归还。非交互卡片不添加按压伪反馈；新页面限制玻璃数量，正文不逐项叠加模糊。
+完整 Skill 已复制到独立临时目录，并从其父目录运行验收记录检查及 8 项回归测试，均通过。归档解压后的副本又在独立 HTTP 根目录运行，Chrome 输出 webgl，引用为包内相对资源；[副本截图](references/qa/portable.png) 与 [390px 窄屏截图](references/qa/mobile.png) 已保存。窄屏没有页面横向溢出，展开控件可操作。它不依赖工作区绝对路径、外部 Demo 或宿主会话文件。
 
-## 证据边界
+## 验证边界
 
-2026-09-14 本轮验证：
-
-| 检查 | 结果 |
-|---|---|
-| 仓库 Skill 校验 | 11 个 Skill 通过 |
-| 仓库校验器回归测试 | 6 项通过 |
-| 本包 5 个 HTML + 1 个 TSX 的静态预检 | 0 错误、0 警告；两份旧演示已统一配方与降级 |
-| Skill frontmatter 与本地文档链接 | 通过 |
-| 临时 DOM 验证 | SSR 导入、rAF 合并、触摸单次定位、动态偏好、观察器增删与清理通过 |
-| 校验器临时失败用例 | 缺饱和、错误 filter:blur、缺动态降级、断资源引用均被拦截 |
-| Chrome 桌面与 390px 演示 | 强度鼠标/方向键切换、减少透明度、收藏反馈通过；390px 实际降为 12px / 140%，无页面横向溢出 |
-| 简化最坏对比度估算 | 浅色 5.19:1、深色 5.26:1；不等同于逐像素采样 |
-
-React/Vue 模板的类型检查已在前一轮完成，当前调整未改变这些组件的逻辑。临时 DOM 用例使用隔离工具目录，不属于交付包的标准测试命令。
-
-- 静态校验会递归读取相对 CSS/JS/import，并识别 CSS 变量；它不是完整 CSS/HTML/TSX 编译器，也不证明实际级联、读屏或帧率。
-- 正文对比度依据前景和最终合成背景评估，当前保守估算与算法见 [无障碍](references/accessibility.md)；修改遮罩或文字色后重新计算。
-- TypeScript/Vue 类型检查、浏览器行为检查、原生编译和真机性能是不同证据，不能相互替代。
-- 本轮没有 Xcode、Flutter 或 React Native 真机构建证据；VoiceOver/NVDA 与完整强制颜色模式测试也不能由静态结果代替。
-- Web 实现不含 Apple 官方的实时边缘折射、内容色调自适应或玻璃流体融合。
+- 本轮有实际 Chrome WebGL 输出和控制交互；无 Safari/Firefox、真实移动设备或原生 Xcode/Flutter/RN 编译结论。
+- 窄屏检查是桌面 Chrome 的 390×1100 视口；没有把它等同于真实触摸设备或其他移动浏览器测试。
+- 减少动态/透明度测试包含应用内开关；没有把它等同于完整 OS 辅助功能、强制颜色或读屏测试。
+- label 的局部衬底/前景在简化极端合成下估算约 5.19:1；不是任意主题/视频的逐像素认证。
+- 纹理来源是本地 Canvas，未把本例当作跨域媒体或任意 DOM 的验证。
+- 本 shader 不实现自动多玻璃流体融合或系统级色调适应；移动/展开是同一透镜几何的连续近似。
+- 静态检查、单位测试、视觉观察、可携带性和目标平台性能分别记录，不互相替代。

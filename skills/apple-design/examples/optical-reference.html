@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liquid Glass · 透镜与形变基准</title>
+  <link rel="stylesheet" href="../assets/liquid-glass-optics.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--lg-page-base-light); color: var(--lg-text-light); font: 16px/1.6 var(--lg-font); }
+    main { max-width: 1120px; margin: 48px auto; padding: 0 24px; }
+    h1 { font-size: 32px; line-height: 1.3; font-weight: 600; margin: 0 0 12px; }
+    p { margin: 0 0 18px; }
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; margin-bottom: 20px; }
+    .controls label { display: inline-flex; gap: 8px; align-items: center; min-height: 44px; cursor: pointer; }
+    input { accent-color: var(--lg-text-light); }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+    #scene { height: 600px; touch-action: pan-y; }
+    .tabs { top: 24px; left: 16px; height: 52px; display: grid; grid-template-columns: repeat(3, 1fr); z-index: 2; }
+    .tabs button { border: 0; background: transparent; padding: 6px; border-radius: var(--lg-radius-pill); font-size: 14px; }
+    .tabs button[aria-pressed="true"] { font-weight: 650; }
+    #tab-backplate { top: 24px; height: 52px; border-radius: var(--lg-radius-pill); }
+    #drag-lens { left: 0; top: 0; border: 0; padding: 0; background: transparent; border-radius: var(--lg-radius-pill); touch-action: none; user-select: none; }
+    #drag-lens .lg-optical-label { font-size: 14px; font-weight: 600; }
+    #menu-host { right: 20px; bottom: 32px; height: 230px; pointer-events: none; }
+    #menu-backplate { transform-origin: top left; border-radius: var(--lg-radius-lg); }
+    #menu-toggle { position: absolute; right: 0; bottom: 0; height: 62px; width: 190px; border: 0; border-radius: var(--lg-radius-pill); background: transparent; pointer-events: auto; }
+    #menu-toggle .lg-optical-label { font-size: 14px; font-weight: 600; }
+    #menu-content { position: absolute; left: 20px; top: 16px; right: 20px; opacity: 0; pointer-events: none; }
+    #menu-content button { width: 100%; display: block; text-align: left; padding: 9px 12px; min-height: 44px; border: 0; background: var(--lg-readable-light); border-radius: var(--lg-radius-sm); margin-bottom: 8px; font-size: 14px; }
+    #menu-content[data-visible="true"] { pointer-events: auto; }
+    .footnote { margin-top: 18px; font-size: 14px; }
+    details { font-size: 13px; margin-top: 18px; }
+    #renderer-status { font-size: 13px; }
+    #fallback-reason { overflow-wrap: anywhere; }
+    @media (max-width: 600px) { main { margin-block: 28px; padding-inline: 16px; } h1 { font-size: 26px; } #scene { height: 580px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>透过内容，看见材质。</h1>
+    <p>移动透明控件，观察它边缘的线条弯折；展开右下角的控件，观察同一块材质连续改变形状。</p>
+    <div class="controls">
+      <label><input id="refraction" type="checkbox" checked>开启折射</label>
+      <label><input id="solid" type="checkbox">减少透明效果</label>
+      <label><input id="reduce-motion" type="checkbox">减少动态效果</label>
+      <label><input id="compatibility" type="checkbox">基础兼容模式</label>
+      <output id="renderer-status" aria-live="polite">正在初始化材质…</output>
+    </div>
+    <div id="scene" class="lg-optical-scene" data-renderer="pending" data-lg-profile="optical">
+      <canvas id="source" aria-hidden="true"></canvas>
+      <canvas id="optics" class="lg-optical-output" aria-hidden="true"></canvas>
+      <div id="tab-backplate" class="lg-optical-control" aria-hidden="true"><div class="lg-optical-backplate"></div></div>
+      <nav class="tabs lg-optical-control" aria-label="透镜导航">
+        <button type="button" aria-pressed="true"><span class="lg-optical-label">概览</span></button>
+        <button type="button" aria-pressed="false"><span class="lg-optical-label">空间</span></button>
+        <button type="button" aria-pressed="false"><span class="lg-optical-label">收藏</span></button>
+      </nav>
+      <button id="drag-lens" class="lg-optical-control" type="button" aria-label="移动透镜，可拖动或使用方向键">
+        <span class="lg-optical-backplate" aria-hidden="true"></span>
+        <span class="lg-optical-label">拖动这块玻璃 ↔</span>
+      </button>
+      <div id="menu-host" class="lg-optical-control">
+        <div id="menu-backplate" class="lg-optical-backplate" aria-hidden="true"></div>
+        <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-content"><span class="lg-optical-label">展开控件 ＋</span></button>
+        <div id="menu-content" role="group" aria-label="展开的控件" inert hidden>
+          <button id="grid-toggle" type="button" aria-pressed="true">背景网格：显示</button>
+          <button id="reset-position" type="button">重置透镜位置</button>
+        </div>
+      </div>
+    </div>
+    <p class="footnote">配色保持灰阶。折射关闭时可直接对比：白边和半透明仍在，但背景线条不再发生透镜位移。</p>
+    <details><summary>实现和验收说明</summary><p>WebGL 读取同一受控背景纹理并重新采样，文字与操作仍使用真实 DOM。本示例不采样任意网页 DOM，不是 Apple 原生渲染器。当前来源是本地 Canvas，无网络依赖。</p><p id="fallback-reason"></p></details>
+  </main>
+  <script src="../assets/liquid-glass-optics.js"></script>
+  <script>
+    const scene = document.querySelector('#scene');
+    const source = document.querySelector('#source');
+    const canvas = document.querySelector('#optics');
+    const drag = document.querySelector('#drag-lens');
+    const menuHost = document.querySelector('#menu-host');
+    const menuPlate = document.querySelector('#menu-backplate');
+    const menuContent = document.querySelector('#menu-content');
+    const menuToggle = document.querySelector('#menu-toggle');
+    const tabs = document.querySelector('.tabs');
+    const tabPlate = document.querySelector('#tab-backplate');
+    const motion = matchMedia('(prefers-reduced-motion: reduce)');
+    const transparency = matchMedia('(prefers-reduced-transparency: reduce)');
+    const forced = matchMedia('(forced-colors: active)');
+    const tokens = getComputedStyle(document.documentElement);
+    const color = (name) => tokens.getPropertyValue(`--lg-optics-${name}`).trim();
+    const reduceMotion = () => motion.matches || document.querySelector('#reduce-motion').checked;
+    let width = 1, height = 1, menuWidth = 300, dragWidth = 250, slotWidth = 100;
+    let selected = 0, opened = false, grid = true, raf = 0, previousTime = 0, held = null;
+    let state = {}, target = {}, velocity = {};
+    let light = { x: -1000, y: -1000, intensity: 0 };
+    let renderer;
+    const status = () => {
+      const solid = transparency.matches || forced.matches || document.querySelector('#solid').checked;
+      scene.dataset.effects = solid ? 'solid' : 'normal';
+      const mode = renderer?.status.mode || scene.dataset.renderer;
+      document.querySelector('#renderer-status').textContent = solid ? '不透明降级' : mode !== 'webgl' ? '基础毛玻璃降级：未启用折射' : document.querySelector('#refraction').checked ? '已启用像素折射' : '折射关闭：对照模式';
+    };
+    const drawSource = () => {
+      source.width = Math.round(width * 1.5); source.height = Math.round(height * 1.5);
+      const ctx = source.getContext('2d'); ctx.setTransform(1.5, 0, 0, 1.5, 0, 0);
+      ctx.fillStyle = color('scene'); ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = color('paper'); ctx.fillRect(24, 100, width * 0.52, height - 150);
+      ctx.strokeStyle = color('contour'); ctx.lineWidth = 3;
+      const cx = width * .77, cy = height * .38;
+      for (let radius = 34; radius <= 180; radius += 26) { ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2); ctx.stroke(); }
+      ctx.fillStyle = color('ink'); ctx.font = `600 ${Math.min(70, width * .085)}px Georgia, serif`;
+      ctx.fillText('LIGHT', 40, height * .35); ctx.fillText('& SPACE', 40, height * .48);
+      ctx.font = '13px system-ui, sans-serif'; ctx.fillText('FORM / 01', 42, height - 86);
+      if (grid) {
+        ctx.strokeStyle = color('grid'); ctx.lineWidth = 1;
+        for (let x = 0; x < width; x += 32) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke(); }
+        for (let y = 0; y < height; y += 32) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke(); }
+      }
+    };
+    const render = () => {
+      drag.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.dragW / dragWidth}, ${state.dragH / 92})`;
+      tabPlate.style.transform = `translateX(${state.tabX}px) scaleX(${state.tabW / slotWidth})`;
+      const menuX = width - 20 - state.menuW, menuY = height - 32 - state.menuH;
+      menuPlate.style.transform = `translate(${menuWidth - state.menuW}px, ${230 - state.menuH}px) scale(${state.menuW / menuWidth}, ${state.menuH / 230})`;
+      const openness = Math.max(0, Math.min(1, (state.menuH - 100) / 120));
+      menuContent.style.opacity = String(openness);
+      menuContent.style.transform = `translateY(${(1 - openness) * 8}px)`;
+      if (!opened && state.menuH < 62.1) menuContent.hidden = true;
+      renderer?.render([
+        { x: state.tabX, y: 24, width: state.tabW, height: 52, radius: 26 },
+        { x: state.x, y: state.y, width: state.dragW, height: state.dragH, radius: state.dragH / 2 },
+        { x: menuX, y: menuY, width: state.menuW, height: state.menuH, radius: 31 }
+      ], { refraction: document.querySelector('#refraction').checked, light: reduceMotion() ? {} : light });
+    };
+    const frame = (now) => {
+      raf = 0;
+      const dt = Math.min(.025, Math.max(.001, (now - (previousTime || now - 16)) / 1000)); previousTime = now;
+      let moving = false;
+      for (const key of Object.keys(target)) {
+        velocity[key] ||= 0;
+        if (reduceMotion()) { state[key] = target[key]; velocity[key] = 0; continue; }
+        velocity[key] += ((target[key] - state[key]) * 260 - velocity[key] * 28) * dt;
+        state[key] += velocity[key] * dt;
+        if (Math.abs(target[key] - state[key]) > .05 || Math.abs(velocity[key]) > .05) moving = true;
+        else { state[key] = target[key]; velocity[key] = 0; }
+      }
+      render();
+      if (moving) raf = requestAnimationFrame(frame); else previousTime = 0;
+    };
+    const wake = () => { if (!raf) raf = requestAnimationFrame(frame); };
+    const resize = () => {
+      width = scene.clientWidth; height = scene.clientHeight;
+      menuWidth = Math.min(300, width - 40); dragWidth = Math.min(250, width - 64); slotWidth = Math.min(328, width - 32) / 3;
+      tabs.style.width = `${slotWidth * 3}px`; menuHost.style.width = `${menuWidth}px`;
+      drag.style.width = `${dragWidth}px`; drag.style.height = '92px'; tabPlate.style.width = `${slotWidth}px`;
+      target = { x: Math.max(16, width * .46 - dragWidth / 2), y: 216, dragW: dragWidth, dragH: 92, menuW: opened ? menuWidth : 190, menuH: opened ? 230 : 62, tabX: 16 + selected * slotWidth, tabW: slotWidth };
+      state = { ...target }; velocity = {};
+      drawSource();
+      if (!renderer) renderer = LiquidGlassOptics.createRenderer(canvas, { source, onStatus(value) { scene.dataset.renderer = value.mode; document.querySelector('#fallback-reason').textContent = value.reason; status(); } });
+      else renderer.setSource(source);
+      renderer.resize(width, height); status(); render();
+    };
+    const setOpen = (value, focus = false) => {
+      opened = value; target.menuW = value ? menuWidth : 190; target.menuH = value ? 230 : 62;
+      menuToggle.setAttribute('aria-expanded', String(value)); menuToggle.querySelector('span').textContent = value ? '收起控件 −' : '展开控件 ＋';
+      menuContent.inert = !value; menuContent.dataset.visible = String(value);
+      if (value) menuContent.hidden = false;
+      if (!value && focus) menuToggle.focus();
+      wake();
+    };
+    menuToggle.addEventListener('click', () => setOpen(!opened));
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && opened) setOpen(false, true); });
+    document.addEventListener('pointerdown', (event) => { if (opened && !menuHost.contains(event.target)) setOpen(false); });
+    tabs.querySelectorAll('button').forEach((button, index) => button.addEventListener('click', () => {
+      selected = index; target.tabX = 16 + index * slotWidth;
+      tabs.querySelectorAll('button').forEach((item) => item.setAttribute('aria-pressed', String(item === button))); wake();
+    }));
+    const clampPosition = (x, y) => { target.x = Math.max(12, Math.min(width - dragWidth - 12, x)); target.y = Math.max(96, Math.min(height - 110, y)); };
+    drag.addEventListener('pointerdown', (event) => {
+      const bounds = scene.getBoundingClientRect();
+      held = { id: event.pointerId, left: bounds.left, top: bounds.top, dx: event.clientX - bounds.left - state.x, dy: event.clientY - bounds.top - state.y };
+      drag.setPointerCapture(event.pointerId); target.dragW = dragWidth * 1.025; target.dragH = 89;
+      light = { x: event.clientX - bounds.left, y: event.clientY - bounds.top, intensity: 1 }; wake();
+    });
+    drag.addEventListener('pointermove', (event) => {
+      if (!held || held.id !== event.pointerId) return;
+      clampPosition(event.clientX - held.left - held.dx, event.clientY - held.top - held.dy);
+      light = { x: event.clientX - held.left, y: event.clientY - held.top, intensity: 1 }; wake();
+    });
+    const release = () => { held = null; target.dragW = dragWidth; target.dragH = 92; light.intensity = 0; wake(); };
+    drag.addEventListener('pointerup', release); drag.addEventListener('pointercancel', release); drag.addEventListener('lostpointercapture', release);
+    drag.addEventListener('keydown', (event) => {
+      const delta = { ArrowLeft: [-16,0], ArrowRight: [16,0], ArrowUp: [0,-16], ArrowDown: [0,16] }[event.key];
+      if (!delta) return; event.preventDefault(); clampPosition(target.x + delta[0], target.y + delta[1]); wake();
+    });
+    document.querySelector('#grid-toggle').addEventListener('click', (event) => { grid = !grid; event.target.setAttribute('aria-pressed', String(grid)); event.target.textContent = grid ? '背景网格：显示' : '背景网格：隐藏'; drawSource(); renderer.setSource(source); wake(); });
+    document.querySelector('#reset-position').addEventListener('click', () => { clampPosition(width * .46 - dragWidth / 2, 216); wake(); });
+    document.querySelector('#refraction').addEventListener('change', () => { status(); wake(); });
+    document.querySelector('#solid').addEventListener('change', () => { status(); wake(); });
+    document.querySelector('#reduce-motion').addEventListener('change', () => { light.intensity = 0; wake(); });
+    document.querySelector('#compatibility').addEventListener('change', (event) => {
+      if (event.target.checked) renderer.destroy();
+      else { renderer = null; resize(); }
+      status(); wake();
+    });
+    for (const query of [motion, transparency, forced]) query.addEventListener('change', () => { light.intensity = 0; status(); wake(); });
+    const observer = new ResizeObserver(resize); observer.observe(scene);
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); observer.disconnect(); renderer?.destroy(); });
+  </script>
+</body>
+</html>

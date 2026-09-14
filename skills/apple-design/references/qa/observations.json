@@ -1,0 +1,51 @@
+{
+  "geometry": {
+    "height": 1040,
+    "lens": {
+      "bottom": 517.1875,
+      "height": 92,
+      "left": 472.1199951171875,
+      "right": 722.1199645996094,
+      "top": 425.1875,
+      "width": 249.99996948242188,
+      "x": 472.1199951171875,
+      "y": 425.1875
+    },
+    "mode": "webgl",
+    "scene": {
+      "bottom": 809.1875,
+      "height": 600,
+      "left": 104,
+      "right": 1176,
+      "top": 209.1875,
+      "width": 1072,
+      "x": 104,
+      "y": 209.1875
+    },
+    "width": 1280
+  },
+  "morphSample": "transform: translate(3.13032px, 4.78085px) scale(0.989566, 0.979214);",
+  "expandedSample": "transform: translate(0px, 0px) scale(1, 1);",
+  "reducedSample": "transform: translate(0px, 0px) scale(1, 1);",
+  "keyboardGeometry": {
+    "bottom": 517.1875,
+    "height": 92,
+    "left": 488.1199951171875,
+    "right": 738.1199645996094,
+    "top": 425.1875,
+    "width": 249.99996948242188,
+    "x": 488.1199951171875,
+    "y": 425.1875
+  },
+  "inputGeometry": {
+    "bottom": 436,
+    "height": 92,
+    "left": 765,
+    "right": 1015,
+    "top": 344,
+    "width": 250,
+    "x": 765,
+    "y": 344
+  },
+  "navigationSample": "width: 109.333px; transform: translateX(23.2772px) scaleX(1);"
+}

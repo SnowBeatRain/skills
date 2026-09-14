@@ -1,5 +1,6 @@
 /*!
  * liquid-glass.js v1.0.0
+ * BASIC: standard frosted highlight only; no lensing/refraction.
  * 经典脚本：<script src="liquid-glass.js" data-lg-auto="true" defer></script>
  * ESM：import './liquid-glass.js'; globalThis.LiquidGlass.initLiquidGlass(root)
  * 无命名 ESM export，保证 file:// 示例可直接打开。框架中默认不自动扫描。

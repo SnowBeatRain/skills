@@ -1,68 +1,81 @@
-# React 实现
+# React：优先接入光学渲染器
 
-## 1. 完整可复制组件
+先读 [Web 背景合同](web-implementation.md)。明确要求 Liquid Glass 时，将原样 [光学基准](../examples/optical-reference.html) 的场景、几何与控制逻辑迁入 React，不从旧 GlassCard 组件开始。背景与原生 DOM 控件分层，shader 不参与 React state 的每帧重渲染。
 
-可运行源文件在 [react-glass-card.tsx](../examples/react-glass-card.tsx)，包含 `LiquidGlass`、`useGlassHighlight` 与默认演示组件，所有相对依赖都已提供。不要引用包中不存在的 `components/LiquidGlass` 或 hooks 文件。
+## 1. 资源与类型
 
-使用已有 React + TypeScript 构建项目（如 Vite），将 assets 与 examples 按原相对位置复制到 src，再在 App 导入：
-
-```tsx
-import GlassCardDemo from './examples/react-glass-card';
-
-export default function App() {
-  return <GlassCardDemo />;
-}
-```
-
-`.tsx` 不是网页，不能双击直接打开。HTML 三例可直接打开，React 示例需框架运行；不要对第四个示例作虚假承诺。若已有项目规定 CSS 只能在全局入口导入，将样式 import 移到入口，避免重复引入。
-
-Vite 项目保留 `vite/client` 类型；其他严格 TypeScript 项目需在已纳入 tsconfig 的环境声明中提供 `declare module '*.css';`，否则 CSS 副作用 import 会报缺少类型。验证时使用项目锁定的 TypeScript/框架版本，避免临时升级工具链。
-
-## 2. Props 与语义
-
-| 属性 | 类型/默认 | 用途 |
-|---|---|---|
-| intensity | subtle / medium / strong，medium | 材质配方 |
-| radius | sm / md / lg / xl / pill，md | 明确对应 CSS 圆角类 |
-| interactive | boolean，true | 是否绑定高光 |
-| as | div / section / nav / aside / button，div | 保留原生语义 |
-| ref | HTMLElement | 转发实际 DOM，可用于 focus |
-
-按钮使用独立的属性联合分支，允许 `type`、`disabled`、onClick；默认 type=button，内容包 span。容器包 div。不要把所有标签都断言为 HTMLDivElement，或在 button 里塞 div。
+复制 assets 中 optics.js、optics.css、liquid-glass.css 到项目；副作用导入 JavaScript，CSS 走项目全局入口。保留 vite/client 或 `declare module '*.css';` 声明。
 
 ```tsx
-import { LiquidGlass } from './examples/react-glass-card';
+import { useEffect, useRef } from 'react';
+import '../assets/liquid-glass-optics.js';
+import '../assets/liquid-glass-optics.css';
 
-export function SaveButton() {
-  return <LiquidGlass as="button" intensity="strong" radius="pill"
-    className="lg-button" onClick={() => window.alert('已保存')}>
-    保存
-  </LiquidGlass>;
+type Lens = { x: number; y: number; width: number; height: number; radius?: number; refraction?: number; blur?: number; tint?: number };
+type Renderer = {
+  resize(width: number, height: number): void;
+  render(lenses: Lens[], options?: { refraction?: boolean }): boolean;
+  destroy(): void;
+};
+declare global {
+  var LiquidGlassOptics: {
+    createRenderer(canvas: HTMLCanvasElement, options: {
+      source: HTMLCanvasElement;
+      onStatus(status: { mode: string; reason: string }): void;
+    }): Renderer;
+  };
 }
-```
 
-## 3. Hook 与清理
-
-组件以 callback ref 保存真实 HTMLElement，hook 的依赖是节点和 enabled，不只是稳定的 RefObject；这样切换 as、条件挂载与 StrictMode 重挂载都会正确解绑旧节点。
-
-```ts
-import { useEffect } from 'react';
-
-export function useGlassHighlight(element: HTMLElement | null, enabled = true) {
+export function useOpticalScene(
+  scene: HTMLDivElement | null,
+  canvas: HTMLCanvasElement | null,
+  source: HTMLCanvasElement | null,
+  lenses: Lens[],
+) {
+  const renderer = useRef<Renderer | null>(null);
+  const latest = useRef(lenses);
   useEffect(() => {
-    if (element && enabled) return globalThis.LiquidGlass.attachLiquidGlass(element);
-  }, [element, enabled]);
+    latest.current = lenses;
+    renderer.current?.render(lenses);
+  }, [lenses]);
+  useEffect(() => {
+    if (!scene || !canvas || !source) return;
+    const instance = LiquidGlassOptics.createRenderer(canvas, {
+      source,
+      onStatus({ mode }) { scene.dataset.renderer = mode; },
+    });
+    renderer.current = instance;
+    const update = () => {
+      instance.resize(scene.clientWidth, scene.clientHeight);
+      instance.render(latest.current);
+    };
+    const observer = new ResizeObserver(update);
+    observer.observe(scene);
+    update();
+    return () => {
+      observer.disconnect();
+      instance.destroy();
+      if (renderer.current === instance) renderer.current = null;
+    };
+  }, [scene, canvas, source]);
+  return renderer;
 }
 ```
 
-上段需与示例中的资源 import、全局类型声明一起使用。底层脚本已处理 rAF、pointerType、计时器、动态媒体查询、ResizeObserver 与引用计数；不要再复制第二套事件代码或额外 throttle。
+这是接入 Hook，需与完整基准的来源画布和语义控件一起使用。source 必须已绘制，不为 0×0；初始化在客户端完成。DOM callback ref 要把真实节点作为响应式依赖，不只依赖稳定 RefObject。SSR 时不要在 render/module 顶层创建 Canvas。
 
-## 4. SSR、性能与验收
+## 2. 组件合同
 
-- 模块顶层不访问 document/window；脚本副作用只注册接口，DOM 绑定在 useEffect 内执行。SSR 不产生监听。
-- Next 等环境中，交互组件属于客户端边界；保留示例的 `'use client'`，CSS 入口遵循项目约束。
-- 不为每个列表行渲染玻璃；必要的容器可 interactive=false。CSS 变量调整材质，避免动态样式库每帧产生新类名。
-- 验证按钮键盘/禁用态、ref focus、interactive 切换、as 切换、StrictMode、SSR 与卸载无残留。
-- 调用方函数 ref 的额外 React 19 cleanup 返回值不由此兼容封装转发；若依赖这种新用法，按目标 React 版本使用原生 ref-as-prop 实现并验证。普通 callback(null) 与 object ref 已支持。
+- 场景根 class 为 lg-optical-scene；输出 Canvas 用 lg-optical-output，且 aria-hidden=true。
+- 在输出层下保留可见来源画布/图片，用作失败时的真实背景；原生 button/nav 放上层。其 lg-optical-backplate 是基础/实底降级。
+- 使用 ref 保存动画几何，在实际过渡期间用 rAF 调 renderer.current.render；不要每帧 setState 整个内容页面。
+- React 选中态和 aria-expanded/aria-pressed 仍由 state 管理；只把绘制几何插值交给渲染层。
+- source 内容更新时调用实例 setSource；上面的最小类型可按 API 增补该方法。不能只重画源图而忘记刷新 GPU 纹理。
+- 运行时媒体查询变化须停止自己的动画；CSS 不能停止 Hook 内的 rAF。
+- StrictMode、节点替换、source 更换与组件卸载均需清理。不要使用全局单例 renderer 控制多个场景。
 
-强度、主题、降级、对比度和 Web 折射限制与 [Web 指南](web-implementation.md) 一致。
+## 3. 验证与兼容
+
+运行目标工程 TypeScript/构建，并按 [视觉验收](visual-validation.md) 在目标画布/内容上复验；原 HTML 的收据不自动覆盖 React 版本。
+
+[react-glass-card.tsx](../examples/react-glass-card.tsx) 和原 useGlassHighlight 保留为 **basic 普通毛玻璃** 兼容代码，处理 DOM 高光生命周期；它们没有透镜折射。若用户只需要这种效果可继续复用，但不要当成光学路线的默认组件。

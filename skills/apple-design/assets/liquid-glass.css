@@ -1,5 +1,5 @@
 /*!
- * liquid-glass.css v1.0.0 — Apple Liquid Glass 的 Web 近似实现。
+ * liquid-glass.css — 历史 BASIC 毛玻璃资源，不是光学 Liquid Glass 实现。
  * 页面须有图片/渐变/视频。结构：.lg-surface > .lg-surface__content。
  * 可选 liquid-glass.js 提供高光；不含官方边缘折射与内容自适应色调。
  * 下方令牌区由 node scripts/validate.mjs --sync-tokens 更新。
@@ -43,6 +43,12 @@
   --lg-dark-inset-top: inset 0 1px 0 rgba(255,255,255,0.28);
   --lg-dark-radial-color: rgba(255,255,255,0.20);
   --lg-dark-sweep-color: rgba(255,255,255,0.14);
+  --lg-optics-max-dpr: 1.5;
+  --lg-optics-max-visible-lenses: 3;
+  --lg-optics-edge-displacement: 15;
+  --lg-optics-regular-blur: 1.2;
+  --lg-optics-regular-tint: 0.045;
+  --lg-optics-radius: 30;
   --lg-white-rgb: 255,255,255;
   --lg-text-light: #1d1d1f;
   --lg-text-dark: #f5f5f7;
@@ -67,6 +73,11 @@
   --lg-page-highlight-dark: #363636;
   --lg-page-shade-dark: #111111;
   --lg-page-soft-dark: #242424;
+  --lg-optics-scene: #e7e7e7;
+  --lg-optics-paper: #f5f5f5;
+  --lg-optics-grid: #b5b5b5;
+  --lg-optics-contour: #7d7d7d;
+  --lg-optics-ink: #292929;
   --lg-space-1: 4px;
   --lg-space-2: 8px;
   --lg-space-3: 12px;

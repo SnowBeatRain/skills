@@ -2,6 +2,10 @@
 
 把 Apple 设计语言落到网页（HTML/CSS）。**做网页设计任务时必读**，并优先使用 `assets/apple-web-template.css` 作为起点。
 
+明确要求液态玻璃 / Liquid Glass 时，追加读 [专用 Web 实现](web-implementation.md)，使用 `../assets/liquid-glass.css` 与 `../assets/liquid-glass.js`。本文件保留通用 Apple 风格模板；两套类名分别为 `.nav/.modal` 与 `.lg-*`，不要在同一节点叠加材质。
+
+**背景选择**：默认简约素净，以黑白灰和低对比度灰阶渐变、轻微纹理或真实内容表现透光；不要求彩色背景，不主动添加红紫蓝底色、多色光球或循环渐变。完全均匀的背景会减弱玻璃感，但应尊重用户选择。已有品牌强调色只用于必要操作/状态。
+
 ## 目录
 
 1. [核心原则](#1-核心原则)
@@ -54,8 +58,9 @@
   --shadow-float: 0 4px 16px rgba(0,0,0,.12), 0 12px 40px rgba(0,0,0,.10);
 
   /* 毛玻璃 */
-  --glass: rgba(255,255,255,.65);
-  --glass-blur: blur(20px) saturate(180%);
+  --glass: rgba(255,255,255,.6);
+  --glass-blur: blur(20px) saturate(150%);
+  --glass-highlight: linear-gradient(180deg, rgba(255,255,255,.15) 0%, rgba(255,255,255,0) 50%);
 }
 ```
 
@@ -94,8 +99,9 @@
     --accent: #0A84FF;
     --success: #30D158; --danger: #FF453A; --warning: #FF9F0A;
     --fill: rgba(120,120,128,.24);
-    --glass: rgba(28,28,30,.65);
-    --shadow-card: 0 1px 3px rgba(0,0,0,.4);
+    --glass: rgba(28,28,30,.6);
+    --glass-highlight: linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 50%);
+    --shadow-card: 0 1px 2px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.4);
   }
 }
 ```

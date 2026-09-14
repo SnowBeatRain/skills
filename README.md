@@ -27,6 +27,7 @@
 | [`stripe`](skills/stripe) | 你在构建、审查、升级、测试或排查 Stripe 集成 | Payments、Billing、Connect、Tax、Terminal、Webhooks、SDK/API 版本、风控、争议、报表和上线检查 |
 | [`design-system`](skills/design-system) | 你需要建立或更新设计系统、配色方案、字体选型、间距布局、组件规范、品牌视觉语言 | 配色系统、字体排版、间距/圆角/阴影、组件设计规范、品牌参考、设计令牌 |
 | [`design-ui-gallery`](skills/design-ui-gallery) | 你需要选择或探索 UI 视觉风格方向 | 9 种主流风格目录（Glassmorphism、Brutalism、Claymorphism 等）、落地页/Dashboard/移动端场景参考 |
+| [`apple-design`](skills/apple-design) | 你需要 Apple 风格、HIG 评审或 Liquid Glass 界面 | 简约素净的视觉规则、三档玻璃 Tokens、Web/React/Vue 资源、SwiftUI/UIKit/Flutter/React Native 路由、无障碍降级与示例校验 |
 
 查看机器可读列表：
 
@@ -75,6 +76,7 @@ SKILL.md
 references/
 scripts/
 assets/
+examples/
 ```
 
 其中只有 `SKILL.md` 是必需文件；如果某个 Skill 带有 `references/` 等资料，也建议一起复制，否则 Agent 可能缺少详细背景。
@@ -158,6 +160,28 @@ sqlite-uniapp-uts
 stripe
 ```
 
+### 做 Apple 风格与 Liquid Glass 界面
+
+加载 [`apple-design`](skills/apple-design/SKILL.md)。默认以黑白灰、留白和低对比度明暗变化为主；保留已有品牌色，不主动生成艳丽红紫蓝底色、彩色光球或循环渐变。Liquid Glass 优先用于导航、控件与浮层，正文可保持实底。
+
+可直接打开的示例：
+
+- [强度切换演示](skills/apple-design/examples/liquid-glass-demo.html)：三档材质、键盘可操作的单选控件、减少透明度开关。
+- [实底与玻璃对比](skills/apple-design/examples/liquid-glass-comparison.html)：比较各自适用场景。
+- [卡片](skills/apple-design/examples/card.html)、[导航栏](skills/apple-design/examples/navbar.html)、[弹窗](skills/apple-design/examples/modal.html)。
+
+HTML 无外部图片或包依赖，保留相对路径即可本地打开。React 示例是 TSX，需要 React/TypeScript 构建环境；平台接入见 [Web 指南](skills/apple-design/references/web-implementation.md) 与 [实现说明](skills/apple-design/LIQUID_GLASS_AUDIT.md)。Web 材质仅为近似，不能复刻 Apple 官方折射。
+
+修改 Tokens 后同步样式，再检查所有示例：
+
+```bash
+cd skills/apple-design
+node scripts/validate.mjs --sync-tokens
+node scripts/validate.mjs examples/card.html examples/navbar.html examples/modal.html examples/react-glass-card.tsx examples/liquid-glass-demo.html examples/liquid-glass-comparison.html
+```
+
+校验器支持相对资源引用和 CSS 变量；静态通过不代表对比度、原生编译或真机性能通过。
+
 ## 每个 Skill 里面有什么
 
 一个标准 Skill 目录通常长这样：
@@ -167,7 +191,8 @@ skills/<skill-name>/
 ├── SKILL.md        # Agent 首先读取的说明：何时使用、怎么工作、如何验证
 ├── references/     # 可选：详细指南、API 说明、示例、平台规则
 ├── scripts/        # 可选：确定性辅助脚本
-└── assets/         # 可选：模板、静态资源、输出素材
+├── assets/         # 可选：模板、静态资源、输出素材
+└── examples/       # 可选：可运行示例或框架接入示例
 ```
 
 设计原则是：

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liquid Glass · 导航栏</title>
+  <link rel="stylesheet" href="../assets/liquid-glass.css">
+  <style>
+    .gallery { min-height: 110vh; }
+    .lg-navbar a { color: inherit; padding: var(--lg-space-3); }
+  </style>
+</head>
+<body class="lg-demo">
+  <nav class="lg-surface lg-surface--medium lg-navbar" aria-label="主导航">
+    <div class="lg-surface__content">
+      <strong>光影手记</strong>
+      <div class="lg-actions">
+        <a href="#collection" aria-current="page">精选</a>
+        <a href="#about">关于</a>
+      </div>
+    </div>
+  </nav>
+  <main class="lg-demo-main">
+    <section id="collection" class="gallery">
+      <article class="lg-surface lg-surface--subtle lg-card" data-lg-interactive="false">
+        <div class="lg-surface__content">
+          <h1>把日常，留在光里。</h1>
+          <p>向下滚动。导航始终停留在上方，背景从它身后经过。</p>
+          <p>周末散步 · 窗边的光 · 一段安静的旅程</p>
+        </div>
+      </article>
+    </section>
+    <section id="about" class="lg-surface lg-surface--subtle lg-card" data-lg-interactive="false">
+      <div class="lg-surface__content">
+        <h2>关于这本手记</h2>
+        <p>记录值得停留的小事。精选与关于链接均可用键盘访问。</p>
+      </div>
+    </section>
+  </main>
+  <script src="../assets/liquid-glass.js" data-lg-auto="true" defer></script>
+</body>
+</html>

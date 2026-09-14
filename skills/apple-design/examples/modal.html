@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liquid Glass · 弹窗</title>
+  <link rel="stylesheet" href="../assets/liquid-glass.css">
+  <style>
+    .dialog-choice { font: inherit; color: inherit; background: var(--lg-readable); border: 1px solid currentColor; border-radius: var(--lg-radius-sm); min-height: var(--lg-target-size); padding: var(--lg-space-2) var(--lg-space-4); cursor: pointer; }
+  </style>
+</head>
+<body class="lg-demo lg-demo--center">
+  <main>
+    <button id="open-modal" class="lg-surface lg-surface--strong lg-button" type="button">
+      <span class="lg-surface__content">开启专注时刻</span>
+    </button>
+    <p id="status" role="status" aria-live="polite"></p>
+  </main>
+  <dialog id="glass-dialog" class="lg-surface lg-surface--medium lg-modal" aria-labelledby="modal-title" aria-describedby="modal-description">
+    <form method="dialog" class="lg-surface__content">
+      <h1 id="modal-title">留一段时间，给自己。</h1>
+      <p id="modal-description">准备好开始一段安静的专注时刻了吗？</p>
+      <div class="lg-actions">
+        <button class="dialog-choice" value="cancel" autofocus>稍后再说</button>
+        <button class="dialog-choice" value="start">开始专注</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="../assets/liquid-glass.js" data-lg-auto="true" defer></script>
+  <script>
+    const dialog = document.querySelector('#glass-dialog');
+    const opener = document.querySelector('#open-modal');
+    const status = document.querySelector('#status');
+    opener.addEventListener('click', () => {
+      dialog.returnValue = '';
+      dialog.showModal();
+    });
+    dialog.addEventListener('close', () => {
+      status.textContent = dialog.returnValue === 'start' ? '专注时刻已开启。' : '随时可以回来。';
+      opener.focus();
+    });
+  </script>
+</body>
+</html>

@@ -6,7 +6,7 @@
 
 复制该 HTML 及 `../assets/liquid-glass-optics.js`、`../assets/liquid-glass-optics.css`、`../assets/liquid-glass.css`，保留相对关系即可运行；本地 Canvas 背景无需联网或 CORS。`tokens.json` 与本包校验资源应随 Skill 一起保留。
 
-基础 CSS/JS 示例只演示普通毛玻璃、组件生命周期与语义，不含折射。不以这些页面的静态通过作为 Liquid Glass 交付。
+正式案例仅保留这一份光学基准，基础与实底降级也在其中验证。共享 CSS/JS 仍提供 Tokens 和按需兼容能力，不另提供不含折射的展示案例作为起点。
 
 ## 2. 背景合同（不可省略）
 

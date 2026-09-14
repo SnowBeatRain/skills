@@ -13,4 +13,4 @@
 - [ ] 每个证据对应当前文件哈希；未测平台和帧率明确标未测。
 - [ ] 静态通过只记静态通过；未完成视觉验证不声称理想效果已实现。
 
-执行方式、截图条件与验收记录见 [visual-validation.md](visual-validation.md)。首选示例是 [optical-reference.html](../examples/optical-reference.html)；其余旧 CSS 卡片示例仅为 basic。
+执行方式、截图条件与验收记录见 [visual-validation.md](visual-validation.md)。唯一正式案例是 [optical-reference.html](../examples/optical-reference.html)，其中同时覆盖基础与实底降级。

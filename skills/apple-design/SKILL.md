@@ -84,8 +84,6 @@ description: 基于 Apple 设计原则与 HIG 设计、实现和评审 App、网
 node scripts/validate.mjs --profile optical examples/optical-reference.html
 # 同时核对对应版本的验收记录
 node scripts/validate.mjs --profile optical --evidence references/qa/optical.json examples/optical-reference.html
-# 历史毛玻璃模板只能按 basic 检查
-node scripts/validate.mjs --profile basic examples/card.html
 ```
 
 **缺少折射/相关形变或视觉证据时，不得声称“已实现理想 Liquid Glass”。** 应继续修正；若平台条件确实阻断，说明当前降级级别和需要的背景/平台条件。不能自动给未执行项目打勾。
@@ -103,7 +101,7 @@ node scripts/validate.mjs --profile basic examples/card.html
 | 性能、辅助功能与视觉验收 | `references/performance.md`、`references/accessibility.md`、`references/visual-validation.md` |
 | 清单入口 | `references/liquid-glass-checklist.md` |
 
-普通毛玻璃示例为 [卡片](examples/card.html)、[导航](examples/navbar.html)、[弹窗](examples/modal.html)、[参数切换](examples/liquid-glass-demo.html)、[实底对比](examples/liquid-glass-comparison.html)、[React 兼容示例](examples/react-glass-card.tsx)。它们保留作 basic 路线，不能作为光学交付的起点。
+正式案例只有 [折射与形变基准](examples/optical-reference.html)。基础毛玻璃、实底与减少动态模式在同一案例中验证；共享样式与兼容资源按需使用，不另设容易混淆的基础展示入口。
 
 ## 交付契约
 

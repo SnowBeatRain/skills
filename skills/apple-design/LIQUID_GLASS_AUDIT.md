@@ -21,7 +21,7 @@
 | [视觉流程](references/visual-validation.md) | 必查用例、截图条件、哈希记录与未测说明 |
 | [脚本](scripts/validate.mjs) / [回归测试](scripts/validate.test.mjs) | basic/optical 分级、依赖和证据完整性检查 |
 
-旧 CSS/JS 与六个基础入口保留为 basic。它们的历史交互检查不构成光学证据。未把工作区外的个人工作台 Demo 作为 Skill 的光学起点。
+正式案例仅保留 optical-reference.html，基础与实底降级在同一案例里验证。六个旧基础展示入口已从发布包移除；共享 CSS/JS 继续提供 Tokens 与按需兼容能力。防止 basic 冒充 optical 的回归测试改为临时生成最小样例，不依赖旧展示文件。
 
 ## 当前基准的证据
 

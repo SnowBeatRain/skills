@@ -20,7 +20,9 @@ test.after(() => {
 });
 
 test('ordinary frosted material cannot pass optical preflight', () => {
-  const basic = join(base, 'examples/card.html');
+  const basic = join(temp, 'basic.html');
+  writeFileSync(join(temp, 'basic.css'), readFileSync(join(base, 'assets/liquid-glass.css')));
+  writeFileSync(basic, '<!doctype html><html lang="en"><head><link rel="stylesheet" href="./basic.css"></head><body><button class="lg-surface">Basic test fixture</button></body></html>');
   assert.equal(preflight(basic, 'basic').errors.length, 0);
   assert(preflight(basic, 'optical').errors.some((s) => s.includes('WebGL')));
 });

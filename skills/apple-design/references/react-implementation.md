@@ -1,6 +1,6 @@
 # React：优先接入光学渲染器
 
-先读 [Web 背景合同](web-implementation.md)。明确要求 Liquid Glass 时，将原样 [光学基准](../examples/optical-reference.html) 的场景、几何与控制逻辑迁入 React，不从旧 GlassCard 组件开始。背景与原生 DOM 控件分层，shader 不参与 React state 的每帧重渲染。
+先读 [Web 背景合同](web-implementation.md)。明确要求 Liquid Glass 时，将原样 [光学基准](../examples/optical-reference.html) 的场景、几何与控制逻辑迁入 React。背景与原生 DOM 控件分层，shader 不参与 React state 的每帧重渲染。
 
 ## 1. 资源与类型
 
@@ -78,4 +78,4 @@ export function useOpticalScene(
 
 运行目标工程 TypeScript/构建，并按 [视觉验收](visual-validation.md) 在目标画布/内容上复验；原 HTML 的收据不自动覆盖 React 版本。
 
-[react-glass-card.tsx](../examples/react-glass-card.tsx) 和原 useGlassHighlight 保留为 **basic 普通毛玻璃** 兼容代码，处理 DOM 高光生命周期；它们没有透镜折射。若用户只需要这种效果可继续复用，但不要当成光学路线的默认组件。
+基础与实底降级使用光学场景里的 backplate，沿用同一套语义控件。若项目明确只需要普通毛玻璃，可按需复用基础资源；它们没有透镜折射，不能替代光学路线的验收。

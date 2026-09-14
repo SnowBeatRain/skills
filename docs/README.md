@@ -68,7 +68,6 @@ git diff --check
 ```bash
 node skills/apple-design/scripts/validate.test.mjs
 node skills/apple-design/scripts/validate.mjs --profile optical --evidence skills/apple-design/references/qa/optical.json skills/apple-design/examples/optical-reference.html
-node skills/apple-design/scripts/validate.mjs --profile basic skills/apple-design/examples/card.html skills/apple-design/examples/navbar.html skills/apple-design/examples/modal.html skills/apple-design/examples/react-glass-card.tsx skills/apple-design/examples/liquid-glass-demo.html skills/apple-design/examples/liquid-glass-comparison.html
 ```
 
 修改 `assets/tokens.json` 后先运行 `node skills/apple-design/scripts/validate.mjs --sync-tokens`，不要手改 CSS 自动生成的令牌区。渲染/样式/来源代码变化后重新做相应视觉验收，更新截图与哈希；不能仅更新哈希沿用未经复查的 pass。基础模板不能通过 optical 验收。会话自动生成的 `.claude/` 状态文件不属于 Skill 发布内容，暂存与归档时按明确范围选择。

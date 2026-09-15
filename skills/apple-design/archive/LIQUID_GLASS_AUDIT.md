@@ -1,3 +1,5 @@
+> 历史记录：以下描述对应 2026-09-14 的实现与验收，不作为当前执行指引。
+
 # Liquid Glass v2：实现与验收记录
 
 本次修订针对旧版“规则齐全但像厚白卡片”的问题。默认继续素净灰阶，主路线改为官方材质定义、受控背景光学重采样和真实视觉验收。
@@ -14,28 +16,28 @@
 
 | 资源 | 用途 |
 |---|---|
-| [官方定义](references/official-liquid-glass.md) | 官方来源、语义材质与使用层级 |
-| [光学渲染器](assets/liquid-glass-optics.js) | WebGL 纹理重采样、圆角透镜、局部边缘光学、失败与清理 |
-| [光学样式](assets/liquid-glass-optics.css) | 画布/语义 DOM 分层及基础/实底降级 |
-| [光学基准](examples/optical-reference.html) | A/B、拖动、方向键、导航移动、按钮展开、降级开关 |
-| [视觉流程](references/visual-validation.md) | 必查用例、截图条件、哈希记录与未测说明 |
-| [脚本](scripts/validate.mjs) / [回归测试](scripts/validate.test.mjs) | basic/optical 分级、依赖和证据完整性检查 |
+| [官方定义](../references/official-liquid-glass.md) | 官方来源、语义材质与使用层级 |
+| [光学渲染器](../assets/liquid-glass-optics.js) | WebGL 纹理重采样、圆角透镜、局部边缘光学、失败与清理 |
+| [光学样式](../assets/liquid-glass-optics.css) | 画布/语义 DOM 分层及基础/实底降级 |
+| [光学基准](../examples/optical-reference.html) | A/B、拖动、方向键、导航移动、按钮展开、降级开关 |
+| [视觉流程](../references/visual-validation.md) | 必查用例、截图条件、哈希记录与未测说明 |
+| [脚本](../scripts/validate.mjs) / [回归测试](../scripts/validate.test.mjs) | basic/optical 分级、依赖和证据完整性检查 |
 
 正式案例仅保留 optical-reference.html，基础与实底降级在同一案例里验证。六个旧基础展示入口已从发布包移除；共享 CSS/JS 继续提供 Tokens 与按需兼容能力。防止 basic 冒充 optical 的回归测试改为临时生成最小样例，不依赖旧展示文件。
 
 ## 当前基准的证据
 
-2026-09-14，在 Chrome、1280×1040 视口完成基准检查。可查看 [折射开/关局部对照](references/qa/optical-comparison.png)、[开启](references/qa/optical-on.png)、[关闭](references/qa/optical-off.png)、[展开态](references/qa/expanded.png)、[移动到轮廓背景](references/qa/input-moved.png) 和 [基础降级](references/qa/fallback.png)。
+2026-09-14，在 Chrome、1280×1040 视口完成基准检查。可查看 [折射开/关局部对照](../references/qa/optical-comparison.png)、[开启](../references/qa/optical-on.png)、[关闭](../references/qa/optical-off.png)、[展开态](../references/qa/expanded.png)、[移动到轮廓背景](../references/qa/input-moved.png) 和 [基础降级](../references/qa/fallback.png)。
 
 同位置 A/B 在所测透镜的边缘带中，有 1913 / 9648 个像素的最大 RGB 通道差超过 4/255，平均最大通道差约 4.651/255。该数值只证明此基准对照存在局部变化；结合截图里的网格弯折判断折射，不能作为所有设计的美学评分。
 
 按钮展开过程中观察到中间几何 `scale(0.989566, 0.979214)`，最终为 `scale(1,1)`；导航选择态也观察到起终点之间的平移。减少动态开关启用后直接进入目标几何。Escape 回焦触发器，Tab 到展开内容；方向键与鼠标拖动可改变透镜位置。
 
-[optical.json](references/qa/optical.json) 记录截图与当前源码哈希，[observations.json](references/qa/observations.json) 保留观察到的 DOM 几何，[ab-metrics.json](references/qa/ab-metrics.json) 保留 A/B 统计。验证器核对完整性，不自动判断图像是否好看。
+[optical.json](../references/qa/optical.json) 记录截图与当前源码哈希，[observations.json](../references/qa/observations.json) 保留观察到的 DOM 几何，[ab-metrics.json](../references/qa/ab-metrics.json) 保留 A/B 统计。验证器核对完整性，不自动判断图像是否好看。
 
 回归测试 8 项通过，覆盖 basic 不能通过 optical、CSS 引用、SSR 导入、无 GPU/编译失败、非法尺寸、过期证据与跨 cwd 调用。React Hook 与 Vue SFC 接入代码分别通过 TypeScript 5.9.3 和 vue-tsc 检查；这是类型证据，不是 React/Vue 版本的浏览器视觉验收。
 
-完整 Skill 已复制到独立临时目录，并从其父目录运行验收记录检查及 8 项回归测试，均通过。归档解压后的副本又在独立 HTTP 根目录运行，Chrome 输出 webgl，引用为包内相对资源；[副本截图](references/qa/portable.png) 与 [390px 窄屏截图](references/qa/mobile.png) 已保存。窄屏没有页面横向溢出，展开控件可操作。它不依赖工作区绝对路径、外部 Demo 或宿主会话文件。
+完整 Skill 已复制到独立临时目录，并从其父目录运行验收记录检查及 8 项回归测试，均通过。归档解压后的副本又在独立 HTTP 根目录运行，Chrome 输出 webgl，引用为包内相对资源；[副本截图](../references/qa/portable.png) 与 [390px 窄屏截图](../references/qa/mobile.png) 已保存。窄屏没有页面横向溢出，展开控件可操作。它不依赖工作区绝对路径、外部 Demo 或宿主会话文件。
 
 ## 验证边界
 

@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="澄境：一个以内容为主角的 Apple 风格与 Liquid Glass 网页交互演示。">
+  <title>澄境 STILL — 把目光，交还风景。</title>
+  <link rel="stylesheet" href="assets/liquid-glass-optics.css">
+  <link rel="preload" as="image" href="assets/lake.jpg">
+  <style>
+    :root { --page:#f8f8f7; --paper:#fff; --ink:#202122; --muted:#686a6b; --line:#dedfdd; --soft:#eeefed; --accent:#242729; --frame:1180px; --font:-apple-system,BlinkMacSystemFont,system-ui,"PingFang SC","Microsoft YaHei",sans-serif; color-scheme:light; }
+    :root[data-theme="dark"] { --page:#181a1b; --paper:#212425; --ink:#f4f5f3; --muted:#b0b4b1; --line:#363b3a; --soft:#2b2f2e; --accent:#f1f2ef; color-scheme:dark; }
+    * { box-sizing:border-box; }
+    [hidden] { display:none !important; }
+    html { scroll-padding-top:24px; }
+    body { margin:0; background:var(--page); color:var(--ink); font:15px/1.6 var(--font); -webkit-font-smoothing:antialiased; }
+    button,input { font:inherit; }
+    button { color:inherit; cursor:pointer; }
+    a { color:inherit; text-decoration:none; }
+    button,a,input { -webkit-tap-highlight-color:transparent; }
+    button { touch-action:manipulation; }
+    svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+    :focus-visible { outline:3px solid #0071e3; outline-offset:4px; }
+    .wrap { width:min(var(--frame),calc(100% - 80px)); margin-inline:auto; }
+    .site-header { display:flex; align-items:center; justify-content:space-between; height:86px; border-bottom:1px solid var(--line); gap:24px; }
+    .brand { display:inline-flex; align-items:center; gap:11px; font-size:21px; font-weight:650; white-space:nowrap; }
+    .brand svg { width:28px; height:28px; stroke-width:1.4; }
+    .brand small { margin-left:4px; font-size:10px; letter-spacing:.2em; font-weight:500; color:var(--muted); }
+    .top-nav { display:flex; gap:32px; }
+    .top-nav button { background:none; border:0; padding:12px 0; font-size:13px; color:var(--muted); }
+    .top-nav button[aria-pressed="true"] { color:var(--ink); font-weight:650; }
+    .count { font-size:10px; min-width:17px; display:inline-flex; justify-content:center; background:var(--soft); border-radius:9px; margin-left:5px; }
+    .header-tools { display:flex; align-items:center; gap:17px; }
+    .header-caption { font-size:11px; color:var(--muted); }
+    .icon-button { width:44px; height:44px; padding:0; display:grid; place-items:center; border:1px solid var(--line); border-radius:50%; background:transparent; transition:background .18s; }
+    .icon-button:hover { background:var(--soft); }
+    .intro { display:flex; align-items:flex-end; justify-content:space-between; gap:32px; padding:47px 0 31px; }
+    .eyebrow { margin:0 0 11px; font-size:10px; letter-spacing:.2em; font-weight:600; color:var(--muted); }
+    h1 { margin:0; font-size:45px; line-height:1.3; font-weight:600; letter-spacing:-.045em; }
+    .intro-copy { margin:0 0 3px; color:var(--muted); font-size:13px; line-height:1.9; }
+    .scene { height:480px; border-radius:23px; background:#b4bcb9; box-shadow:0 16px 36px -24px #101a2444; }
+    .scene > canvas { display:block; }
+    .scene-caption { position:absolute; z-index:1; left:32px; top:29px; color:#fff; pointer-events:none; }
+    .scene-caption .chapter { font-size:10px; letter-spacing:.18em; margin:0 0 7px; }
+    .scene-caption h2 { margin:0; font-size:29px; font-weight:550; line-height:1.45; }
+    .scene-caption p { margin:6px 0 0; font-size:12px; }
+    .caption-ink { display:table; background:#0004; border-radius:6px; padding:2px 6px; margin-left:-6px !important; }
+    .scene-number { position:absolute; left:30px; bottom:33px; color:white; font-size:11px; letter-spacing:.12em; padding:4px 9px; border-radius:15px; background:#0008; }
+    .scene-number span { opacity:.76; }
+    .dock { bottom:24px; height:62px; width:354px; border-radius:31px; display:grid; grid-template-columns:repeat(3,1fr); padding:8px; }
+    .dock .selection { position:absolute; top:8px; left:8px; height:46px; border-radius:24px; background:#242729; pointer-events:none; }
+    .dock button { position:relative; border:0; border-radius:24px; padding:0; background:transparent; font-size:12px; color:#202122; display:flex; align-items:center; justify-content:center; gap:7px; }
+    .dock button svg { width:16px; height:16px; }
+    .dock button .label { display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:5px 9px; border-radius:20px; background:rgba(255,255,255,.76); }
+    .dock button[aria-pressed="true"] { color:white; }
+    .dock button[aria-pressed="true"] .label { background:transparent; }
+    .glass-icon { display:grid; place-items:center; border:0; background:transparent; padding:0; border-radius:50%; color:#202122; }
+    .glass-icon .icon-ink { position:relative; display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.76); }
+    .favorite { width:54px; height:54px; right:26px; bottom:28px; }
+    .favorite[aria-pressed="true"] svg { fill:#202122; }
+    .settings-host { width:286px; height:302px; top:20px; right:20px; pointer-events:none; }
+    .settings-plate { width:286px; height:302px; border-radius:25px; }
+    .settings-toggle { position:absolute; right:0; top:0; width:50px; height:50px; pointer-events:auto; }
+    .settings-content { position:absolute; inset:14px 14px 15px; padding:14px; padding-top:8px; border-radius:17px; background:rgba(255,255,255,.84); color:#202122; opacity:0; }
+    .settings-content[data-open="true"] { pointer-events:auto; }
+    .settings-content h3 { font-size:14px; margin:0 0 16px; padding-top:4px; }
+    .settings-content .setting-label { display:block; font-size:11px; color:#525658; margin:0 0 8px; }
+    .material-choices { display:flex; gap:5px; padding:4px; border-radius:12px; background:#2021220b; margin-bottom:15px; }
+    .material-choices button { flex:1; min-height:35px; border:0; background:transparent; border-radius:9px; font-size:12px; }
+    .material-choices button[aria-pressed="true"] { background:#fff; box-shadow:0 1px 4px #00000012; font-weight:600; }
+    .range-row { display:flex; justify-content:space-between; }
+    .range-row output { font-size:11px; font-variant-numeric:tabular-nums; }
+    input[type="range"] { display:block; width:100%; margin:0 0 10px; accent-color:#242729; height:22px; }
+    .switch-label { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:36px; font-size:11px; }
+    .switch-label input { appearance:none; width:30px; height:18px; border-radius:12px; background:#adb0ae; border:0; flex-shrink:0; position:relative; cursor:pointer; }
+    .switch-label input::before { content:""; position:absolute; width:14px; height:14px; top:2px; left:2px; border-radius:50%; background:#fff; transition:transform .18s; }
+    .switch-label input:checked { background:#242729; }
+    .switch-label input:checked::before { transform:translateX(12px); }
+    .settings-host .settings-toggle { z-index:2; }
+    .settings-host[data-open="true"] .settings-toggle { right:13px; top:9px; width:34px; height:34px; }
+    .settings-host[data-open="true"] .settings-toggle .icon-ink { background:transparent; }
+    .scene-meta { display:flex; align-items:center; justify-content:space-between; padding:16px 2px; gap:18px; color:var(--muted); font-size:11px; }
+    .scene-meta strong { color:var(--ink); font-weight:500; }
+    .meta-divider { margin:0 11px; color:var(--line); }
+    .status-dot { display:inline-block; width:5px; height:5px; border-radius:50%; background:currentColor; margin-right:6px; vertical-align:2px; }
+    .collection { padding:29px 0 30px; }
+    .section-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+    .section-head h2 { margin:0; font-size:16px; font-weight:600; }
+    .section-head span { color:var(--muted); font-size:11px; }
+    .gallery { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; }
+    .photo-choice { display:grid; grid-template-columns:104px 1fr 20px; align-items:center; gap:17px; padding:0; text-align:left; border:0; background:none; border-radius:12px; min-width:0; }
+    .photo-choice img { width:104px; height:76px; object-fit:cover; border-radius:10px; filter:saturate(.65); transition:filter .2s; }
+    .photo-choice:hover img { filter:saturate(1); }
+    .photo-choice strong { display:block; font-size:13px; font-weight:550; }
+    .photo-choice small { display:block; font-size:10px; color:var(--muted); margin-top:5px; }
+    .photo-choice .active-mark { color:var(--muted); opacity:0; }
+    .photo-choice[aria-pressed="true"] .active-mark { opacity:1; }
+    .photo-choice[aria-pressed="true"] img { outline:2px solid var(--ink); outline-offset:3px; }
+    .empty { padding:28px; text-align:center; background:var(--soft); border-radius:12px; }
+    .empty p { margin:0 0 12px; color:var(--muted); }
+    .text-button { background:none; padding:6px 2px; border:0; color:var(--ink); font-size:12px; text-decoration:underline; text-underline-offset:4px; }
+    .experience { display:flex; align-items:center; justify-content:space-between; padding:24px 0; border-top:1px solid var(--line); gap:24px; }
+    .experience h2 { margin:0 0 3px; font-size:12px; font-weight:600; }
+    .experience p { margin:0; color:var(--muted); font-size:11px; }
+    .preferences { display:flex; gap:24px; flex-wrap:wrap; }
+    .preferences label { display:flex; align-items:center; gap:7px; font-size:11px; cursor:pointer; min-height:44px; }
+    .preferences input { accent-color:var(--accent); width:15px; height:15px; }
+    footer { border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:16px; padding:20px 0 max(28px,env(safe-area-inset-bottom,0px)); font-size:10px; color:var(--muted); }
+    footer a { text-decoration:underline; text-underline-offset:3px; }
+    dialog { color:var(--ink); background:var(--paper); border:1px solid var(--line); border-radius:22px; padding:28px; width:min(450px,calc(100% - 40px)); box-shadow:0 24px 80px #0003; }
+    dialog::backdrop { background:#0006; }
+    dialog h2 { font-size:20px; margin:0 0 12px; }
+    dialog p { color:var(--muted); font-size:13px; }
+    dialog .close-about { float:right; margin-top:-6px; }
+    dialog a { text-decoration:underline; }
+    .toast { position:fixed; z-index:10; bottom:24px; left:50%; transform:translate(-50%,10px); padding:11px 20px; border-radius:25px; background:var(--ink); color:var(--page); font-size:12px; opacity:0; pointer-events:none; transition:opacity .2s,transform .2s; box-shadow:0 8px 30px #0002; }
+    .toast[data-visible="true"] { opacity:1; transform:translate(-50%,0); }
+    .scene[data-effects="solid"] .settings-content { background:#f5f5f7; }
+    @media (max-width:950px) { .intro-copy { max-width:220px; } h1 { font-size:37px; } .gallery { gap:20px; } .photo-choice { grid-template-columns:78px 1fr; gap:13px; } .photo-choice img { width:78px; height:66px; } .active-mark { display:none; } .header-caption { display:none; } }
+    @media (max-width:650px) {
+      .wrap { width:calc(100% - 32px); } .site-header { height:72px; gap:12px; } .brand { font-size:18px; gap:8px; } .brand small { display:none; } .brand svg { width:25px; } .top-nav { gap:19px; } .top-nav button { font-size:12px; } .icon-button { width:40px; height:40px; }
+      .intro { display:block; padding:32px 0 24px; } h1 { font-size:30px; letter-spacing:-.04em; } .eyebrow { font-size:9px; margin-bottom:10px; } .intro-copy { max-width:none; margin-top:12px; font-size:12px; } .intro-copy br { display:none; }
+      .scene { height:470px; border-radius:19px; } .scene-caption { left:22px; top:28px; } .scene-caption h2 { font-size:25px; } .scene-caption p { font-size:11px; max-width:180px; } .scene-caption .chapter { font-size:8px; } .scene-number { display:none; }
+      .dock { bottom:20px; } .dock button { font-size:11px; } .dock button .label { gap:5px; padding:5px 6px; } .dock button svg { width:14px; }
+      .favorite { width:50px; height:50px; right:16px; bottom:26px; } .settings-host { right:16px; top:18px; }
+      .scene-meta { align-items:flex-start; font-size:10px; padding-block:13px; } .meta-hint { display:none; }
+      .collection { padding:24px 0; } .gallery { grid-template-columns:1fr; gap:17px; } .photo-choice { grid-template-columns:82px 1fr 20px; gap:17px; } .photo-choice img { width:82px; height:63px; } .active-mark { display:block; }
+      .experience { display:block; padding:20px 0 12px; } .preferences { gap:18px; margin-top:10px; } footer { align-items:flex-start; font-size:9px; } footer .footer-detail { max-width:190px; text-align:right; }
+    }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
+    html[data-motion="reduced"] *,html[data-motion="reduced"] *::before { transition:none !important; animation:none !important; }
+    @media (prefers-contrast:more) { :root { --muted:var(--ink); } .scene .lg-optical-output { visibility:hidden; } .scene .lg-optical-backplate { visibility:visible; background:#f5f5f7; backdrop-filter:none; } }
+    @media (forced-colors:active) { .scene-caption,.scene-number { color:CanvasText; background:Canvas; } .settings-content,.icon-ink,.dock button .label { background:Canvas !important; color:CanvasText !important; } .dock .selection { background:Highlight; } .dock button[aria-pressed="true"] { outline:2px solid Highlight; } .switch-label input { appearance:auto; } .switch-label input::before { display:none; } }
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" style="display:none"><defs>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.4 14.2A8.7 8.7 0 0 1 9.8 3.6 8.8 8.8 0 1 0 20.4 14.2Z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.8a5.3 5.3 0 0 0-7.5 0L12 6.1l-1.3-1.3a5.3 5.3 0 0 0-7.5 7.5L12 21l8.8-8.7a5.3 5.3 0 0 0 0-7.5Z"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h7m5 0h4M4 17h3m5 0h8"/><circle cx="13.5" cy="7" r="2.5"/><circle cx="9.5" cy="17" r="2.5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-lake" viewBox="0 0 24 24"><path d="m3 13 5-8 6 8m-2-3 3-5 6 8M3 17c3-2 3 2 6 0s3 2 6 0 3 2 6 0M5 21h14"/></symbol>
+    <symbol id="i-peak" viewBox="0 0 24 24"><path d="m2 20 10-17 10 17H2Zm7-12 3 3 3-3"/></symbol>
+    <symbol id="i-field" viewBox="0 0 24 24"><path d="M3 20c3-5 8-8 18-8M3 15c5-3 9-3 12-2M9 20c3-3 7-4 12-4"/><circle cx="7" cy="6" r="3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  </defs></svg>
+  <header class="site-header wrap">
+    <a class="brand" href="#top" aria-label="澄境首页"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M15 2C11 8 4 14 4 20a11 11 0 0 0 22 0C26 14 19 8 15 2Z"/><path d="M5 21c4-4 7 4 11 0s6-1 9 0"/></svg>澄境 <small>STILL</small></a>
+    <nav class="top-nav" aria-label="内容分类"><button id="show-all" type="button" aria-pressed="true">精选影像</button><button id="show-favorites" type="button" aria-pressed="false">我的收藏<span id="favorite-count" class="count">0</span></button></nav>
+    <div class="header-tools"><span class="header-caption">A LITTLE SPACE TO BREATHE</span><button id="theme-toggle" class="icon-button" type="button" aria-label="切换深色外观" title="切换外观"><svg aria-hidden="true"><use href="#i-moon"/></svg></button></div>
+  </header>
+  <main id="top" class="wrap">
+    <section class="intro" aria-labelledby="page-title"><div><p class="eyebrow">THE ART OF LESS</p><h1 id="page-title">把目光，交还风景。</h1></div><p class="intro-copy">不必填满每一寸。<br>让内容自然呈现，让操作轻轻浮起。</p></section>
+    <section id="scene" class="scene lg-optical-scene" data-renderer="pending" data-lg-profile="optical" aria-label="风景与悬浮操作">
+      <canvas id="source" aria-hidden="true"></canvas><canvas id="optics" class="lg-optical-output" aria-hidden="true"></canvas>
+      <div class="scene-caption"><p class="chapter caption-ink" id="chapter">01 / THE LAKE</p><h2 id="scene-title" class="caption-ink">山湖之间</h2><p id="scene-description" class="caption-ink">水面无声，山色有回响。</p></div>
+      <div class="scene-number" aria-hidden="true"><b id="scene-index">01</b><span> / 03</span></div>
+      <nav id="dock" class="dock lg-optical-control" aria-label="切换风景"><span class="lg-optical-backplate" aria-hidden="true"></span><span id="selection" class="selection" aria-hidden="true"></span>
+        <button type="button" data-photo="0" aria-pressed="true"><span class="label"><svg aria-hidden="true"><use href="#i-lake"/></svg>山湖</span></button>
+        <button type="button" data-photo="1" aria-pressed="false"><span class="label"><svg aria-hidden="true"><use href="#i-peak"/></svg>雪峰</span></button>
+        <button type="button" data-photo="2" aria-pressed="false"><span class="label"><svg aria-hidden="true"><use href="#i-field"/></svg>旷野</span></button>
+      </nav>
+      <button id="favorite" type="button" class="favorite glass-icon lg-optical-control" aria-label="收藏当前风景" aria-pressed="false" title="收藏风景"><span class="lg-optical-backplate" aria-hidden="true"></span><span class="icon-ink"><svg aria-hidden="true"><use href="#i-heart"/></svg></span></button>
+      <div id="settings-host" class="settings-host lg-optical-control">
+        <span id="settings-plate" class="settings-plate lg-optical-backplate" aria-hidden="true"></span>
+        <div id="settings-content" class="settings-content" role="group" aria-label="显示设置" hidden inert>
+          <h3>一点自己的偏好</h3><span class="setting-label">玻璃质感</span>
+          <div class="material-choices" role="group" aria-label="玻璃质感"><button id="clear-material" type="button" aria-pressed="true">轻透</button><button id="soft-material" type="button" aria-pressed="false">柔和</button></div>
+          <div class="range-row"><label for="strength" class="setting-label">边缘折射</label><output id="strength-value" for="strength">18</output></div><input id="strength" type="range" min="0" max="30" value="18">
+          <label class="switch-label" for="refraction">开启折射<input id="refraction" type="checkbox" checked></label>
+          <label class="switch-label" for="grid">显示观察网格<input id="grid" type="checkbox"></label>
+        </div>
+        <button id="settings-toggle" class="settings-toggle glass-icon" type="button" aria-expanded="false" aria-controls="settings-content" aria-label="打开显示设置" title="调整玻璃质感"><span class="icon-ink"><svg aria-hidden="true"><use href="#i-sliders"/></svg></span></button>
+      </div>
+    </section>
+    <div class="scene-meta"><span><strong id="photo-meta">山湖之间</strong><span class="meta-divider">/</span>静谧影像集 · <span id="meta-index">01</span></span><span><span class="meta-hint">切换风景，看看玻璃里的变化<span class="meta-divider">·</span></span><span class="status-dot"></span><output id="renderer-status" aria-live="polite">正在准备画面</output></span></div>
+    <section id="collection" class="collection" aria-labelledby="collection-title"><div class="section-head"><h2 id="collection-title">三个片刻，慢慢看。</h2><span id="collection-count">03 张精选</span></div>
+      <div id="gallery" class="gallery">
+        <button class="photo-choice" type="button" data-photo="0" aria-pressed="true"><img src="assets/lake.jpg" width="104" height="76" alt="山峰、森林与湖边木屋"><span><strong>山湖之间</strong><small>01 — 一次安静的停留</small></span><svg class="active-mark" aria-hidden="true"><use href="#i-check"/></svg></button>
+        <button class="photo-choice" type="button" data-photo="1" aria-pressed="false"><img src="assets/peak.jpg" width="104" height="76" alt="云雾中的陡峭山峰" loading="lazy"><span><strong>云端之上</strong><small>02 — 向更远处望去</small></span><svg class="active-mark" aria-hidden="true"><use href="#i-check"/></svg></button>
+        <button class="photo-choice" type="button" data-photo="2" aria-pressed="false"><img src="assets/field.jpg" width="104" height="76" alt="夕阳映照起伏的山野" loading="lazy"><span><strong>风经过的地方</strong><small>03 — 让思绪自由生长</small></span><svg class="active-mark" aria-hidden="true"><use href="#i-check"/></svg></button>
+      </div><div id="empty" class="empty" hidden><p>还没有收藏的风景。遇到喜欢的，就留下来。</p><button id="explore" class="text-button" type="button">回到精选影像</button></div>
+    </section>
+    <section class="experience" aria-labelledby="preferences-title"><div><h2 id="preferences-title">舒适，由你决定。</h2><p>减少视觉效果，仍然保留完整的操作体验。</p></div><div class="preferences"><label><input id="solid" type="checkbox">减少透明度</label><label><input id="reduce-motion" type="checkbox">减少动态</label><label><input id="compatibility" type="checkbox">基础毛玻璃</label></div></section>
+  </main>
+  <footer class="wrap"><span>澄境 STILL <span class="meta-divider">/</span> Apple Design Study</span><span class="footer-detail">内容优先。轻盈有度。 <button id="about-toggle" class="text-button" type="button">关于这个演示 ↗</button></span></footer>
+  <dialog id="about"><button id="about-close" class="icon-button close-about" type="button" aria-label="关闭说明"><svg aria-hidden="true"><use href="#i-close"/></svg></button><h2>关于澄境</h2><p>这是基于 apple-design 技能制作的本地演示。试试切换风景、收藏影像，或打开右上角的显示设置，观察玻璃边缘与背景的关系。</p><p>玻璃通过 WebGL 对同一张背景图像重新采样，文字与按钮保留真实网页语义。这是 Web 光学近似，并非 Apple 原生 Liquid Glass；“轻透 / 柔和”是本示例的可调配方。</p><p>收藏只保存在当前浏览器中。照片来自 <a href="https://unsplash.com" target="_blank" rel="noreferrer">Unsplash</a>，已下载到演示目录；页面运行不依赖在线图片服务。</p><p id="image-message">图片加载中。</p><p id="fallback-reason"></p></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="assets/liquid-glass-optics.js"></script>
+  <script>
+    const $ = (selector) => document.querySelector(selector);
+    const scene = $('#scene'), source = $('#source'), canvas = $('#optics'), dock = $('#dock');
+    const host = $('#settings-host'), plate = $('#settings-plate'), settings = $('#settings-content'), toggle = $('#settings-toggle');
+    const queries = { motion:matchMedia('(prefers-reduced-motion: reduce)'), transparency:matchMedia('(prefers-reduced-transparency: reduce)'), contrast:matchMedia('(prefers-contrast: more)'), forced:matchMedia('(forced-colors: active)'), dark:matchMedia('(prefers-color-scheme: dark)') };
+    const photos = [
+      {file:'lake',title:'山湖之间',chapter:'THE LAKE',description:'水面无声，山色有回响。'},
+      {file:'peak',title:'云端之上',chapter:'ABOVE THE CLOUDS',description:'远离喧嚣，靠近辽阔。'},
+      {file:'field',title:'风经过的地方',chapter:'THE OPEN FIELD',description:'把片刻留白，还给自己。'}
+    ];
+    let selected = 0, favoritesOnly = false, opened = false, soft = false, renderer = null, width = 1, height = 1;
+    let raf = 0, lastTime = 0, toastTimer = 0, menuWidth = 286, dockWidth = 354, dockX = 0;
+    let state = {menuW:50,menuH:50,selection:0}, target = {...state}, velocity = {menuW:0,menuH:0,selection:0};
+    let favorites = new Set(), manualTheme = false, storageAvailable = true;
+    try { const saved=JSON.parse(localStorage.getItem('still-favorites') || '[]'); if(Array.isArray(saved))favorites=new Set(saved.filter(i=>Number.isInteger(i)&&i>=0&&i<photos.length)); } catch { storageAvailable=false; }
+    const reduceMotion = () => queries.motion.matches || $('#reduce-motion').checked;
+    const isSolid = () => queries.transparency.matches || queries.contrast.matches || queries.forced.matches || $('#solid').checked;
+    const notify = (message) => { clearTimeout(toastTimer); $('#toast').textContent=message; $('#toast').dataset.visible='true'; toastTimer=setTimeout(()=>$('#toast').dataset.visible='false',2200); };
+    function setTheme(dark) { document.documentElement.dataset.theme=dark?'dark':'light'; $('#theme-toggle').setAttribute('aria-label',dark?'切换浅色外观':'切换深色外观'); $('#theme-toggle use').setAttribute('href',dark?'#i-sun':'#i-moon'); }
+    setTheme(queries.dark.matches);
+    $('#theme-toggle').addEventListener('click',()=>{manualTheme=true;setTheme(document.documentElement.dataset.theme!=='dark');});
+    function updateStatus() {
+      scene.dataset.effects=isSolid()?'solid':'normal';
+      document.documentElement.dataset.motion=reduceMotion()?'reduced':'normal';
+      $('#renderer-status').textContent=isSolid()?'实底模式':renderer?.status.mode!=='webgl'?'基础毛玻璃':$('#refraction').checked?'光学玻璃':'折射已关闭';
+    }
+    function drawSource() {
+      const dpr=Math.min(devicePixelRatio||1,1.5);source.width=Math.round(width*dpr);source.height=Math.round(height*dpr);
+      const ctx=source.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
+      const image=photos[selected].image;
+      if(image?.naturalWidth){
+        const scale=Math.max(width/image.naturalWidth,height/image.naturalHeight);
+        const w=image.naturalWidth*scale,h=image.naturalHeight*scale;
+        ctx.filter='saturate(.65)';ctx.drawImage(image,(width-w)/2,(height-h)/2,w,h);ctx.filter='none';
+      } else {
+        const gradient=ctx.createLinearGradient(0,0,width,height);gradient.addColorStop(0,'#b8c1be');gradient.addColorStop(1,'#6d8380');ctx.fillStyle=gradient;ctx.fillRect(0,0,width,height);
+        ctx.strokeStyle='#e8eeeb70';ctx.lineWidth=1;for(let r=80;r<900;r+=30){ctx.beginPath();ctx.arc(width*.6,height*.7,r,0,Math.PI*2);ctx.stroke();}
+      }
+      const top=ctx.createLinearGradient(0,0,0,190);top.addColorStop(0,'rgba(0,0,0,.58)');top.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=top;ctx.fillRect(0,0,width,190);
+      const bottom=ctx.createLinearGradient(0,height-130,0,height);bottom.addColorStop(0,'rgba(0,0,0,0)');bottom.addColorStop(1,'rgba(0,0,0,.2)');ctx.fillStyle=bottom;ctx.fillRect(0,height-130,width,130);
+      if($('#grid').checked){ctx.lineWidth=1;ctx.strokeStyle='#ffffffb3';for(let x=0;x<width;x+=24){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,height);ctx.stroke();}for(let y=0;y<height;y+=24){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(width,y);ctx.stroke();}}
+    }
+    function createRenderer() {
+      renderer=LiquidGlassOptics.createRenderer(canvas,{source,maxDpr:1.5,onStatus(value){scene.dataset.renderer=value.mode;if(value.mode==='fallback')console.warn('[STILL renderer]',value.reason);$('#fallback-reason').textContent=value.mode==='fallback'?'当前设备已切换到基础毛玻璃，图片与操作仍然可用。':'';updateStatus();}});
+      scene.dataset.renderer=renderer.status.mode;
+    }
+    function render() {
+      plate.style.transform=`translateX(${menuWidth-state.menuW}px) scale(${state.menuW/menuWidth},${state.menuH/302})`;
+      $('#selection').style.transform=`translateX(${state.selection}px)`;
+      settings.style.opacity=String(Math.max(0,Math.min(1,(state.menuH-100)/190)));
+      settings.style.transform=`translateY(${Math.max(0,(302-state.menuH)*.04)}px)`;
+      if(!opened&&state.menuH<=50.1)settings.hidden=true;
+      if(isSolid()||$('#compatibility').checked)return;
+      const mobile=matchMedia('(max-width:650px)').matches;
+      const right=mobile?16:20, dockY=height-(mobile?20:24)-62;
+      const favoriteSize=mobile?50:54, favoriteRight=mobile?16:26;
+      const recipe={refraction:Number($('#strength').value),blur:soft?4:1.2,tint:soft?.12:.04};
+      renderer?.render([
+        {x:dockX,y:dockY,width:dockWidth,height:62,radius:31,...recipe},
+        {x:width-favoriteRight-favoriteSize,y:height-(mobile?26:28)-favoriteSize,width:favoriteSize,height:favoriteSize,radius:favoriteSize/2,...recipe},
+        {x:width-right-state.menuW,y:mobile?18:20,width:state.menuW,height:state.menuH,radius:25,...recipe}
+      ],{refraction:$('#refraction').checked});
+    }
+    function frame(now) {
+      raf=0;const dt=Math.min(.025,Math.max(.001,(now-(lastTime||now-16))/1000));lastTime=now;let moving=false;
+      for(const key of Object.keys(target)){
+        if(reduceMotion()){state[key]=target[key];velocity[key]=0;continue;}
+        velocity[key]+=((target[key]-state[key])*280-velocity[key]*31)*dt;state[key]+=velocity[key]*dt;
+        if(Math.abs(target[key]-state[key])>.04||Math.abs(velocity[key])>.04)moving=true;else{state[key]=target[key];velocity[key]=0;}
+      }
+      render();if(moving)raf=requestAnimationFrame(frame);else lastTime=0;
+    }
+    function wake(){if(!raf&&!document.hidden)raf=requestAnimationFrame(frame);}
+    function resize(){
+      width=scene.clientWidth;height=scene.clientHeight;const mobile=matchMedia('(max-width:650px)').matches;
+      dockWidth=mobile?width-98:354;dockX=mobile?16:(width-dockWidth)/2;menuWidth=Math.min(286,width-32);
+      dock.style.width=`${dockWidth}px`;dock.style.left=`${dockX}px`;$('#selection').style.width=`${(dockWidth-16)/3}px`;
+      host.style.width=`${menuWidth}px`;plate.style.width=`${menuWidth}px`;
+      target={menuW:opened?menuWidth:50,menuH:opened?302:50,selection:selected*(dockWidth-16)/3};state={...target};velocity={menuW:0,menuH:0,selection:0};
+      drawSource();if(!renderer)createRenderer();else if(!$('#compatibility').checked)renderer.setSource(source);
+      renderer.resize(width,height);updateStatus();render();
+    }
+    function setOpen(value,restoreFocus=false){opened=value;target.menuW=value?menuWidth:50;target.menuH=value?302:50;toggle.setAttribute('aria-expanded',String(value));toggle.setAttribute('aria-label',value?'关闭显示设置':'打开显示设置');toggle.querySelector('use').setAttribute('href',value?'#i-close':'#i-sliders');host.dataset.open=String(value);settings.dataset.open=String(value);settings.inert=!value;if(value)settings.hidden=false;if(!value&&restoreFocus)toggle.focus();wake();}
+    toggle.addEventListener('click',()=>setOpen(!opened));
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&opened)setOpen(false,true);});
+    document.addEventListener('pointerdown',event=>{if(opened&&!host.contains(event.target))setOpen(false);});
+    function updateCollection(){
+      $('#favorite-count').textContent=favorites.size;
+      $('#favorite').setAttribute('aria-pressed',String(favorites.has(selected)));$('#favorite').setAttribute('aria-label',favorites.has(selected)?'取消收藏当前风景':'收藏当前风景');
+      document.querySelectorAll('[data-photo]').forEach(button=>{const index=Number(button.dataset.photo);button.setAttribute('aria-pressed',String(index===selected));if(button.classList.contains('photo-choice'))button.hidden=favoritesOnly&&!favorites.has(index);});
+      $('#show-all').setAttribute('aria-pressed',String(!favoritesOnly));$('#show-favorites').setAttribute('aria-pressed',String(favoritesOnly));
+      $('#collection-title').textContent=favoritesOnly?'喜欢的风景，留在这里。':'三个片刻，慢慢看。';$('#collection-count').textContent=`${String(favoritesOnly?favorites.size:3).padStart(2,'0')} 张${favoritesOnly?'收藏':'精选'}`;$('#empty').hidden=!favoritesOnly||favorites.size>0;
+    }
+    function selectPhoto(index){selected=index;target.selection=index*(dockWidth-16)/3;const p=photos[index];$('#scene-title').textContent=p.title;$('#scene-description').textContent=p.description;$('#chapter').textContent=`0${index+1} / ${p.chapter}`;$('#scene-index').textContent=`0${index+1}`;$('#meta-index').textContent=`0${index+1}`;$('#photo-meta').textContent=p.title;drawSource();if(!$('#compatibility').checked)renderer?.setSource(source);updateCollection();wake();}
+    document.querySelectorAll('[data-photo]').forEach(button=>button.addEventListener('click',()=>selectPhoto(Number(button.dataset.photo))));
+    $('#favorite').addEventListener('click',()=>{const saved=favorites.has(selected);if(saved)favorites.delete(selected);else favorites.add(selected);try{localStorage.setItem('still-favorites',JSON.stringify([...favorites]));storageAvailable=true;}catch{storageAvailable=false;}updateCollection();notify((saved?'已从收藏中移除':'已收藏这片风景')+(storageAvailable?'':' · 仅在本次页面保留'));});
+    function showCollection(value){favoritesOnly=value;updateCollection();$('#collection').scrollIntoView({behavior:reduceMotion()?'instant':'smooth',block:'center'});}
+    $('#show-all').addEventListener('click',()=>showCollection(false));$('#show-favorites').addEventListener('click',()=>showCollection(true));$('#explore').addEventListener('click',()=>{showCollection(false);$('#favorite').focus({preventScroll:true});});
+    $('#clear-material').addEventListener('click',()=>{soft=false;$('#clear-material').setAttribute('aria-pressed','true');$('#soft-material').setAttribute('aria-pressed','false');wake();});
+    $('#soft-material').addEventListener('click',()=>{soft=true;$('#clear-material').setAttribute('aria-pressed','false');$('#soft-material').setAttribute('aria-pressed','true');wake();});
+    $('#strength').addEventListener('input',()=>{$('#strength-value').textContent=$('#strength').value;wake();});
+    $('#refraction').addEventListener('change',()=>{updateStatus();wake();});
+    $('#grid').addEventListener('change',()=>{drawSource();if(!$('#compatibility').checked)renderer?.setSource(source);wake();});
+    for(const id of ['solid','reduce-motion'])$('#'+id).addEventListener('change',()=>{updateStatus();wake();});
+    $('#compatibility').addEventListener('change',()=>{renderer?.destroy();if(!$('#compatibility').checked){renderer=null;resize();}updateStatus();wake();});
+    for(const [key,query] of Object.entries(queries))query.addEventListener('change',()=>{if(key==='dark'&&!manualTheme)setTheme(query.matches);updateStatus();wake();});
+    $('#about-toggle').addEventListener('click',()=>$('#about').showModal());$('#about-close').addEventListener('click',()=>$('#about').close());
+    $('#about').addEventListener('click',event=>{if(event.target===$('#about')){const r=$('#about').getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)$('#about').close();}});
+    updateCollection();const observer=new ResizeObserver(resize);observer.observe(scene);
+    Promise.all(photos.map(photo=>new Promise(resolve=>{const image=new Image();image.onload=()=>{photo.image=image;if(photos[selected]===photo&&renderer){drawSource();if(!$('#compatibility').checked)renderer.setSource(source);wake();}resolve(true);};image.onerror=()=>resolve(false);image.src=`assets/${photo.file}.jpg`;}))).then(results=>{const failures=results.filter(ok=>!ok).length;$('#image-message').textContent=failures?`${failures} 张影像加载失败，已保留几何背景与全部操作。`:'三张本地影像已就绪。';if(failures)notify('部分影像未能加载，已显示替代画面');});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;lastTime=0;}else wake();});
+    window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);clearTimeout(toastTimer);observer.disconnect();renderer?.destroy();});
+    window.addEventListener('pageshow',event=>{if(event.persisted){renderer=null;observer.observe(scene);resize();}});
+  </script>
+</body>
+</html>

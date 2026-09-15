@@ -1,0 +1,313 @@
+/*!
+ * liquid-glass.css — 历史 BASIC 毛玻璃资源，不是光学 Liquid Glass 实现。
+ * 页面须有图片/渐变/视频。结构：.lg-surface > .lg-surface__content。
+ * 可选 liquid-glass.js 提供高光；不含官方边缘折射与内容自适应色调。
+ * 下方令牌区由 node scripts/validate.mjs --sync-tokens 更新。
+ */
+/* tokens:start */
+:root {
+  --lg-subtle-blur: 12px;
+  --lg-subtle-saturate: 140%;
+  --lg-subtle-background-alpha: 0.08;
+  --lg-subtle-border-alpha: 0.2;
+  --lg-medium-blur: 24px;
+  --lg-medium-saturate: 180%;
+  --lg-medium-background-alpha: 0.14;
+  --lg-medium-border-alpha: 0.35;
+  --lg-strong-blur: 36px;
+  --lg-strong-saturate: 220%;
+  --lg-strong-background-alpha: 0.22;
+  --lg-strong-border-alpha: 0.5;
+  --lg-radius-sm: 16px;
+  --lg-radius-md: 24px;
+  --lg-radius-lg: 32px;
+  --lg-radius-xl: 44px;
+  --lg-radius-pill: 999px;
+  --lg-shadow-sm: 0 8px 24px rgba(0,0,0,0.16);
+  --lg-shadow-md: 0 20px 50px rgba(0,0,0,0.22);
+  --lg-shadow-lg: 0 32px 80px rgba(0,0,0,0.30);
+  --lg-inset-top: inset 0 1px 0 rgba(255,255,255,0.75);
+  --lg-inset-bottom: inset 0 -1px 0 rgba(255,255,255,0.12);
+  --lg-inset-side: inset 1px 0 0 rgba(255,255,255,0.18), inset -1px 0 0 rgba(255,255,255,0.18);
+  --lg-highlight-radial-color: rgba(255,255,255,0.38);
+  --lg-highlight-radial-radius: 320px;
+  --lg-highlight-sweep-color: rgba(255,255,255,0.28);
+  --lg-highlight-sweep-angle: 115deg;
+  --lg-motion-sweep: 900ms cubic-bezier(0.2,0.8,0.2,1);
+  --lg-motion-hover: 200ms cubic-bezier(0.2,0.8,0.2,1);
+  --lg-motion-press: 120ms cubic-bezier(0.2,0.8,0.2,1);
+  --lg-motion-touch-ms: 600;
+  --lg-dark-background-alpha: 0.06;
+  --lg-dark-border-alpha: 0.18;
+  --lg-dark-shadow: 0 20px 50px rgba(0,0,0,0.50);
+  --lg-dark-inset-top: inset 0 1px 0 rgba(255,255,255,0.28);
+  --lg-dark-radial-color: rgba(255,255,255,0.20);
+  --lg-dark-sweep-color: rgba(255,255,255,0.14);
+  --lg-optics-max-dpr: 1.5;
+  --lg-optics-max-visible-lenses: 3;
+  --lg-optics-edge-displacement: 15;
+  --lg-optics-regular-blur: 1.2;
+  --lg-optics-regular-tint: 0.045;
+  --lg-optics-radius: 30;
+  --lg-white-rgb: 255,255,255;
+  --lg-text-light: #1d1d1f;
+  --lg-text-dark: #f5f5f7;
+  --lg-readable-light: rgba(255,255,255,0.56);
+  --lg-readable-dark: rgba(18,18,18,0.80);
+  --lg-solid-light: #f5f5f7;
+  --lg-solid-dark: #1c1c1e;
+  --lg-fallback-light: rgba(255,255,255,0.96);
+  --lg-fallback-dark: rgba(28,28,30,0.97);
+  --lg-fallback-border: rgba(128,128,128,0.60);
+  --lg-gloss-start: rgba(255,255,255,0.22);
+  --lg-gloss-end: rgba(255,255,255,0.02);
+  --lg-overlay: rgba(18,18,18,0.45);
+  --lg-focus-light: #1d1d1f;
+  --lg-focus-dark: #ffffff;
+  --lg-focus-halo: rgba(128,128,128,0.65);
+  --lg-page-base-light: #ededed;
+  --lg-page-highlight-light: #fafafa;
+  --lg-page-shade-light: #d4d4d4;
+  --lg-page-soft-light: #e5e5e5;
+  --lg-page-base-dark: #181818;
+  --lg-page-highlight-dark: #363636;
+  --lg-page-shade-dark: #111111;
+  --lg-page-soft-dark: #242424;
+  --lg-optics-scene: #e7e7e7;
+  --lg-optics-paper: #f5f5f5;
+  --lg-optics-grid: #b5b5b5;
+  --lg-optics-contour: #7d7d7d;
+  --lg-optics-ink: #292929;
+  --lg-space-1: 4px;
+  --lg-space-2: 8px;
+  --lg-space-3: 12px;
+  --lg-space-4: 16px;
+  --lg-space-5: 20px;
+  --lg-space-6: 24px;
+  --lg-space-8: 32px;
+  --lg-space-12: 48px;
+  --lg-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', system-ui, sans-serif;
+  --lg-body-size: 1rem;
+  --lg-title-size: 1.5rem;
+  --lg-line-height: 1.6;
+  --lg-target-size: 44px;
+  --lg-card-width: 420px;
+  --lg-content-width: 720px;
+  --lg-highlight-opacity: 0.6;
+  --lg-press-scale: 0.97;
+  --lg-border-width: 1px;
+}
+/* tokens:end */
+
+.lg-surface {
+  --lg-blur: var(--lg-medium-blur);
+  --lg-saturate: var(--lg-medium-saturate);
+  --lg-bg-alpha: var(--lg-medium-background-alpha);
+  --lg-border-alpha: var(--lg-medium-border-alpha);
+  --lg-radius: var(--lg-radius-md);
+  --lg-shadow: var(--lg-shadow-md);
+  --lg-top: var(--lg-inset-top);
+  --lg-hl: var(--lg-highlight-radial-color);
+  --lg-sweep: var(--lg-highlight-sweep-color);
+  --lg-text: var(--lg-text-light);
+  --lg-readable: var(--lg-readable-light);
+  --lg-solid: var(--lg-solid-light);
+  --lg-fallback: var(--lg-fallback-light);
+  --lg-focus: var(--lg-focus-light);
+  box-sizing: border-box;
+  position: relative;
+  isolation: isolate;
+  color: var(--lg-text);
+  border: var(--lg-border-width) solid rgba(var(--lg-white-rgb), var(--lg-border-alpha));
+  border-radius: var(--lg-radius);
+  background:
+    linear-gradient(var(--lg-readable), var(--lg-readable)),
+    linear-gradient(135deg, var(--lg-gloss-start), var(--lg-gloss-end) 60%),
+    rgba(var(--lg-white-rgb), var(--lg-bg-alpha));
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  box-shadow: var(--lg-top), var(--lg-inset-bottom), var(--lg-shadow);
+  transition: transform var(--lg-motion-hover);
+}
+.lg-surface--subtle {
+  --lg-blur: var(--lg-subtle-blur);
+  --lg-saturate: var(--lg-subtle-saturate);
+  --lg-bg-alpha: var(--lg-subtle-background-alpha);
+  --lg-border-alpha: var(--lg-subtle-border-alpha);
+}
+.lg-surface--strong {
+  --lg-blur: var(--lg-strong-blur);
+  --lg-saturate: var(--lg-strong-saturate);
+  --lg-bg-alpha: var(--lg-strong-background-alpha);
+  --lg-border-alpha: var(--lg-strong-border-alpha);
+}
+.lg-surface--medium {
+  --lg-blur: var(--lg-medium-blur);
+  --lg-saturate: var(--lg-medium-saturate);
+  --lg-bg-alpha: var(--lg-medium-background-alpha);
+  --lg-border-alpha: var(--lg-medium-border-alpha);
+}
+
+/* 装饰限定在自身圆角内；不裁剪内容和焦点，不使用超大 inset。 */
+.lg-surface::before, .lg-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+}
+.lg-surface::before {
+  background: radial-gradient(var(--lg-highlight-radial-radius) circle at var(--lg-mx, 50%) var(--lg-my, 0%), var(--lg-hl), transparent 60%);
+  transition: opacity var(--lg-motion-hover);
+}
+.lg-surface.is-active::before { opacity: var(--lg-highlight-opacity); }
+.lg-surface::after {
+  background: linear-gradient(var(--lg-highlight-sweep-angle), transparent 35%, var(--lg-sweep) 48%, transparent 62%);
+}
+/* 扫光通过 opacity 表现一次掠光，不移动超出圆角的伪元素。 */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lg-surface.lg-bound.is-active::after { animation: lg-sweep var(--lg-motion-sweep) both; }
+}
+@keyframes lg-sweep {
+  0%, 100% { opacity: 0; }
+  45% { opacity: var(--lg-highlight-opacity); }
+}
+.lg-surface__content { position: relative; z-index: 1; }
+.lg-card, .lg-modal, .lg-sheet, .lg-sidebar { padding: var(--lg-space-6); }
+.lg-card { max-width: var(--lg-card-width); width: 100%; }
+.lg-modal { --lg-radius: var(--lg-radius-lg); max-width: var(--lg-card-width); width: calc(100% - var(--lg-space-8)); }
+.lg-modal::backdrop { background: var(--lg-overlay); }
+.lg-sheet { --lg-radius: var(--lg-radius-lg); }
+.lg-sidebar { --lg-radius: var(--lg-radius-md); }
+.lg-tooltip { padding: var(--lg-space-3); }
+.lg-segmented { display: inline-flex; gap: var(--lg-space-1); padding: var(--lg-space-1); }
+.lg-button {
+  --lg-radius: var(--lg-radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lg-space-2);
+  min-height: var(--lg-target-size);
+  padding: var(--lg-space-3) var(--lg-space-6);
+  font: 600 var(--lg-body-size)/1.2 var(--lg-font);
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+}
+.lg-button:active:not(:disabled) { transform: scale(var(--lg-press-scale)); transition: transform var(--lg-motion-press); }
+.lg-button:disabled { cursor: not-allowed; opacity: 0.65; }
+.lg-surface:focus-visible, .lg-surface :focus-visible {
+  outline: 2px solid var(--lg-focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px var(--lg-focus-halo);
+}
+.lg-navbar {
+  position: sticky;
+  top: var(--lg-space-4);
+  z-index: 10;
+  margin: var(--lg-space-4);
+  padding: var(--lg-space-3) var(--lg-space-5);
+}
+.lg-navbar > .lg-surface__content, .lg-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--lg-space-3); }
+.lg-navbar--edge { --lg-radius: 0px; top: 0; margin: 0; }
+.lg-tabbar {
+  --lg-radius: var(--lg-radius-pill);
+  position: fixed;
+  bottom: max(var(--lg-space-6), env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--lg-space-2);
+}
+.lg-radius--sm { --lg-radius: var(--lg-radius-sm); }
+.lg-radius--md { --lg-radius: var(--lg-radius-md); }
+.lg-radius--lg { --lg-radius: var(--lg-radius-lg); }
+.lg-radius--xl { --lg-radius: var(--lg-radius-xl); }
+.lg-radius--pill { --lg-radius: var(--lg-radius-pill); }
+
+/* 暗色规则必须位于强度类后，避免 :root 变量被局部强度覆盖。 */
+@media (prefers-color-scheme: dark) {
+  .lg-surface {
+    --lg-bg-alpha: var(--lg-dark-background-alpha);
+    --lg-border-alpha: var(--lg-dark-border-alpha);
+    --lg-shadow: var(--lg-dark-shadow);
+    --lg-top: var(--lg-dark-inset-top);
+    --lg-hl: var(--lg-dark-radial-color);
+    --lg-sweep: var(--lg-dark-sweep-color);
+    --lg-text: var(--lg-text-dark);
+    --lg-readable: var(--lg-readable-dark);
+    --lg-solid: var(--lg-solid-dark);
+    --lg-fallback: var(--lg-fallback-dark);
+    --lg-focus: var(--lg-focus-dark);
+  }
+}
+@media (max-width: 768px), (pointer: coarse) {
+  .lg-surface {
+    --lg-blur: var(--lg-subtle-blur);
+    --lg-saturate: var(--lg-subtle-saturate);
+  }
+  .lg-surface .lg-surface { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .lg-surface::after { display: none; }
+}
+.lg-reduced .lg-surface {
+  --lg-blur: var(--lg-subtle-blur);
+  --lg-saturate: var(--lg-subtle-saturate);
+}
+.lg-reduced .lg-surface .lg-surface { -webkit-backdrop-filter: none; backdrop-filter: none; }
+.lg-reduced .lg-surface::after { display: none; }
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lg-surface { background: var(--lg-fallback); border-color: var(--lg-fallback-border); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .lg-surface { background: var(--lg-solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .lg-surface::before, .lg-surface::after { display: none; }
+}
+.lg-opaque .lg-surface { background: var(--lg-solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.lg-opaque .lg-surface::before, .lg-opaque .lg-surface::after { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .lg-surface, .lg-surface::before, .lg-surface::after { transition: none !important; animation: none !important; }
+  .lg-surface::before, .lg-surface::after { display: none; }
+  .lg-button:active:not(:disabled) { transform: none; }
+}
+@media (forced-colors: active) {
+  .lg-surface { color: CanvasText; background: Canvas; border: 1px solid CanvasText; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; }
+  .lg-surface::before, .lg-surface::after { display: none; }
+  .lg-surface:focus-visible, .lg-surface :focus-visible { outline-color: Highlight; box-shadow: none; }
+}
+
+/* 可选示例背景：中性灰阶的明暗变化，不依赖彩色光球或持续动画。 */
+.lg-demo {
+  --lg-page-base: var(--lg-page-base-light);
+  --lg-page-highlight: var(--lg-page-highlight-light);
+  --lg-page-shade: var(--lg-page-shade-light);
+  --lg-page-soft: var(--lg-page-soft-light);
+  --lg-page-text: var(--lg-text-light);
+  --lg-demo-solid: var(--lg-solid-light);
+  margin: 0;
+  min-height: 100vh;
+  color-scheme: light dark;
+  font: var(--lg-body-size)/var(--lg-line-height) var(--lg-font);
+  color: var(--lg-page-text);
+  background: radial-gradient(ellipse at 15% 10%, var(--lg-page-highlight), transparent 65%), radial-gradient(ellipse at 90% 35%, var(--lg-page-shade), transparent 55%), linear-gradient(155deg, var(--lg-page-soft), var(--lg-page-base));
+}
+@media (prefers-color-scheme: dark) {
+  .lg-demo {
+    --lg-page-base: var(--lg-page-base-dark);
+    --lg-page-highlight: var(--lg-page-highlight-dark);
+    --lg-page-shade: var(--lg-page-shade-dark);
+    --lg-page-soft: var(--lg-page-soft-dark);
+    --lg-page-text: var(--lg-text-dark);
+    --lg-demo-solid: var(--lg-solid-dark);
+  }
+}
+.lg-demo--center { display: grid; place-items: center; padding: var(--lg-space-6); box-sizing: border-box; }
+.lg-demo h1, .lg-demo h2 { margin: 0 0 var(--lg-space-2); font-size: var(--lg-title-size); line-height: 1.25; }
+.lg-demo p { margin: 0 0 var(--lg-space-5); }
+.lg-demo p:last-child { margin-bottom: 0; }
+.lg-demo [role="status"]:not(:empty) { color: var(--lg-text-light); background: var(--lg-solid-light); padding: var(--lg-space-3); border-radius: var(--lg-radius-sm); }
+.lg-demo-main { max-width: var(--lg-content-width); margin: auto; padding: var(--lg-space-12) var(--lg-space-6); }
+.lg-demo a { color: inherit; }
+.lg-demo input { accent-color: currentColor; }
+.lg-demo :focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }

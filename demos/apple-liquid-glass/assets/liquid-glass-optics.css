@@ -1,0 +1,47 @@
+/* Liquid Glass optical scene. Import tokens; legacy .lg-surface is NOT the optical renderer. */
+@import url('./liquid-glass.css');
+
+.lg-optical-scene {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--lg-radius-lg);
+  background: var(--lg-page-base-light);
+  color: var(--lg-text-light);
+}
+.lg-optical-scene > canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.lg-optical-scene > .lg-optical-output { visibility: hidden; }
+.lg-optical-scene[data-renderer="webgl"] > .lg-optical-output { visibility: visible; }
+.lg-optical-control { position: absolute; z-index: 1; }
+.lg-optical-backplate {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--lg-fallback-border);
+  border-radius: inherit;
+  background: var(--lg-fallback-light);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: var(--lg-inset-top), var(--lg-shadow-sm);
+  pointer-events: none;
+  transform-origin: top left;
+}
+.lg-optical-scene[data-renderer="webgl"] .lg-optical-backplate { visibility: hidden; }
+.lg-optical-label { position: relative; color: var(--lg-text-light); background: var(--lg-readable-light); border-radius: var(--lg-radius-pill); padding: 4px 10px; }
+.lg-optical-control :focus-visible, .lg-optical-control:focus-visible { outline: 2px solid var(--lg-focus-light); outline-offset: 4px; }
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lg-optical-backplate { background: var(--lg-solid-light); }
+}
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+  .lg-optical-scene[data-renderer="webgl"] > .lg-optical-output { visibility: hidden; }
+  .lg-optical-scene .lg-optical-backplate { visibility: visible; background: var(--lg-solid-light); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (forced-colors: active) {
+  .lg-optical-backplate { background: Canvas !important; border-color: CanvasText; box-shadow: none; }
+  .lg-optical-label { color: CanvasText; background: Canvas; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lg-optical-control, .lg-optical-control * { animation: none !important; transition: none !important; }
+}
+.lg-optical-scene[data-effects="solid"] > .lg-optical-output { visibility: hidden; }
+.lg-optical-scene[data-effects="solid"] .lg-optical-backplate { visibility: visible; background: var(--lg-solid-light); -webkit-backdrop-filter: none; backdrop-filter: none; }

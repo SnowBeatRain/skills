@@ -1,45 +1,35 @@
-# 官方 Liquid Glass 定义与边界
+# Liquid Glass 材质语义
 
-来源核对：2026-09-14。此文件是规则依据，不是 Apple 效果参数表；后续在目标 SDK/平台发生变化时重新核对官方文档。
+用于材质选型或核对官方行为；Web 实现的接口和几何规则不在本页重复。
 
-## 1. 来源
+## 定义与层级
 
-| 来源 | 关键位置 |
+Liquid Glass 通过透镜感、光反馈、连续运动和环境适应区分浮在内容上的功能层。普通 blur、白边与软阴影不能单独证明复现了它。
+
+用于导航、工具和交互控件；正文、表格、普通内容卡片使用实底或标准材质。内容中的滑块/开关等瞬态交互元素可在激活时呈现玻璃。子控件用普通填充或 vibrancy 分组，避免一层玻璃上再叠完整玻璃。
+
+原生 Regular、大侧栏和降低透明度外观可以更磨砂/不透明；不能以 Web 透明透镜基准强迫所有原生材质像 Clear。
+
+## Regular / Clear
+
+| 变体 | 选型 |
 |---|---|
-| [Apple Design](https://developer.apple.com/design/) | 官方设计入口与资源导航 |
-| [Materials / HIG](https://developer.apple.com/design/human-interface-guidelines/materials) | Liquid Glass 与标准材质的区别、使用层级、Regular/Clear |
-| [Meet Liquid Glass](https://developer.apple.com/videos/play/wwdc2025/219/) | 1:55 lensing；3:10 视觉与运动；6:00 环境适应；12:46 使用原则；13:48 变体；18:22 辅助功能 |
-| [Applying Liquid Glass to custom views](https://developer.apple.com/documentation/swiftui/applying-liquid-glass-to-custom-views) | 原生自定义控件和容器 |
+| Regular | 默认，模糊并调整背景亮度；文字较多或背景干扰阅读时优先 |
+| Clear | 照片/视频等富媒体背景，前景简洁粗亮，优先保留内容可见性 |
 
-## 2. 定义
+Clear 在亮背景下可考虑约 35% 暗层；背景够暗或 AVKit 已有暗层时不重复叠加。暗层在玻璃后方，不是降低文字和按钮整体 opacity。35% 不是对比度保证：纯白底加 35% 黑层后与白字仅约 2.44:1，仍需检查最终合成结果。
 
-官方讲解把 **lensing** 作为主要视觉识别线索：材料弯折、塑造和集中背景的光，透明控件由此能与内容分层。它不是把整个区域糊掉再画一圈白边。
+Regular 的滚动边缘处理可进一步模糊、减淡背景内容，不等于再叠完整玻璃。
 
-视觉和运动共同设计：交互时柔性变化与光反馈、选择态移动、按钮到菜单的连续变化，让人理解是同一块材质在改变状态。不是给一个静态卡片加通用 hover 位移就完成了“液态”。
+## 颜色与系统适应
 
-原生材质会依据环境改变局部阴影、明暗、对比度和色调；不同尺寸元素的行为也不同。不能把统一的 `.white.opacity`、固定阴影或手动深色开关等同于这些能力。
+- 默认从后方内容取色；小导航/工具控件可随局部背景调整明暗，大侧栏更不透明以保护文字。
+- 主要操作可给背景着强调色；选中标签、文本或状态符号也可用色。显著按钮通常每视图一到两个，不是所有彩色元素的硬配额；破坏性操作不设为默认 primary。
+- 原生使用语义 label/primary/secondary 与框架的 vibrancy。Vibrancy 不是模糊文字或 CSS saturate；systemGray3 不适合作为材质正文的通用固定色。
+- 提供明暗模式的平台，自定义色应有浅/深及各自增强对比度变体；即使只呈现一种模式，也需支持玻璃适应所需的颜色资源，不等于必须新增主题切换按钮。
+- 系统首选玻璃外观、减少动态、降低透明度和增强对比度分别处理；Web prefers-color-scheme 不会检测控件后的局部亮度。
+- 标准 Material.regular 与 Glass.regular 不同；subtle/medium/strong、固定 blur、圆角及遮罩值只是本包配方，不是 Apple 标准。visionOS 窗口 glass 的例外见 [平台差异](platform-matrix.md#1-apple-平台差异)。
 
-## 3. 层级
+## 来源
 
-HIG 明确写道：“Don’t use Liquid Glass in the content layer.”
-
-主要用于浮在内容之上的导航、工具、功能控件。内容层用标准材质或实底。滑块、开关等内容中的短暂交互控件可以在交互时采用 Liquid Glass；这不授权把整张文章/任务卡片变成玻璃。
-
-避免 glass-on-glass：玻璃上方的子控件采用普通填充、透明度或 vibrancy，建立同一材质内的结构，不再加另一层完整玻璃。
-
-## 4. Regular / Clear
-
-| 变体 | 用途与条件 |
-|---|---|
-| Regular | 默认，具有背景模糊与亮度调整，适合大多数导航、功能控件及需要清晰文字的菜单/侧栏等 |
-| Clear | 高透明、以富媒体背景为前提；需要明亮粗重的前景；根据背景亮度采用必要的局部/整体压暗 |
-
-HIG 建议在 Clear 背景较亮时考虑约 35% 的暗化层；这不是所有材质的全局必填值。背景足够暗或原生播放控件已经处理压暗时，不必重复加层。
-
-subtle / medium / strong 是本包早期 CSS 配方，**不对应官方变体**。12/24/36px、140/180/220%、固定 1px 白边都不应写成 Apple 标准，更不能拿这些数值判断视觉是否达标。
-
-## 5. 辅助功能与近似
-
-原生 Reduced Transparency 使材质更磨砂、遮挡更多背景；Increased Contrast 与 Reduced Motion 另有行为。Web 用实底降级是本项目的兼容策略，不是对原生效果的逐像素描述。
-
-WebGL 可以对**自己拥有的背景纹理**做实际像素重采样，产生看得见的折射近似。浏览器不会把任意 DOM 背景直接交给本包 WebGL；普通 backdrop-filter 方案也没有本包光学渲染器的位移能力。必须区分实现范围、运行结果与 Apple 原生能力。
+2026-09-15 核对：[Materials](https://developer.apple.com/design/human-interface-guidelines/materials)、[Color](https://developer.apple.com/design/human-interface-guidelines/color#Liquid-Glass-color)、[Buttons](https://developer.apple.com/design/human-interface-guidelines/buttons)、[Glass.clear](https://developer.apple.com/documentation/swiftui/glass/clear)、[Meet Liquid Glass](https://developer.apple.com/videos/play/wwdc2025/219/)。Materials 日志记载 2025-06-09 新增、2025-09-09 更新，Buttons 另有 2025-12-16 更新；不据此推断整个 HIG 的版本。API 与系统设置以目标 SDK/OS 为准。

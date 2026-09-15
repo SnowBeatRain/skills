@@ -7,7 +7,7 @@
 | 文档 | 适合什么时候读 | 内容 |
 |------|----------------|------|
 | [`skill-patterns.md`](skill-patterns.md) | 你要新增、拆分、重构或审查 Skill 时 | Skill 目录组织、frontmatter 描述、渐进式披露、脚本/参考资料使用方式、质量门禁 |
-| [`apple-design` 实现说明](../skills/apple-design/LIQUID_GLASS_AUDIT.md) | 维护 Apple 风格与 Liquid Glass 资源时 | 官方定义、光学与基础路线、验收截图、来源哈希、独立复制与验证边界 |
+| [`apple-design` 历史实现说明](../skills/apple-design/archive/LIQUID_GLASS_AUDIT.md) | 维护 Apple 风格与 Liquid Glass 资源时 | 官方定义、光学与基础路线、验收截图、来源哈希、独立复制与验证边界 |
 
 ## 常用维护流程
 

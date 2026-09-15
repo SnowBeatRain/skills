@@ -1,0 +1,58 @@
+{
+  "kind": "imported-css-svg-example",
+  "entry": "examples/glass-gallery/index.html",
+  "originalName": "index_embed.html",
+  "originalSha256": "f2d7553554dcd8b14093660a5b115859b95162df6cd308b2ee5473ea4748141b",
+  "originalBytes": 625204,
+  "images": [
+    {
+      "file": "assets/scene-01.jpg",
+      "sha256": "c6dfc56dcdb4b7543d959cd113a2aea85cdac01d9b5142e483e41a9457c58414",
+      "bytes": 93888
+    },
+    {
+      "file": "assets/scene-02.jpg",
+      "sha256": "0221bab8ba2d3a78fad03f91233f9009963a12562de8f6e54855334431f56a8c",
+      "bytes": 122648
+    }
+  ],
+  "changes": [
+    "Extracted and deduplicated embedded JPEGs without recompression",
+    "Corrected four nested quotation errors in image style attributes",
+    "Clarified native-vs-CSS material claims, dimming guidance and manual theme behavior",
+    "Used the same image within each comparison pair",
+    "Added selected-state ARIA, focus indication, narrow-grid wrapping and paired fallback foreground/background",
+    "Respected live reduced-motion/reduced-transparency preferences and stopped script animation while hidden"
+  ],
+  "checks": {
+    "source_analysis": "complete",
+    "source_file_unchanged": "pass",
+    "jpeg_decode_and_dedup": "pass",
+    "local_resource_http": "pass",
+    "html_ids_and_catalog_links": "pass",
+    "javascript_syntax_and_browser_errors": "pass: script compiles; no page errors observed",
+    "background_and_theme_switches": "pass: coast/dark state observed",
+    "reduced_transparency": "pass: solid backgrounds, paired foreground and hidden decorative lens observed",
+    "simulated_action_feedback": "pass: playback demo toast observed; no real playback or sharing",
+    "comparison_backgrounds": "pass: each pair uses identical source URL",
+    "responsive_320px": "pass: checked content containers remain within viewport",
+    "basic_preflight": {
+      "status": "failed-with-reviewed-finding",
+      "finding": "The generic checker matches filter:blur(80px) on .aurora. This is a text-free decorative layer inside an aria-hidden background, not blurred foreground text. The checker was not changed or bypassed."
+    },
+    "os_preference_change_and_forced_colors": "not-run: implemented but not tested through OS settings",
+    "full_contrast_audit_and_cross_browser": "not-run",
+    "archive_inclusion": "pass: packaged page, both images, catalog and source record verified"
+  },
+  "updatedAt": "2026-09-15T07:22:36.908791+00:00",
+  "classification": "CSS backdrop blur and decorative SVG displacement; not the controlled-texture WebGL optical baseline",
+  "files": {
+    "examples/glass-gallery/assets/scene-01.jpg": "c6dfc56dcdb4b7543d959cd113a2aea85cdac01d9b5142e483e41a9457c58414",
+    "examples/glass-gallery/assets/scene-02.jpg": "0221bab8ba2d3a78fad03f91233f9009963a12562de8f6e54855334431f56a8c",
+    "examples/glass-gallery/index.html": "6bcec3147bc622c0c5e97000e89ff4633c82d86c4965871d4429b958211e91e7"
+  },
+  "htmlBytes": 51795,
+  "packageRuntimeBytes": 268331,
+  "preview": "references/qa/glass-gallery-preview.png",
+  "previewSha256": "acd530181c126f176a43191f89b1d8d35f094ea48be9b64f30d91bd096828cd3"
+}

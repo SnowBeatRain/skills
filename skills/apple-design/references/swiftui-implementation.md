@@ -109,7 +109,9 @@ struct CompatGlassToolbar: View {
 @Environment(\.accessibilityReduceMotion) private var reduceMotion
 ```
 
-兼容分支在减少透明度时走实底；自定义 sweep/parallax/弹性过渡在 reduceMotion 时关闭，使用静态状态或无位移动画。保留 Dynamic Type、VoiceOver 标签、语义文字色与 ≥44pt 命中区域。
+上面的 AdaptiveGlass 示例把 reduceTransparency 放在原生分支之前，因此新旧系统都切成实底：这是本包可选的统一兼容策略，不是原生 Liquid Glass 的默认行为。希望保留系统自适应时，优先进入可用的 glassEffect 分支，让系统处理透明度偏好；仅在旧版兼容/产品明确要求时采用手动实底。
+
+自定义 sweep/parallax/弹性过渡在 reduceMotion 时关闭，使用静态状态或无位移动画。保留 Dynamic Type、VoiceOver 标签、语义文字色与 iOS ≥44pt 命中区域。Regular/Clear、Glass/Material 的命名和平台差异见 [官方参考](official-liquid-glass.md) 与 [平台矩阵](platform-matrix.md)，不拿此 iOS/macOS 示例直接保证 visionOS 编译。
 
 ## 5. UIKit
 

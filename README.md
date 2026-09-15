@@ -180,7 +180,7 @@ node scripts/validate.mjs --profile optical examples/optical-reference.html
 node scripts/validate.mjs --profile optical --evidence references/qa/optical.json examples/optical-reference.html
 ```
 
-没有视觉记录时，optical 静态预检明确返回 `NEEDS_VISUAL_QA`。验收记录核对截图、用例与代码哈希，代码变化会让旧证据失效；脚本不会代替看图。检查流程和未测边界见 [视觉验收](skills/apple-design/references/visual-validation.md) 与 [实现记录](skills/apple-design/LIQUID_GLASS_AUDIT.md)。
+没有视觉记录时，optical 静态预检明确返回 `NEEDS_VISUAL_QA`。验收记录核对截图、用例与代码哈希，代码变化会让旧证据失效；脚本不会代替看图。检查流程和未测边界见 [视觉验收](skills/apple-design/references/visual-validation.md) 与 [历史实现记录](skills/apple-design/archive/LIQUID_GLASS_AUDIT.md)。
 
 ## 每个 Skill 里面有什么
 

@@ -1,101 +1,26 @@
-# 跨平台能力与 React Native
+# 平台选择
 
-Liquid Glass 的定义与层级先看 [官方参考](official-liquid-glass.md)。Web 的首选路径现为受控背景 WebGL 重采样；本页旧 BlurView/BackdropFilter 代码仅是 standard/basic 降级。
+只有原生/跨平台任务或比较平台时读取。先核对目标 OS、SDK、锁定依赖和具体 API availability；不把“26+”套到所有系统。原生优先系统组件，普通 BlurView/BackdropFilter 不等于原生 Liquid Glass。
 
-## 1. 能力矩阵
+## 1. Apple 平台差异
 
-| 能力 | iOS/macOS 26 系统材质 | Web 本配方 | Flutter 通用近似 | React Native 通用 BlurView |
-|---|---|---|---|---|
-| 背景模糊 | 系统 | 受控纹理采样；basic 用 CSS | BackdropFilter | 依库/平台 |
-| 饱和提升 | 系统 | 按采样管线处理；basic 用 saturate | 背景 ColorFilter 组合，需引擎验证 | 依库，有限 |
-| 边缘位移折射 | 系统 | optics.js 对同一受控纹理重采样；basic 无 | 普通模糊无，需原生/自绘 | 普通 BlurView 无；原生桥接另议 |
-| 内容自适应色调 | 系统 | 手动语义色/遮罩 | 手动 | 手动 |
-| 玻璃流体融合 | GlassEffectContainer 等 | 无 | 需自绘/桥接 | 需原生桥接 |
-| 弹性形变 | 原生交互/动画 | 示例的连续透镜几何；非自动流体融合 | 需原生/自定义 | 需原生/自定义 |
-| 指针/触摸高光 | 系统交互 | 本地脚本 | 自绘装饰 | 自绘或原生 |
-| 降级偏好 | 系统材质 + 自定义内容仍需检查 | 媒体查询 + 应用开关 | 按目标 SDK/桥接/开关 | AccessibilityInfo + 应用开关 |
-
-“Flutter/React Native 无”仅针对此处普通模糊实现，不代表所有未来库或桥接都不可能使用原生 API。版本、Expo SDK 和操作系统能力以项目锁定版本为准。
-
-## 2. React Native 方案
-
-项目已使用 Expo 时可选 expo-blur；裸 RN 可选 @react-native-community/blur，遵循其安装/原生依赖流程，不自动混装两套。先核对对应版本的 Android 支持、降级参数与 BlurView 渲染顺序。
-
-以上两个包是**基础模糊路线**。如果目标是 iOS 26 Liquid Glass，先检查目标框架版本是否提供原生玻璃模块及其可用性检查（例如对应 Expo SDK 的 [GlassEffect 文档](https://docs.expo.dev/versions/latest/sdk/glass-effect/)）；必须按项目锁定版本核对，不能凭本页推测 import/API 或把普通 BlurView 当作官方材质。
-
-下面以 expo-blur 为例，阴影在外层、裁切在内层。示例默认 Android 实底，以可预测性能为先；该默认是配方策略，不是断言 Android 永远不支持模糊。
-
-```tsx
-import { useEffect, useState, type ReactNode } from 'react';
-import { AccessibilityInfo, Platform, StyleSheet, View, useColorScheme } from 'react-native';
-import { BlurView } from 'expo-blur';
-
-export function GlassCard({ children, opaque = false }: { children: ReactNode; opaque?: boolean }) {
-  const dark = useColorScheme() === 'dark';
-  const [reduced, setReduced] = useState(false);
-  useEffect(() => {
-    if (Platform.OS !== 'ios') return;
-    let active = true;
-    let changed = false;
-    const subscription = AccessibilityInfo.addEventListener('reduceTransparencyChanged', (value) => {
-      changed = true;
-      if (active) setReduced(value);
-    });
-    AccessibilityInfo.isReduceTransparencyEnabled().then((value) => {
-      if (active && !changed) setReduced(value);
-    }).catch(() => { if (active) setReduced(true); });
-    return () => { active = false; subscription.remove(); };
-  }, []);
-  const solid = dark ? '#1c1c1e' : '#f5f5f7';
-  const fallback = opaque || reduced || Platform.OS !== 'ios';
-  return <View style={styles.shadow}>
-    <View style={styles.clip}>
-      {!fallback && <BlurView intensity={60} tint={dark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
-      <View style={[styles.content, { backgroundColor: fallback ? solid : dark ? 'rgba(18,18,18,.80)' : 'rgba(255,255,255,.56)' }]}>
-        {children}
-      </View>
-    </View>
-  </View>;
-}
-
-const styles = StyleSheet.create({
-  shadow: { borderRadius: 24, shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 25, shadowOffset: { width: 0, height: 20 }, elevation: 12 },
-  clip: { borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,.35)' },
-  content: { padding: 24, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,.75)' },
-});
-```
-
-示例中的数值是 `../assets/tokens.json` 的布局/颜色映射；实际项目从 JSON 或现有主题常量读，不散落硬编码。BlurView intensity=60 是库的专有尺度，不等于 Web blur=24px，也不是官方 Liquid Glass 强度。
-
-子元素 Text 必须显式使用主题文字色（浅 #1d1d1f / 深 #f5f5f7），React Native 不像 CSS 自动继承 View.color。加上非纯色的 ImageBackground 或项目已有渐变，并验证加载失败时的实底。若引入触摸高光，装饰 pointerEvents="none"、accessibilityElementsHidden，监听 reduceMotionChanged 并在卸载清理动画/计时器；单次定位，不持续追踪手指。
-
-## 3. 平台选择
-
-| 场景 | 首选 |
+| 平台 | 要点 |
 |---|---|
-| Apple 原生 26+ 且 SDK 可用 | glassEffect / UIGlassEffect |
-| 旧版 SwiftUI | ultraThinMaterial + 明确高光/实底兼容 |
-| Web 桌面 | 受控纹理光学模板 + 视觉验收 |
-| Web 移动 | 同样明确背景合同，按实测降 DPR/采样；关闭光学时明确标 basic |
-| 跨平台且 iOS 优先 | 已有原生玻璃桥接优先；否则 BlurView 近似 |
-| Android 优先 | 按最低设备实测选实底或轻模糊 |
-| 极低性能或用户减少透明度 | 不透明卡片 |
+| iOS / iPadOS | 导航/工具功能层采用系统玻璃；内容层可用标准材质。Glass.regular 与 Material.regular 不同 |
+| macOS | 尊重窗口、工具栏、侧栏与用户强调色。NSVisualEffectView 的 behindWindow/withinWindow 属标准材质融合模式，不是新增玻璃变体 |
+| tvOS | 部分控件聚焦时采用玻璃；遥控器焦点与阅读距离优先，Web hover 不能代替焦点 |
+| visionOS | 窗口通常使用不可修改的系统 glass，自适应环境亮度，没有独立 Dark Mode；优先半透明，不能把“内容层不用 Liquid Glass”套为禁止系统窗口 glass |
+| watchOS | 保留模态 sheet 默认材质与系统工具栏惯例，不照搬桌面尺寸和多层面板 |
 
-```text
-用户需要玻璃材质
-├─ Apple 原生 + 26 SDK/运行系统 → 官方 API
-├─ Apple 原生旧版本 → Material / UIBlurEffect + 实底兼容
-├─ Web 可控背景 → WebGL 重采样 + 连续几何 + DOM 控件
-├─ Web 任意 DOM → 先解决来源合同；无法解决则明确 basic 降级
-└─ 跨平台 → 核对原生桥接或库能力
-   ├─ 能使用官方材质 → 平台分支
-   └─ 普通 BlurView / BackdropFilter → 明确近似 + 性能/无障碍降级
-```
+标准材质的标签也按语义选择：iOS/iPadOS 的 quaternary 在 thin/ultraThin 上通常对比不足；visionOS 的 tertiary 不用于需要高可读性的内容。
 
-## 4. 官方/库参考
+## 2. 只读目标平台的接入资料
 
-- [Expo BlurView](https://docs.expo.dev/versions/latest/sdk/blur-view/)
-- [React Native AccessibilityInfo](https://reactnative.dev/docs/accessibilityinfo)
-- [Community Blur](https://github.com/Kureev/react-native-blur)
+- SwiftUI/UIKit： [swiftui-implementation.md](swiftui-implementation.md)。
+- Flutter： [flutter-implementation.md](flutter-implementation.md)。
+- React Native： [react-native-implementation.md](react-native-implementation.md)。
+- 只是核对 Regular/Clear、颜色或辅助功能外观时： [材质语义](official-liquid-glass.md)。
 
-库参数经常随版本变化；使用前读取目标版本文档和项目 lockfile。Web、Flutter、RN 通用模糊方案均不能承诺 Apple 官方实时折射。来源核对不替代构建和真机测试。
+旧系统使用标准材质或实底兼容，并明确能力级别；跨平台库可能支持原生桥接，须查目标版本，不能凭旧模糊示例断言永远不支持。
+
+来源为 2026-09-15 核对的 [HIG Materials](https://developer.apple.com/design/human-interface-guidelines/materials#Platform-considerations) 与 [Color](https://developer.apple.com/design/human-interface-guidelines/color)。文档核对不等于目标平台编译/真机测试。

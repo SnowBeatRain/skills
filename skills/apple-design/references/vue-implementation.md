@@ -1,6 +1,6 @@
 # Vue：光学场景与语义组件
 
-使用 Vue 3 Composition API + `<script setup lang="ts">`。先读 [Web 背景合同](web-implementation.md)；从 [光学基准](../examples/optical-reference.html) 迁移场景与控件，保持 shader 为独立渲染层。
+使用 Vue 3 Composition API + `<script setup lang="ts">`。先读 [Web 背景合同](web-implementation.md)；首次接入本包时从 [光学基准](../examples/optical-reference.html) 按需迁移场景与控件，保持 shader 为独立渲染层。已有接入的精修或组件提取沿用当前实现，不重建已认可页面。
 
 ## 1. 接入生命周期
 

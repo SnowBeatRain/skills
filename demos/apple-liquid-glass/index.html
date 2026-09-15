@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="澄境：一个以内容为主角的 Apple 风格与 Liquid Glass 网页交互演示。">
+  <title>澄境 STILL — 把目光，交还风景。</title>
+  <link rel="stylesheet" href="assets/liquid-glass-optics.css">
+  <link rel="preload" as="image" href="assets/lake.jpg">
+  <style>
+    :root { --font:-apple-system,BlinkMacSystemFont,system-ui,"PingFang SC","Microsoft YaHei",sans-serif; --ink:#202628; --muted:#5d6668; --paper:#f7f8f6; --edge:32px; --panel-bottom:max(28px,env(safe-area-inset-bottom,0px)); --glass-ink:#fff; --glass-muted:#e1e5e3; --glass-shade:rgba(15,22,24,.27); --field:rgba(35,47,50,.07); --hairline:rgba(35,47,50,.12); color-scheme:light; }
+    :root[data-theme="dark"] { --ink:#f2f4f1; --muted:#b9c2be; --paper:#232a29; --field:rgba(255,255,255,.07); --hairline:rgba(255,255,255,.12); --glass-shade:rgba(10,17,20,.43); color-scheme:dark; }
+    * { box-sizing:border-box; }
+    [hidden] { display:none !important; }
+    html,body { width:100%; min-height:100%; margin:0; background:#182322; }
+    body { color:var(--ink); font:14px/1.5 var(--font); -webkit-font-smoothing:antialiased; }
+    button,input { font:inherit; }
+    button { cursor:pointer; color:inherit; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+    a { color:inherit; text-decoration:none; }
+    svg { width:20px; height:20px; flex-shrink:0; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+    :focus-visible { outline:3px solid #92c9ff; outline-offset:4px; }
+    .scene .lg-optical-control :focus-visible,.scene .lg-optical-control:focus-visible { outline:3px solid #92c9ff; outline-offset:4px; }
+    .scene { width:100%; height:100dvh; min-height:660px; border-radius:0; background:#82918d; }
+    .scene>canvas { display:block; width:100%; height:100%; }
+    .site-header,.collection,.dock { color:var(--glass-ink); }
+    .site-header::after,.collection::after,.dock::after { content:""; position:absolute; inset:1px; border-radius:inherit; background:var(--glass-shade); pointer-events:none; }
+    .site-header>:not(.lg-optical-backplate),.collection>:not(.lg-optical-backplate),.dock>:not(.lg-optical-backplate) { z-index:1; }
+    .site-header { top:max(26px,env(safe-area-inset-top,0px)); left:50%; transform:translateX(-50%); display:flex; align-items:center; width:max-content; max-width:calc(100% - 48px); height:64px; gap:36px; padding:8px 10px 8px 22px; border-radius:32px; }
+    .site-header>*:not(.lg-optical-backplate) { position:relative; }
+    .brand { display:flex; align-items:center; gap:9px; padding:0; white-space:nowrap; font-size:18px; font-weight:600; }
+    .brand svg { width:26px; height:26px; stroke-width:1.35; }
+    .brand small { color:var(--glass-muted); margin-left:5px; font-size:9px; letter-spacing:.18em; font-weight:500; }
+    .top-nav { display:flex; gap:4px; }
+    .top-nav button { display:flex; align-items:center; justify-content:center; min-height:44px; padding:9px 19px; border:0; border-radius:23px; background:transparent; color:var(--glass-muted); font-size:13px; white-space:nowrap; transition:background .18s,color .18s; }
+    .top-nav button:hover { background:rgba(255,255,255,.12); color:#fff; }
+    .top-nav button[aria-pressed="true"] { color:#1e2729; background:rgba(255,255,255,.94); font-weight:600; box-shadow:0 2px 7px #00000016; }
+    .count { display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; margin-left:6px; padding:0 4px; border-radius:9px; font-size:10px; font-weight:500; background:rgba(255,255,255,.17); color:inherit; }
+    .top-nav button[aria-pressed="true"] .count { background:#26323412; }
+    .header-tools { display:flex; gap:6px; align-items:center; }
+    .icon-button,#about-toggle { width:44px; height:44px; display:grid; place-items:center; padding:0; border:0; border-radius:50%; background:rgba(255,255,255,.09); color:inherit; transition:background .18s,transform .18s; }
+    .icon-button:hover,#about-toggle:hover { background:rgba(255,255,255,.2); }
+    .icon-button:active,#about-toggle:active { transform:scale(.95); }
+    .scene-caption { position:absolute; top:29%; left:64px; color:#fff; pointer-events:none; }
+    .scene-caption h1 { margin:16px 0 14px; font-size:70px; font-weight:500; letter-spacing:-.025em; line-height:1.2; }
+    .scene-caption .chapter { font-size:11px; letter-spacing:.2em; }
+    .scene-caption p { margin:0; font-size:15px; letter-spacing:.06em; }
+    .caption-ink { display:table; background:#0005; padding:3px 9px; border-radius:8px; margin-left:-9px !important; }
+    .scene-number { position:absolute; right:var(--edge); bottom:110px; padding:5px 12px; border-radius:15px; color:#fff; font-size:11px; letter-spacing:.12em; background:#0008; }
+    .scene-number span { opacity:.76; }
+    .collection { left:var(--edge); bottom:var(--panel-bottom); width:720px; height:222px; padding:20px 22px 22px; border-radius:28px; }
+    .collection>:not(.lg-optical-backplate) { position:relative; }
+    .section-head { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:16px; }
+    .section-head h2 { margin:0; font-size:14px; font-weight:550; line-height:20px; }
+    .section-head>span { color:var(--glass-muted); font-size:11px; white-space:nowrap; }
+    .gallery { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .photo-choice { position:relative; display:block; height:136px; min-width:0; padding:0; overflow:hidden; border:1px solid #ffffff30; border-radius:15px; background:#384642; color:white; text-align:left; transition:transform .18s,border-color .18s; }
+    .photo-choice:hover { transform:translateY(-2px); border-color:#ffffffb3; }
+    .photo-choice[aria-pressed="true"] { outline:2px solid #fff; outline-offset:3px; }
+    .photo-choice img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:saturate(.65); }
+    .photo-choice>span { position:absolute; inset:auto 0 0; display:block; padding:27px 12px 10px; background:linear-gradient(transparent,rgba(0,0,0,.82)); }
+    .photo-choice strong { display:block; font-size:13px; font-weight:550; }
+    .photo-choice small { display:block; margin-top:3px; color:#e5e9e6; font-size:10px; }
+    .photo-choice .active-mark { position:absolute; right:9px; top:9px; display:none; width:21px; height:21px; padding:4px; border-radius:50%; background:#fffffff0; color:#243330; stroke-width:2; }
+    .photo-choice[aria-pressed="true"] .active-mark { display:block; }
+    .empty { padding:22px 18px; text-align:center; border-radius:16px; background:rgba(0,0,0,.24); }
+    .empty p { margin:0 0 10px; font-size:13px; }
+    .text-button { padding:6px 2px; border:0; background:none; color:inherit; font-size:12px; text-decoration:underline; text-underline-offset:4px; }
+    .dock { right:var(--edge); bottom:var(--panel-bottom); display:grid; grid-template-columns:repeat(3,1fr); width:356px; height:64px; padding:8px 64px 8px 8px; border-radius:32px; }
+    .dock .selection { position:absolute; top:8px; left:8px; height:48px; border-radius:24px; background:#fffffff0; box-shadow:0 2px 8px #00000012; pointer-events:none; }
+    .dock>button { position:relative; display:flex; align-items:center; justify-content:center; padding:0; border:0; border-radius:24px; color:var(--glass-ink); background:transparent; font-size:13px; }
+    .dock>button .label { display:inline-flex; align-items:center; gap:7px; padding:6px 8px; border-radius:20px; }
+    .dock>button[aria-pressed="true"] { color:#202b2d; font-weight:600; }
+    .dock>button svg { width:17px; height:17px; }
+    .dock .favorite { position:absolute; top:8px; right:8px; width:48px; height:48px; }
+    .favorite::before { content:""; position:absolute; left:-5px; top:12px; width:1px; height:24px; background:#ffffff30; }
+    .dock .favorite .icon-ink { display:grid; place-items:center; width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.1); color:#fff; transition:background .18s; }
+    .dock .favorite:hover .icon-ink { background:rgba(255,255,255,.2); }
+    .favorite[aria-pressed="true"] svg { fill:currentColor; }
+    .settings-host { width:344px; height:524px; top:112px; right:var(--edge); border-radius:25px; pointer-events:none; z-index:3; }
+    .settings-plate { width:344px; height:524px; border-radius:25px; }
+    .glass-icon { border:0; border-radius:50%; background:transparent; color:#202628; padding:0; display:grid; place-items:center; }
+    .settings-toggle { position:absolute; top:0; right:0; width:50px; height:50px; pointer-events:auto; z-index:2; }
+    .settings-toggle .icon-ink { display:grid; place-items:center; width:38px; height:38px; border-radius:50%; background:#ffffffc4; }
+    .settings-host[data-open="true"] .settings-toggle { right:17px; top:17px; width:38px; height:38px; color:var(--ink); }
+    .settings-host[data-open="true"] .settings-toggle .icon-ink { width:32px; height:32px; background:var(--field); }
+    .settings-content { position:absolute; inset:12px; padding:20px; border-radius:18px; background:rgba(248,250,247,.88); color:var(--ink); overflow:auto; scrollbar-width:thin; opacity:0; }
+    :root[data-theme="dark"] .settings-content { background:rgba(31,39,38,.91); }
+    .settings-content[data-open="true"] { pointer-events:auto; }
+    .settings-content h3 { margin:0 35px 18px 0; font-size:17px; line-height:24px; font-weight:600; }
+    .setting-label { display:block; margin:0 0 7px; font-size:12px; color:var(--muted); }
+    .material-choices { display:flex; gap:4px; padding:4px; margin-bottom:14px; border-radius:13px; background:var(--field); }
+    .material-choices button { flex:1; min-height:38px; padding:6px 16px; border:0; border-radius:10px; font-size:13px; background:none; }
+    .material-choices button[aria-pressed="true"] { background:var(--paper); box-shadow:0 1px 4px #00000012; font-weight:600; }
+    .range-row { display:flex; justify-content:space-between; align-items:center; }
+    .range-row .setting-label { margin:0; }
+    .range-row output { min-width:30px; font-size:12px; color:var(--muted); text-align:right; font-variant-numeric:tabular-nums; }
+    input[type="range"] { display:block; width:100%; height:28px; margin:4px 0 8px; accent-color:#4c6562; }
+    .switch-label,.preferences label { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:42px; font-size:13px; cursor:pointer; }
+    .preferences label { flex-direction:row-reverse; }
+    .settings-content input[type="checkbox"] { appearance:none; position:relative; flex:0 0 38px; width:38px; height:23px; margin:0; border:0; border-radius:14px; background:#adb6b2; cursor:pointer; transition:background .18s; }
+    .settings-content input[type="checkbox"]::before { content:""; position:absolute; top:3px; left:3px; width:17px; height:17px; border-radius:50%; background:white; box-shadow:0 1px 3px #0002; transition:transform .18s; }
+    .settings-content input[type="checkbox"]:checked { background:#4c6562; }
+    .settings-content input[type="checkbox"]:checked::before { transform:translateX(15px); }
+    .preference-divider { height:1px; background:var(--hairline); margin:10px 0; }
+    .render-state { margin-top:10px; padding-top:10px; border-top:1px solid var(--hairline); color:var(--muted); font-size:11px; }
+    .render-state::before { content:""; display:inline-block; width:5px; height:5px; margin-right:6px; border-radius:50%; background:#617e73; vertical-align:2px; }
+    dialog { width:min(450px,calc(100% - 40px)); padding:28px; border:1px solid var(--hairline); border-radius:24px; background:var(--paper); color:var(--ink); box-shadow:0 24px 80px #0003; }
+    dialog::backdrop { background:#0006; }
+    dialog h2 { margin:0 0 16px; font-size:20px; }
+    dialog p { font-size:13px; color:var(--muted); }
+    dialog a { text-decoration:underline; text-underline-offset:3px; }
+    dialog .close-about { float:right; width:36px; height:36px; margin-top:-5px; background:var(--field); }
+    .toast { position:fixed; z-index:10; left:50%; bottom:calc(var(--panel-bottom) + 82px); transform:translate(-50%,8px); padding:12px 20px; border-radius:24px; background:#202b2d; color:#fff; font-size:13px; opacity:0; pointer-events:none; transition:opacity .2s,transform .2s; box-shadow:0 8px 30px #0002; }
+    .toast[data-visible="true"] { opacity:1; transform:translate(-50%,0); }
+    .scene[data-effects="solid"] .lg-optical-backplate { background:#293936; }
+    .scene[data-effects="solid"] .settings-plate { background:var(--paper); }
+    .scene:not([data-renderer="webgl"]) :is(.site-header,.collection,.dock)>.lg-optical-backplate { background:rgba(35,48,47,.88); border-color:#ffffff45; }
+    @media (max-width:1180px) {
+      :root { --edge:24px; }
+      .scene-caption { top:24%; left:40px; }
+      .scene-caption h1 { font-size:56px; }
+      .collection { width:min(720px,calc(100% - 48px)); left:50%; transform:translateX(-50%); bottom:calc(var(--panel-bottom) + 88px); }
+      .dock { left:50%; right:auto; transform:translateX(-50%); }
+      .scene-number { display:none; }
+      .scene[data-settings-open="true"] .collection { visibility:hidden; }
+    }
+    @media (max-width:650px) {
+      :root { --edge:16px; --panel-bottom:max(22px,env(safe-area-inset-bottom,0px)); }
+      .site-header { top:max(16px,env(safe-area-inset-top,0px)); width:calc(100% - 24px); max-width:none; height:58px; padding:7px 8px 7px 12px; justify-content:space-between; gap:7px; }
+      .brand { font-size:16px; gap:6px; }
+      .brand svg { width:23px; height:23px; }
+      .brand small { display:none; }
+      .top-nav { gap:1px; }
+      .top-nav button { min-height:38px; padding:7px 10px; font-size:11px; }
+      .count { min-width:16px; height:16px; margin-left:4px; font-size:9px; }
+      .header-tools { gap:3px; }
+      .header-tools .icon-button,#about-toggle { width:34px; height:38px; }
+      .header-tools svg { width:18px; height:18px; }
+      .scene-caption { top:22%; left:27px; right:22px; }
+      .scene-caption h1 { font-size:45px; margin:12px 0; }
+      .scene-caption .chapter { font-size:9px; }
+      .scene-caption p { font-size:12px; }
+      .settings-host { top:94px; }
+      .settings-content { padding:18px; }
+      .collection { width:calc(100% - 32px); height:184px; padding:16px; bottom:calc(var(--panel-bottom) + 82px); }
+      .section-head { margin-bottom:13px; gap:10px; }
+      .section-head h2 { font-size:12px; }
+      .section-head>span { font-size:10px; }
+      .gallery { gap:10px; }
+      .photo-choice { height:114px; border-radius:11px; }
+      .photo-choice>span { padding:22px 7px 9px; }
+      .photo-choice strong { font-size:11px; }
+      .photo-choice small { display:none; }
+      .photo-choice .active-mark { top:6px; right:6px; width:18px; height:18px; padding:3px; }
+      .dock>button { font-size:12px; }
+      .dock>button .label { padding:5px; gap:5px; }
+      .dock>button svg { width:16px; }
+      .scene[data-settings-open="true"] .scene-caption { visibility:hidden; }
+    }
+    @media (max-width:360px) { .site-header { gap:4px; padding-inline:9px 6px; } .brand { font-size:15px; gap:4px; } .brand svg { width:21px; } .top-nav button { padding-inline:7px; font-size:10px; } .header-tools .icon-button,#about-toggle { width:30px; } .top-nav .count { min-width:14px; margin-left:3px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
+    html[data-motion="reduced"] *,html[data-motion="reduced"] *::before { animation:none !important; transition:none !important; }
+    @media (prefers-contrast:more) { .scene .lg-optical-output { visibility:hidden; } .scene .lg-optical-backplate { visibility:visible; background:#293936; -webkit-backdrop-filter:none; backdrop-filter:none; } .scene .settings-plate { background:var(--paper); } }
+    @media (prefers-reduced-transparency:reduce) { .scene .lg-optical-backplate { background:#293936; } .scene .settings-plate { background:var(--paper); } }
+    @media (forced-colors:active) { .site-header::after,.collection::after,.dock::after { display:none; } .site-header,.collection,.dock,.scene-caption,.scene-number,.settings-content,.icon-ink { background:Canvas !important; color:CanvasText !important; } .top-nav button,.dock>button { color:CanvasText; } .top-nav button[aria-pressed="true"],.dock>button[aria-pressed="true"] { color:HighlightText; background:Highlight; } .dock .selection { background:Highlight; } .settings-content input[type="checkbox"] { appearance:auto; } .settings-content input[type="checkbox"]::before { display:none; } }
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" style="display:none"><defs>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.4 14.2A8.7 8.7 0 0 1 9.8 3.6 8.8 8.8 0 1 0 20.4 14.2Z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.8a5.3 5.3 0 0 0-7.5 0L12 6.1l-1.3-1.3a5.3 5.3 0 0 0-7.5 7.5L12 21l8.8-8.7a5.3 5.3 0 0 0 0-7.5Z"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h7m5 0h4M4 17h3m5 0h8"/><circle cx="13.5" cy="7" r="2.5"/><circle cx="9.5" cy="17" r="2.5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-lake" viewBox="0 0 24 24"><path d="m3 13 5-8 6 8m-2-3 3-5 6 8M3 17c3-2 3 2 6 0s3 2 6 0 3 2 6 0M5 21h14"/></symbol>
+    <symbol id="i-peak" viewBox="0 0 24 24"><path d="m2 20 10-17 10 17H2Zm7-12 3 3 3-3"/></symbol>
+    <symbol id="i-field" viewBox="0 0 24 24"><path d="M3 20c3-5 8-8 18-8M3 15c5-3 9-3 12-2M9 20c3-3 7-4 12-4"/><circle cx="7" cy="6" r="3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  </defs></svg>
+  <div id="scene" class="scene lg-optical-scene" data-renderer="pending" data-lg-profile="optical" aria-label="全屏风景与液态玻璃控件">
+    <canvas id="source" aria-hidden="true"></canvas><canvas id="optics" class="lg-optical-output" aria-hidden="true"></canvas>
+  <header id="site-header" class="site-header lg-optical-control">
+    <span class="lg-optical-backplate" aria-hidden="true"></span>
+    <a class="brand" href="#top" aria-label="澄境首页"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M15 2C11 8 4 14 4 20a11 11 0 0 0 22 0C26 14 19 8 15 2Z"/><path d="M5 21c4-4 7 4 11 0s6-1 9 0"/></svg>澄境 <small>STILL</small></a>
+    <nav class="top-nav" aria-label="内容分类"><button id="show-all" type="button" aria-pressed="true">精选影像</button><button id="show-favorites" type="button" aria-pressed="false">我的收藏<span id="favorite-count" class="count">0</span></button></nav>
+    <div class="header-tools"><button id="about-toggle" aria-label="关于这个演示" title="关于这个演示" class="text-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.5"/></svg></button><button id="theme-toggle" class="icon-button" type="button" aria-label="切换深色外观" title="切换外观"><svg aria-hidden="true"><use href="#i-moon"/></svg></button></div>
+  </header>
+    <main>
+      <div class="scene-caption" id="top"><p class="chapter caption-ink" id="chapter">01 / THE LAKE</p><h1 id="scene-title" class="caption-ink">山湖之间</h1><p id="scene-description" class="caption-ink">水面无声，山色有回响。</p></div>
+      <div class="scene-number" aria-hidden="true"><b id="scene-index">01</b><span> / 03</span></div>
+    <section id="collection" class="collection lg-optical-control" aria-labelledby="collection-title"><span class="lg-optical-backplate" aria-hidden="true"></span><div class="section-head"><h2 id="collection-title">三个片刻，慢慢看。</h2><span id="collection-count">03 张精选</span></div>
+      <div id="gallery" class="gallery">
+        <button class="photo-choice" type="button" data-photo="0" aria-pressed="true"><img src="assets/lake.jpg" width="104" height="76" alt="山峰、森林与湖边木屋"><span><strong>山湖之间</strong><small>01 — 一次安静的停留</small></span><svg class="active-mark" aria-hidden="true"><use href="#i-check"/></svg></button>
+        <button class="photo-choice" type="button" data-photo="1" aria-pressed="false"><img src="assets/peak.jpg" width="104" height="76" alt="云雾中的陡峭山峰" loading="lazy"><span><strong>云端之上</strong><small>02 — 向更远处望去</small></span><svg class="active-mark" aria-hidden="true"><use href="#i-check"/></svg></button>
+        <button class="photo-choice" type="button" data-photo="2" aria-pressed="false"><img src="assets/field.jpg" width="104" height="76" alt="夕阳映照起伏的山野" loading="lazy"><span><strong>风经过的地方</strong><small>03 — 让思绪自由生长</small></span><svg class="active-mark" aria-hidden="true"><use href="#i-check"/></svg></button>
+      </div><div id="empty" class="empty" hidden><p>还没有收藏的风景。遇到喜欢的，就留下来。</p><button id="explore" class="text-button" type="button">回到精选影像</button></div>
+    </section>
+      <nav id="dock" class="dock lg-optical-control" aria-label="切换风景"><span class="lg-optical-backplate" aria-hidden="true"></span><span id="selection" class="selection" aria-hidden="true"></span>
+        <button type="button" data-photo="0" aria-pressed="true"><span class="label"><svg aria-hidden="true"><use href="#i-lake"/></svg>山湖</span></button>
+        <button type="button" data-photo="1" aria-pressed="false"><span class="label"><svg aria-hidden="true"><use href="#i-peak"/></svg>雪峰</span></button>
+        <button type="button" data-photo="2" aria-pressed="false"><span class="label"><svg aria-hidden="true"><use href="#i-field"/></svg>旷野</span></button>
+      <button id="favorite" type="button" class="favorite glass-icon" aria-label="收藏当前风景" aria-pressed="false" title="收藏风景"><span class="icon-ink"><svg aria-hidden="true"><use href="#i-heart"/></svg></span></button></nav>
+      <div id="settings-host" class="settings-host lg-optical-control">
+        <span id="settings-plate" class="settings-plate lg-optical-backplate" aria-hidden="true"></span>
+        <div id="settings-content" class="settings-content" role="group" aria-label="显示设置" hidden inert>
+          <h3>显示设置</h3><span class="setting-label">玻璃质感</span>
+          <div class="material-choices" role="group" aria-label="玻璃质感"><button id="clear-material" type="button" aria-pressed="true">轻透</button><button id="soft-material" type="button" aria-pressed="false">柔和</button></div>
+          <div class="range-row"><label for="strength" class="setting-label">边缘折射</label><output id="strength-value" for="strength">18</output></div><input id="strength" type="range" min="0" max="30" value="18">
+          <label class="switch-label" for="refraction">开启折射<input id="refraction" type="checkbox" checked></label>
+          <label class="switch-label" for="grid">显示观察网格<input id="grid" type="checkbox"></label><div class="preference-divider"></div><div class="preferences"><label><input id="solid" type="checkbox">减少透明度</label><label><input id="reduce-motion" type="checkbox">减少动态</label><label><input id="compatibility" type="checkbox">基础毛玻璃</label></div>
+        <div class="render-state"><output id="renderer-status" aria-live="polite">正在准备画面</output></div></div>
+        <button id="settings-toggle" class="settings-toggle glass-icon" type="button" aria-expanded="false" aria-controls="settings-content" aria-label="打开显示设置" title="调整玻璃质感"><span class="icon-ink"><svg aria-hidden="true"><use href="#i-sliders"/></svg></span></button>
+      </div>
+    </main>
+  </div>
+  <dialog id="about"><button id="about-close" class="icon-button close-about" type="button" aria-label="关闭说明"><svg aria-hidden="true"><use href="#i-close"/></svg></button><h2>关于澄境</h2><p>这是基于 apple-design 技能制作的本地演示。整张风景覆盖窗口，导航、影像选择、切换栏和设置从同一个背景取样。试试切换风景，或展开显示设置，观察玻璃边缘的变化。</p><p>玻璃通过 WebGL 对同一张背景图像重新采样，文字与按钮保留真实网页语义。这是 Web 光学近似，并非 Apple 原生 Liquid Glass；“轻透 / 柔和”是本示例的可调配方。</p><p>收藏只保存在当前浏览器中。照片来自 <a href="https://unsplash.com" target="_blank" rel="noreferrer">Unsplash</a>，已下载到演示目录；页面运行不依赖在线图片服务。</p><p><a href="contained.html">对比之前的局部展示版本</a></p><p id="image-message">图片加载中。</p><p id="fallback-reason"></p></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="assets/liquid-glass-optics.js"></script>
+  <script>
+    const $ = (selector) => document.querySelector(selector);
+    const scene = $('#scene'), source = $('#source'), canvas = $('#optics'), dock = $('#dock');
+    const host = $('#settings-host'), plate = $('#settings-plate'), settings = $('#settings-content'), toggle = $('#settings-toggle');
+    const queries = { motion:matchMedia('(prefers-reduced-motion: reduce)'), transparency:matchMedia('(prefers-reduced-transparency: reduce)'), contrast:matchMedia('(prefers-contrast: more)'), forced:matchMedia('(forced-colors: active)'), dark:matchMedia('(prefers-color-scheme: dark)') };
+    const photos = [
+      {file:'lake',title:'山湖之间',chapter:'THE LAKE',description:'水面无声，山色有回响。'},
+      {file:'peak',title:'云端之上',chapter:'ABOVE THE CLOUDS',description:'远离喧嚣，靠近辽阔。'},
+      {file:'field',title:'风经过的地方',chapter:'THE OPEN FIELD',description:'把片刻留白，还给自己。'}
+    ];
+    let selected = 0, favoritesOnly = false, opened = false, soft = false, renderer = null, width = 1, height = 1;
+    let raf = 0, lastTime = 0, toastTimer = 0, menuWidth = 344, dockWidth = 356;
+    let menuHeight = 524;
+    let layout = {}, compact = false;
+    let state = {menuW:50,menuH:50,selection:0}, target = {...state}, velocity = {menuW:0,menuH:0,selection:0};
+    let favorites = new Set(), manualTheme = false, storageAvailable = true;
+    try { const saved=JSON.parse(localStorage.getItem('still-favorites') || '[]'); if(Array.isArray(saved))favorites=new Set(saved.filter(i=>Number.isInteger(i)&&i>=0&&i<photos.length)); } catch { storageAvailable=false; }
+    const reduceMotion = () => queries.motion.matches || $('#reduce-motion').checked;
+    const isSolid = () => queries.transparency.matches || queries.contrast.matches || queries.forced.matches || $('#solid').checked;
+    const notify = (message) => { clearTimeout(toastTimer); $('#toast').textContent=message; $('#toast').dataset.visible='true'; toastTimer=setTimeout(()=>$('#toast').dataset.visible='false',2200); };
+    function setTheme(dark) { document.documentElement.dataset.theme=dark?'dark':'light'; $('#theme-toggle').setAttribute('aria-label',dark?'切换浅色外观':'切换深色外观'); $('#theme-toggle use').setAttribute('href',dark?'#i-sun':'#i-moon'); if(renderer){drawSource();if(!$('#compatibility').checked)renderer.setSource(source);wake();} }
+    setTheme(queries.dark.matches);
+    $('#theme-toggle').addEventListener('click',()=>{manualTheme=true;setTheme(document.documentElement.dataset.theme!=='dark');});
+    function updateStatus() {
+      scene.dataset.effects=isSolid()?'solid':'normal';
+      document.documentElement.dataset.motion=reduceMotion()?'reduced':'normal';
+      $('#renderer-status').textContent=isSolid()?'实底模式':renderer?.status.mode!=='webgl'?'基础毛玻璃':$('#refraction').checked?'光学玻璃':'折射已关闭';
+    }
+    function drawSource() {
+      const dpr=Math.min(devicePixelRatio||1,1);source.width=Math.round(width*dpr);source.height=Math.round(height*dpr);
+      const ctx=source.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
+      const image=photos[selected].image;
+      if(image?.naturalWidth){
+        const scale=Math.max(width/image.naturalWidth,height/image.naturalHeight);
+        const w=image.naturalWidth*scale,h=image.naturalHeight*scale;
+        ctx.filter=document.documentElement.dataset.theme==='dark'?'saturate(.55) brightness(.76)':'saturate(.65)';ctx.drawImage(image,(width-w)/2,(height-h)/2,w,h);ctx.filter='none';
+      } else {
+        const gradient=ctx.createLinearGradient(0,0,width,height);gradient.addColorStop(0,'#b8c1be');gradient.addColorStop(1,'#6d8380');ctx.fillStyle=gradient;ctx.fillRect(0,0,width,height);
+        ctx.strokeStyle='#e8eeeb70';ctx.lineWidth=1;for(let r=80;r<900;r+=30){ctx.beginPath();ctx.arc(width*.6,height*.7,r,0,Math.PI*2);ctx.stroke();}
+      }
+      const top=ctx.createLinearGradient(0,0,0,190);top.addColorStop(0,'rgba(0,0,0,.58)');top.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=top;ctx.fillRect(0,0,width,190);
+      const bottom=ctx.createLinearGradient(0,height-130,0,height);bottom.addColorStop(0,'rgba(0,0,0,0)');bottom.addColorStop(1,'rgba(0,0,0,.2)');ctx.fillStyle=bottom;ctx.fillRect(0,height-130,width,130);
+      const shade=ctx.createLinearGradient(0,0,width*.75,0);shade.addColorStop(0,'rgba(0,0,0,.38)');shade.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=shade;ctx.fillRect(0,0,width,height);
+      if($('#grid').checked){ctx.lineWidth=1;ctx.strokeStyle='#ffffffb3';for(let x=0;x<width;x+=24){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,height);ctx.stroke();}for(let y=0;y<height;y+=24){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(width,y);ctx.stroke();}}
+    }
+    function createRenderer() {
+      renderer=LiquidGlassOptics.createRenderer(canvas,{source,maxDpr:1,onStatus(value){scene.dataset.renderer=value.mode;if(value.mode==='fallback')console.warn('[STILL renderer]',value.reason);$('#fallback-reason').textContent=value.mode==='fallback'?'当前设备已切换到基础毛玻璃，图片与操作仍然可用。':'';updateStatus();}});
+      scene.dataset.renderer=renderer.status.mode;
+    }
+    function render() {
+      plate.style.transform=`translateX(${menuWidth-state.menuW}px) scale(${state.menuW/menuWidth},${state.menuH/menuHeight})`;
+      $('#selection').style.transform=`translateX(${state.selection}px)`;
+      settings.style.opacity=String(Math.max(0,Math.min(1,(state.menuH-100)/(menuHeight-110))));
+      settings.style.transform=`translateY(${Math.max(0,(menuHeight-state.menuH)*.03)}px)`;
+      if(!opened&&state.menuH<=50.1)settings.hidden=true;
+      if(isSolid()||$('#compatibility').checked||!layout.header)return;
+      const recipe={refraction:Number($('#strength').value),blur:soft?4:1.2,tint:soft?.12:.04};
+      const lenses=[{...layout.header,...recipe},{...layout.dock,...recipe}];
+      if(!(compact&&opened))lenses.push({...layout.collection,...recipe});
+      lenses.push({x:layout.settings.x+menuWidth-state.menuW,y:layout.settings.y,width:state.menuW,height:state.menuH,radius:25,...recipe});
+      renderer?.render(lenses,{refraction:$('#refraction').checked});
+    }
+    function frame(now) {
+      raf=0;const dt=Math.min(.025,Math.max(.001,(now-(lastTime||now-16))/1000));lastTime=now;let moving=false;
+      for(const key of Object.keys(target)){
+        if(reduceMotion()){state[key]=target[key];velocity[key]=0;continue;}
+        velocity[key]+=((target[key]-state[key])*280-velocity[key]*31)*dt;state[key]+=velocity[key]*dt;
+        if(Math.abs(target[key]-state[key])>.04||Math.abs(velocity[key])>.04)moving=true;else{state[key]=target[key];velocity[key]=0;}
+      }
+      render();if(moving)raf=requestAnimationFrame(frame);else lastTime=0;
+    }
+    function wake(){if(!raf&&!document.hidden)raf=requestAnimationFrame(frame);}
+    function resize(){
+      width=scene.clientWidth;height=scene.clientHeight;compact=matchMedia('(max-width:1180px)').matches;
+      menuWidth=Math.min(344,width-32);dockWidth=Math.min(356,width-32);
+      menuHeight=Math.min(524,height-(matchMedia('(max-width:650px)').matches?94:112)-100);
+      dock.style.width=`${dockWidth}px`;$('#selection').style.width=`${(dockWidth-72)/3}px`;
+      host.style.width=`${menuWidth}px`;host.style.height=`${menuHeight}px`;plate.style.width=`${menuWidth}px`;plate.style.height=`${menuHeight}px`;
+      target={menuW:opened?menuWidth:50,menuH:opened?menuHeight:50,selection:selected*(dockWidth-72)/3};state={...target};velocity={menuW:0,menuH:0,selection:0};
+      const bounds=scene.getBoundingClientRect();
+      for(const [key,element] of Object.entries({header:$('#site-header'),collection:$('#collection'),dock,settings:host})){
+        const rect=element.getBoundingClientRect();layout[key]={x:rect.left-bounds.left,y:rect.top-bounds.top,width:rect.width,height:rect.height,radius:parseFloat(getComputedStyle(element).borderRadius)||25};
+      }
+      $('#collection').inert=compact&&opened;
+      drawSource();if(!renderer)createRenderer();else if(!$('#compatibility').checked)renderer.setSource(source);
+      renderer.resize(width,height);updateStatus();render();
+    }
+    function setOpen(value,restoreFocus=false){opened=value;target.menuW=value?menuWidth:50;target.menuH=value?menuHeight:50;scene.dataset.settingsOpen=String(value);$('#collection').inert=compact&&value;toggle.setAttribute('aria-expanded',String(value));toggle.setAttribute('aria-label',value?'关闭显示设置':'打开显示设置');toggle.querySelector('use').setAttribute('href',value?'#i-close':'#i-sliders');host.dataset.open=String(value);settings.dataset.open=String(value);settings.inert=!value;if(value)settings.hidden=false;if(!value&&restoreFocus)toggle.focus();wake();}
+    toggle.addEventListener('click',()=>setOpen(!opened));
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&opened)setOpen(false,true);});
+    document.addEventListener('pointerdown',event=>{if(opened&&!host.contains(event.target))setOpen(false);});
+    function updateCollection(){
+      $('#favorite-count').textContent=favorites.size;
+      $('#favorite').setAttribute('aria-pressed',String(favorites.has(selected)));$('#favorite').setAttribute('aria-label',favorites.has(selected)?'取消收藏当前风景':'收藏当前风景');
+      document.querySelectorAll('[data-photo]').forEach(button=>{const index=Number(button.dataset.photo);button.setAttribute('aria-pressed',String(index===selected));if(button.classList.contains('photo-choice'))button.hidden=favoritesOnly&&!favorites.has(index);});
+      $('#show-all').setAttribute('aria-pressed',String(!favoritesOnly));$('#show-favorites').setAttribute('aria-pressed',String(favoritesOnly));
+      $('#collection-title').textContent=favoritesOnly?'喜欢的风景，留在这里。':'三个片刻，慢慢看。';$('#collection-count').textContent=`${String(favoritesOnly?favorites.size:3).padStart(2,'0')} 张${favoritesOnly?'收藏':'精选'}`;$('#empty').hidden=!favoritesOnly||favorites.size>0;
+    }
+    function selectPhoto(index){selected=index;target.selection=index*(dockWidth-72)/3;const p=photos[index];$('#scene-title').textContent=p.title;$('#scene-description').textContent=p.description;$('#chapter').textContent=`0${index+1} / ${p.chapter}`;$('#scene-index').textContent=`0${index+1}`;drawSource();if(!$('#compatibility').checked)renderer?.setSource(source);updateCollection();wake();}
+    document.querySelectorAll('[data-photo]').forEach(button=>button.addEventListener('click',()=>selectPhoto(Number(button.dataset.photo))));
+    $('#favorite').addEventListener('click',()=>{const saved=favorites.has(selected);if(saved)favorites.delete(selected);else favorites.add(selected);try{localStorage.setItem('still-favorites',JSON.stringify([...favorites]));storageAvailable=true;}catch{storageAvailable=false;}updateCollection();notify((saved?'已从收藏中移除':'已收藏这片风景')+(storageAvailable?'':' · 仅在本次页面保留'));});
+    function showCollection(value){favoritesOnly=value;updateCollection();if(opened)setOpen(false);$('#collection').animate([{opacity:.6},{opacity:1}],{duration:reduceMotion()?0:200});}
+    $('#show-all').addEventListener('click',()=>showCollection(false));$('#show-favorites').addEventListener('click',()=>showCollection(true));$('#explore').addEventListener('click',()=>{showCollection(false);$('#favorite').focus({preventScroll:true});});
+    $('#clear-material').addEventListener('click',()=>{soft=false;$('#clear-material').setAttribute('aria-pressed','true');$('#soft-material').setAttribute('aria-pressed','false');wake();});
+    $('#soft-material').addEventListener('click',()=>{soft=true;$('#clear-material').setAttribute('aria-pressed','false');$('#soft-material').setAttribute('aria-pressed','true');wake();});
+    $('#strength').addEventListener('input',()=>{$('#strength-value').textContent=$('#strength').value;wake();});
+    $('#refraction').addEventListener('change',()=>{updateStatus();wake();});
+    $('#grid').addEventListener('change',()=>{drawSource();if(!$('#compatibility').checked)renderer?.setSource(source);wake();});
+    for(const id of ['solid','reduce-motion'])$('#'+id).addEventListener('change',()=>{updateStatus();wake();});
+    $('#compatibility').addEventListener('change',()=>{renderer?.destroy();if(!$('#compatibility').checked){renderer=null;resize();}updateStatus();wake();});
+    for(const [key,query] of Object.entries(queries))query.addEventListener('change',()=>{if(key==='dark'&&!manualTheme)setTheme(query.matches);updateStatus();wake();});
+    $('#about-toggle').addEventListener('click',()=>$('#about').showModal());$('#about-close').addEventListener('click',()=>$('#about').close());
+    $('#about').addEventListener('click',event=>{if(event.target===$('#about')){const r=$('#about').getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)$('#about').close();}});
+    updateCollection();const observer=new ResizeObserver(resize);observer.observe(scene);
+    Promise.all(photos.map(photo=>new Promise(resolve=>{const image=new Image();image.onload=()=>{photo.image=image;if(photos[selected]===photo&&renderer){drawSource();if(!$('#compatibility').checked)renderer.setSource(source);wake();}resolve(true);};image.onerror=()=>resolve(false);image.src=`assets/${photo.file}.jpg`;}))).then(results=>{const failures=results.filter(ok=>!ok).length;$('#image-message').textContent=failures?`${failures} 张影像加载失败，已保留几何背景与全部操作。`:'三张本地影像已就绪。';if(failures)notify('部分影像未能加载，已显示替代画面');});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;lastTime=0;}else wake();});
+    window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);clearTimeout(toastTimer);observer.disconnect();renderer?.destroy();});
+    window.addEventListener('pageshow',event=>{if(event.persisted){renderer=null;observer.observe(scene);resize();}});
+  </script>
+</body>
+</html>

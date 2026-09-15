@@ -1,0 +1,38 @@
+{
+  "entry": "index.html",
+  "checkedAt": "2026-09-15T03:53:20.021844+00:00",
+  "layout": "fullscreen",
+  "renderer": "unchanged controlled-background WebGL renderer",
+  "checks": {
+    "fullscreen_canvas_coverage": "pass: origin 0,0; viewport 2560x1271; scene/canvas width 2560 and height 1271.33",
+    "four_shared_background_functional_surfaces": "pass: header, collection, dock, settings",
+    "viewport_390x844": "pass: no horizontal overflow; collection and dock separated",
+    "viewport_320x740": "pass: no horizontal overflow; header controls inside viewport",
+    "compact_settings_occlusion": "pass: collection hidden while settings open",
+    "escape_focus_restore": "pass: focus returns to settings trigger",
+    "global_solid_fallback": "pass: optical canvas hidden; header and collection backplates shown",
+    "static_preflight": "pass",
+    "image_switching": "not-run on final fullscreen revision: browser automation timed out before this check",
+    "full_optical_acceptance": "not-claimed"
+  },
+  "evidence": [
+    "fullscreen.png",
+    "fullscreen-refraction-off.png",
+    "fullscreen-comparison.png"
+  ],
+  "notes": [
+    "Screenshots show the full-screen glass layout. On/off comparison was captured, but text/layout rasterization differences preclude treating raw pixel deltas as isolated optical acceptance.",
+    "No physical-device, FPS or cross-browser claim. The previous contained version is preserved at contained.html.",
+    "Final UI reset attempt timed out in browser automation. A fresh page load initializes refraction on and settings closed."
+  ],
+  "files": {
+    "assets/field.jpg": "1cbbb3fb6a32a54bf6bea9da28398070d4796ea457314f50c856d48a275a09a2",
+    "assets/lake.jpg": "212bc8ff553a6826534d579ec78675145a29fcadea068daf7a32b89c13eea446",
+    "assets/liquid-glass-optics.css": "c1a739e1a1cdaaad71781304ac1047b56dd41e18e90f6363e069477e38347cfc",
+    "assets/liquid-glass-optics.js": "74a3f1681c0fa468af430dccb83372e89b2975b3266f7c098fb98b73fcdd3e13",
+    "assets/liquid-glass.css": "011b8c22958ea6c1eb0c4786b2e63bb23c48de921a5a8786adb463a179e18cd9",
+    "assets/peak.jpg": "a43a424eaefc06715d7454dca63989eeb6ebe275120745ebfb01974e4ca977f6",
+    "contained.html": "aba5be45f13ed897b35a2c15d899dee041830db86ef021303b93285668ac2d5b",
+    "index.html": "61d8d2c3e919a9bcc126a6099777651700e7f63d848c4234bbe670bfeb268b99"
+  }
+}

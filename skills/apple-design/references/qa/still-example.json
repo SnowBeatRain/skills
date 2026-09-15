@@ -1,0 +1,33 @@
+{
+  "kind": "packaged-business-example",
+  "entry": "examples/still/index.html",
+  "comparison": "examples/still/contained.html",
+  "packagedAt": "2026-09-15T06:26:12.922847+00:00",
+  "sourceRevision": "component-proportions",
+  "checks": {
+    "source_preservation": "pass: only shared resource paths changed",
+    "local_resource_closure": "pass",
+    "static_preflight": "pass: both entries from relocated skill directory",
+    "relocated_http": "pass: 8 entry/resource URLs served byte-for-byte from isolated copy",
+    "archive_contents": "pass: existing pack tool includes entries, runtime assets and documentation; no session directories"
+  },
+  "visual": {
+    "status": "not-run",
+    "reason": "The source component-proportions revision was blocked from browser visual review by another extension UI. Packaging is not new visual acceptance."
+  },
+  "files": {
+    "assets/liquid-glass-optics.css": "c1a739e1a1cdaaad71781304ac1047b56dd41e18e90f6363e069477e38347cfc",
+    "assets/liquid-glass-optics.js": "74a3f1681c0fa468af430dccb83372e89b2975b3266f7c098fb98b73fcdd3e13",
+    "assets/liquid-glass.css": "011b8c22958ea6c1eb0c4786b2e63bb23c48de921a5a8786adb463a179e18cd9",
+    "examples/still/assets/field.jpg": "1cbbb3fb6a32a54bf6bea9da28398070d4796ea457314f50c856d48a275a09a2",
+    "examples/still/assets/lake.jpg": "212bc8ff553a6826534d579ec78675145a29fcadea068daf7a32b89c13eea446",
+    "examples/still/assets/peak.jpg": "a43a424eaefc06715d7454dca63989eeb6ebe275120745ebfb01974e4ca977f6",
+    "examples/still/contained.html": "a0560e9ddf2987d830a4c5ff4cbb6385f8e9c2602712a968507e05d25d80782a",
+    "examples/still/index.html": "5aa1ea28ed314b4621eefadce2f8e6824aa4ce6a340daf2037de6398b48f85dd"
+  },
+  "photoSources": {
+    "examples/still/assets/lake.jpg": "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+    "examples/still/assets/peak.jpg": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b",
+    "examples/still/assets/field.jpg": "https://images.unsplash.com/photo-1500534623283-312aade485b7"
+  }
+}

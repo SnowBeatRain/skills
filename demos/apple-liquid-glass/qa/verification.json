@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-09-15T03:38:07.449178+00:00",
+  "environment": {
+    "browser": "Chrome connected preview",
+    "desktopWidth": 2560,
+    "mobileWidth": 390
+  },
+  "checks": {
+    "static_optical_preflight": "pass",
+    "image_switching": "pass",
+    "favorites_add_filter_remove_empty_state": "pass",
+    "favorites_reload_persistence": "pass",
+    "settings_open_escape_focus_return": "pass",
+    "light_dark_theme": "pass",
+    "solid_mode": "pass",
+    "reduced_motion_state": "pass",
+    "desktop_mobile_no_horizontal_overflow": "pass",
+    "native_platforms": "not-run",
+    "cross_browser": "not-run",
+    "optical_on_off_screenshot_comparison": "not-completed"
+  },
+  "limits": [
+    "Initial optical preview rendered successfully. Some subsequent browser sessions returned WebGL unavailable; fallback controls remained usable.",
+    "Optical rendering recovered after resetting the temporary viewport.",
+    "Final optical comparison screenshots could not be completed because the browser capture command timed out. No full optical visual acceptance is claimed.",
+    "Mobile checks use viewport emulation, not a physical phone."
+  ],
+  "files": {
+    "assets/field.jpg": "1cbbb3fb6a32a54bf6bea9da28398070d4796ea457314f50c856d48a275a09a2",
+    "assets/lake.jpg": "212bc8ff553a6826534d579ec78675145a29fcadea068daf7a32b89c13eea446",
+    "assets/liquid-glass-optics.css": "c1a739e1a1cdaaad71781304ac1047b56dd41e18e90f6363e069477e38347cfc",
+    "assets/liquid-glass-optics.js": "74a3f1681c0fa468af430dccb83372e89b2975b3266f7c098fb98b73fcdd3e13",
+    "assets/liquid-glass.css": "011b8c22958ea6c1eb0c4786b2e63bb23c48de921a5a8786adb463a179e18cd9",
+    "assets/peak.jpg": "a43a424eaefc06715d7454dca63989eeb6ebe275120745ebfb01974e4ca977f6",
+    "index.html": "aba5be45f13ed897b35a2c15d899dee041830db86ef021303b93285668ac2d5b"
+  },
+  "photoSources": [
+    "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b",
+    "https://images.unsplash.com/photo-1500534623283-312aade485b7"
+  ]
+}

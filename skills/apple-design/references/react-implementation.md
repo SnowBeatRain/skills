@@ -1,6 +1,6 @@
 # React：优先接入光学渲染器
 
-先读 [Web 背景合同](web-implementation.md)。明确要求 Liquid Glass 时，将原样 [光学基准](../examples/optical-reference.html) 的场景、几何与控制逻辑迁入 React。背景与原生 DOM 控件分层，shader 不参与 React state 的每帧重渲染。
+先读 [Web 背景合同](web-implementation.md)。首次接入本包 Liquid Glass 时，可参考 [光学基准](../examples/optical-reference.html) 将需要的场景、几何与控制逻辑迁入 React；已有接入的精修或组件提取沿用当前实现，不重建已认可页面。背景与原生 DOM 控件分层，shader 不参与 React state 的每帧重渲染。
 
 ## 1. 资源与类型
 

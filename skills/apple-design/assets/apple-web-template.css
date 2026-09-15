@@ -1,6 +1,7 @@
 /* ============================================
    Apple 风格网页 CSS 起点模板（apple-design skill）
-   用法：复制本文件到项目，按需修改变量（尤其 --accent 品牌色）
+   用法：按需并入项目；这是普通 Apple 风格 / 标准毛玻璃起点，不是原生 Liquid Glass。
+   自定义主题同时检查 --accent / --on-accent；实际媒体背景仍需验证对比度。
    ============================================ */
 
 :root {
@@ -9,25 +10,31 @@
   --bg-grouped: #F2F2F7;
   --bg-secondary: #F5F5F7;
   --text-primary: #1D1D1F;
-  --text-secondary: #86868B;
-  --text-tertiary: #AEAEB2;
+  --text-secondary: #626267;
+  --text-tertiary: #68686D;
   --separator: rgba(60, 60, 67, .29);
-  --accent: #007AFF;
-  --accent-hover: #0A84FF;
+  --accent: #0066CC;
+  --accent-hover: #0055AA;
+  --on-accent: #FFFFFF;
+  --danger-fill: #B42318;
+  --on-danger: #FFFFFF;
   --accent-soft: rgba(0, 122, 255, .1);
   --success: #34C759;
   --danger: #FF3B30;
   --warning: #FF9500;
+  --success-text: #1D6B35;
+  --danger-text: #A11B13;
+  --warning-text: #754200;
   --fill: rgba(120, 120, 128, .12);
   --glass: rgba(255, 255, 255, .6);
   --glass-blur: blur(20px) saturate(150%);
 
   /* 字体 */
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-          "SF Pro Display", "PingFang SC", "Helvetica Neue",
+  --font: -apple-system, BlinkMacSystemFont, system-ui,
+          "PingFang SC", "Helvetica Neue",
           "Microsoft YaHei", sans-serif;
 
-  /* 间距（8pt 栅格） */
+  /* 本包 Web 间距尺度：4px 基础，8px 常用节奏；非 HIG 强制值 */
   --space-1: 4px;  --space-2: 8px;  --space-3: 12px;
   --space-4: 16px; --space-5: 20px; --space-6: 24px;
   --space-8: 32px; --space-10: 40px; --space-12: 48px; --space-16: 64px;
@@ -40,7 +47,7 @@
   --shadow-card: 0 1px 2px rgba(0, 0, 0, .06), 0 2px 6px rgba(0, 0, 0, .04), 0 8px 16px rgba(0, 0, 0, .04);
   --shadow-float: 0 2px 8px rgba(0, 0, 0, .08), 0 8px 24px rgba(0, 0, 0, .06), 0 16px 48px rgba(0, 0, 0, .08);
 
-  /* Liquid Glass 高光效果 */
+  /* 标准毛玻璃的装饰高光，不提供光学折射 */
   --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, .15) 0%, rgba(255, 255, 255, 0) 50%);
   --glass-highlight-dark: linear-gradient(180deg, rgba(255, 255, 255, .08) 0%, rgba(255, 255, 255, 0) 50%);
 }
@@ -52,14 +59,18 @@
     --bg-secondary: #161617;
     --text-primary: #F5F5F7;
     --text-secondary: #AEAEB2;
-    --text-tertiary: #636366;
+    --text-tertiary: #A1A1A6;
     --separator: rgba(84, 84, 88, .6);
-    --accent: #0A84FF;
-    --accent-hover: #409CFF;
+    --accent: #409CFF;
+    --accent-hover: #64AEFF;
+    --on-accent: #000000;
     --accent-soft: rgba(10, 132, 255, .2);
     --success: #30D158;
     --danger: #FF453A;
     --warning: #FF9F0A;
+    --success-text: #30D158;
+    --danger-text: #FF6961;
+    --warning-text: #FFB340;
     --fill: rgba(120, 120, 128, .24);
     --glass: rgba(28, 28, 30, .6);
     --shadow-card: 0 1px 2px rgba(0, 0, 0, .5), 0 2px 6px rgba(0, 0, 0, .4);
@@ -72,7 +83,7 @@
 
 body {
   font-family: var(--font);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.5;
   color: var(--text-primary);
   background: var(--bg);
@@ -128,7 +139,7 @@ p { color: var(--text-primary); }
 .nav .brand { font-weight: 700; font-size: 17px; color: var(--text-primary); }
 .nav-links { display: flex; gap: var(--space-5); align-items: center; }
 .nav-links a { color: var(--text-primary); font-size: 14px; }
-.nav-links a:hover { color: var(--text-secondary); text-decoration: none; }
+.nav-links a:hover { color: var(--text-primary); text-decoration: underline; }
 @media (max-width: 640px) { .nav-links { display: none; } }
 
 /* ============ Hero ============ */
@@ -146,12 +157,12 @@ p { color: var(--text-primary); }
   transition: opacity .15s ease-out, transform .15s ease-out, background .15s ease-out;
   -webkit-tap-highlight-color: transparent;
 }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-primary:hover { background: var(--accent-hover); color: var(--on-accent); transform: translateY(-1px); }
 .btn-secondary { background: transparent; color: var(--accent);
   box-shadow: inset 0 0 0 1px var(--accent); }
 .btn-secondary:hover { background: var(--accent-soft); }
-.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger, .btn-danger:hover { background: var(--danger-fill); color: var(--on-danger); }
 .btn-ghost { background: transparent; color: var(--text-primary); }
 .btn-ghost:hover { background: var(--fill); }
 .btn:disabled, .btn[disabled] { opacity: .4; cursor: not-allowed; transform: none; }
@@ -204,9 +215,9 @@ label { display: block; font-size: 14px; font-weight: 600;
   border-radius: var(--radius-full);
   padding: 4px 12px; font-size: 13px; font-weight: 500;
 }
-.tag-success { background: rgba(52,199,89,.15); color: var(--success); }
-.tag-danger { background: rgba(255,59,48,.12); color: var(--danger); }
-.tag-warning { background: rgba(255,149,0,.15); color: var(--warning); }
+.tag-success { background: rgba(52,199,89,.15); color: var(--success-text); }
+.tag-danger { background: rgba(255,59,48,.12); color: var(--danger-text); }
+.tag-warning { background: rgba(255,149,0,.15); color: var(--warning-text); }
 
 /* ============ 列表 / 侧栏 ============ */
 .list { list-style: none; }
@@ -245,9 +256,8 @@ label { display: block; font-size: 14px; font-weight: 600;
 }
 .modal {
   width: 100%; max-width: 420px;
-  background: var(--glass);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
+  /* 文字密集的普通网页弹窗用实底保护可读性。 */
+  background: var(--bg);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-float);
   padding: var(--space-6);
@@ -279,6 +289,37 @@ label { display: block; font-size: 14px; font-weight: 600;
 
 /* ============ 无障碍 ============ */
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+/* 应用可将此属性设在 html 上；媒体查询未获支持时仍有实底入口。 */
+[data-reduced-transparency="true"] :is(.nav, .sidebar, .modal) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--bg);
+}
+[data-reduced-transparency="true"] :is(.nav, .sidebar, .modal)::before { display: none; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav, .sidebar, .modal { background: var(--bg); }
+  .nav::before, .sidebar::before, .modal::before { display: none; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .nav, .sidebar, .modal {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--bg);
+  }
+  .nav::before, .sidebar::before, .modal::before { display: none; }
+}
+@media (forced-colors: active) {
+  .nav, .sidebar, .modal {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: Canvas;
+    color: CanvasText;
+  }
+  .nav::before, .sidebar::before, .modal::before { display: none; }
+  .card, .modal, .btn { box-shadow: none; }
+  .btn, .tag { border: 1px solid ButtonText; }
+  :focus-visible { outline-color: Highlight; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;

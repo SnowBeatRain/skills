@@ -1,0 +1,30 @@
+{
+  "entry": "index.html",
+  "checkedAt": "2026-09-15T04:27:43.672456+00:00",
+  "revision": "component-proportions",
+  "checks": {
+    "unique_ids_and_script_targets": "pass",
+    "local_assets": "pass",
+    "http_preview_serves_current_file": "pass",
+    "optical_renderer_unchanged": "pass",
+    "javascript_static_preflight": "pass",
+    "visual_layout_and_interaction": "blocked"
+  },
+  "blocker": "Chrome reported that another extension UI is open on the page and blocked automation. No current visual acceptance is claimed.",
+  "intended_dimensions": {
+    "header": "content width; centered; 64px high",
+    "collection": "720 x 222px desktop; 184px high mobile",
+    "dock": "356 x 64px desktop; constrained on mobile",
+    "settings": "344px wide; height capped by available viewport; scrollable content"
+  },
+  "files": {
+    "assets/field.jpg": "1cbbb3fb6a32a54bf6bea9da28398070d4796ea457314f50c856d48a275a09a2",
+    "assets/lake.jpg": "212bc8ff553a6826534d579ec78675145a29fcadea068daf7a32b89c13eea446",
+    "assets/liquid-glass-optics.css": "c1a739e1a1cdaaad71781304ac1047b56dd41e18e90f6363e069477e38347cfc",
+    "assets/liquid-glass-optics.js": "74a3f1681c0fa468af430dccb83372e89b2975b3266f7c098fb98b73fcdd3e13",
+    "assets/liquid-glass.css": "011b8c22958ea6c1eb0c4786b2e63bb23c48de921a5a8786adb463a179e18cd9",
+    "assets/peak.jpg": "a43a424eaefc06715d7454dca63989eeb6ebe275120745ebfb01974e4ca977f6",
+    "contained.html": "aba5be45f13ed897b35a2c15d899dee041830db86ef021303b93285668ac2d5b",
+    "index.html": "f7720687c7cfa18aa18807310796d0c8afdef80e4869f87ad44f22e5a1e497e7"
+  }
+}
